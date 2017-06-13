@@ -13,7 +13,7 @@ These Benchmarks are performed on vectors of size 32.
 
 It can be seen that floating point arithmetic operations are very slow, the reason is that pulpino does not have a FPU unlike ARM M4.
 
-ARM M4 Benchmarks were done with  Kiel simulator(CM4_FP) and CMSISv5.
+ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
 
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
