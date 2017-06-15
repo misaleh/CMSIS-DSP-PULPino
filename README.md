@@ -52,4 +52,4 @@ ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
 | arm_sub_f32      | 6068 |  |295 | 
 | arm_sub_q7      | 430 |  | 109| 
 | arm_sub_q15      | 460 |  | 168| 
-| arm_sub_q15      | 654 |  | 290| 
+| arm_sub_q31      | 654 |  | 290| 
