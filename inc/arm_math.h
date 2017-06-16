@@ -5086,7 +5086,7 @@ void arm_rfft_fast_f32(
     {
 
 
-      *pOut = sqrtf(in);
+      *pOut = sqrt(in);
 
 
       return (ARM_MATH_SUCCESS);
