@@ -252,6 +252,7 @@ int32_t main(void)
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
   printf("\narm_dot_prod_q31:\n");  
+  ptr = &result_q63_1;
   printf("%X ",*(ptr++));
   printf("%X ",*(ptr++));
 
