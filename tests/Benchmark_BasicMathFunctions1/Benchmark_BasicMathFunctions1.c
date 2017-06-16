@@ -139,6 +139,7 @@ q31_t result_q31[MAX_BLOCKSIZE];
 q63_t result_q63_1;
 q31_t result_q31_1;
 float32_t result_f32_1;
+int * ptr = &result_q63_1;
 
 int i = 0 ;
 int32_t main(void)
@@ -238,18 +239,22 @@ int32_t main(void)
 #endif
 /*dot product*/
   set_gpio_pin_value(6, 1);	
-  arm_dot_prod_q15(srcA_buf_q15,srcB_buf_q15,MAX_BLOCKSIZE,&result_q63_1);
+  arm_dot_prod_q15(srcA_buf_q15,srcB_buf_q15,MAX_BLOCKSIZE,&result_q63_1);/*output format Q34.30*/
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
   printf("\narm_dot_prod_q15:\n");  
-  printf("%d ",result_q63_1);
+  printf("%X ",*(ptr++));
+  printf("%X ",*(ptr++));
+
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_dot_prod_q31(srcA_buf_q31,srcB_buf_q31,MAX_BLOCKSIZE,&result_q63_1);
+  arm_dot_prod_q31(srcA_buf_q31,srcB_buf_q31,MAX_BLOCKSIZE,&result_q63_1); /*output format Q16.48*/
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
   printf("\narm_dot_prod_q31:\n");  
-  printf("%d ",result_q63_1);
+  printf("%X ",*(ptr++));
+  printf("%X ",*(ptr++));
+
 #endif
   set_gpio_pin_value(6, 1);	
   arm_dot_prod_f32(srcA_buf_f32,srcB_buf_f32,MAX_BLOCKSIZE,&result_f32_1);
@@ -259,11 +264,11 @@ int32_t main(void)
   printf("%d ",(int)(result_f32_1*100));
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_dot_prod_q7(srcA_buf_q7,srcB_buf_q7,MAX_BLOCKSIZE,&result_q31_1);
+  arm_dot_prod_q7(srcA_buf_q7,srcB_buf_q7,MAX_BLOCKSIZE,&result_q31_1);/*output format Q18.14*/
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
   printf("\narm_dot_prod_q7:\n");  
-  printf("%d ",result_q31_1);  
+  printf("%X ",result_q31_1);  
 
 #endif
 /*Mult*/
