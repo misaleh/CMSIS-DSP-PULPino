@@ -78,20 +78,20 @@ q31_t arm_cos_q31(
 
   /* Calculate the nearest index */
   index = (uint32_t)x >> FAST_MATH_Q31_SHIFT;
-  printf("index %d\n",index);
+  //printf("index %d\n",index);
   /* Calculation of fractional value */
   fract = (x - (index << FAST_MATH_Q31_SHIFT)) << 9;
-  printf("fract = %X\n",fract);
+  //printf("fract = %X\n",fract);
   /* Read two nearest values of input value from the sin table */
   a = sinTable_q31[index];
   b = sinTable_q31[index+1];
-  printf("a = %X\n",a);
-  printf("b= %X\n",b);
+  //printf("a = %X\n",a);
+  //printf("b= %X\n",b);
   /* Linear interpolation process */
   cosVal = ((q63_t)(temp1-(q63_t)fract)*(q63_t)a) >> 32;
-  printf("cosVal1 = %X\n",cosVal);
+  //printf("cosVal1 = %X\n",cosVal);
   cosVal = (q31_t)((((q63_t)cosVal << 32) + ((q63_t)fract*b)) >> 32);
-  printf("cosVal2= %X\n",cosVal);
+  //printf("cosVal2= %X\n",cosVal);
   return cosVal << 1;
 }
 
