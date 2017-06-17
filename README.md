@@ -17,6 +17,7 @@ It can be seen that floating point arithmetic operations are very slow, the reas
 
 ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
 
+Results from pulpino were compared with results from ARM m4 and also were checked by hand.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
@@ -62,7 +63,7 @@ Fast Math Functions doesn't operate on vectors.
 
 Test cases are the same in the two benchmarks.
 
-All Sin and Cosine functions uses tables but float functions are slower as they use the fixed point tables and interpolate the results from it using float data type.
+All Sin and Cosine functions uses tables but with interpolation.
 
 sqrt for float use the built in functions sqrt function while sqrt for fixed point use  Newton-Raphson algorithm.
 
