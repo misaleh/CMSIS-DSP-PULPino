@@ -6,6 +6,8 @@ This Repo is still under development.
 
 #### Ported Modules
 BasicMathFunctions
+
+FastMathFunctions
 #### Benchmarks
 **BasicMathFunctions**
 
@@ -53,3 +55,25 @@ ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
 | arm_sub_q7      | 430 |  | 109| 
 | arm_sub_q15      | 460 |  | 168| 
 | arm_sub_q31      | 654 |  | 290| 
+
+**FastMathFunctions**
+
+Fast Math Functions doesn't operate on vectors.
+
+Test cases are the same in the two benchmarks.
+
+All Sin and Cosine functions uses tables but float functions are slower as the use the fixed point table and interpolate the results from it using float data type.
+
+sqrt for float use the built in functions sqrt function while sqrt for fixed point use  Newton-Raphson algorithm.
+
+| Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
+| ------------- |:-------------:| -----:| -----:|
+| arm_sqrt_f32      | 38 |N/A  | | 
+| arm_sqrt_q15      | 723 |  N/A| | 
+| arm_sqrt_q31      | 683 | N/A | | 
+| arm_cos_f32      | 2134 |  N/A| | 
+| arm_cos_q15      | 64|N/A  | | 
+| arm_cos_q31      | 68 |  N/A| | 
+| arm_sin_f32      | 2047 |  N/A| | 
+| arm_sin_q15      | 56 |  N/A| | 
+| arm_sin_q31      | 62 |  N/A| | 
