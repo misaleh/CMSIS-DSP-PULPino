@@ -62,18 +62,18 @@ Fast Math Functions doesn't operate on vectors.
 
 Test cases are the same in the two benchmarks.
 
-All Sin and Cosine functions uses tables but float functions are slower as the use the fixed point table and interpolate the results from it using float data type.
+All Sin and Cosine functions uses tables but float functions are slower as they use the fixed point tables and interpolate the results from it using float data type.
 
 sqrt for float use the built in functions sqrt function while sqrt for fixed point use  Newton-Raphson algorithm.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_sqrt_f32      | 38 |N/A  | | 
-| arm_sqrt_q15      | 723 |  N/A| | 
-| arm_sqrt_q31      | 683 | N/A | | 
-| arm_cos_f32      | 2134 |  N/A| | 
-| arm_cos_q15      | 64|N/A  | | 
-| arm_cos_q31      | 68 |  N/A| | 
-| arm_sin_f32      | 2047 |  N/A| | 
-| arm_sin_q15      | 56 |  N/A| | 
-| arm_sin_q31      | 62 |  N/A| | 
+| arm_sqrt_f32      | 38 |N/A  | 26| 
+| arm_sqrt_q15      | 723 |  N/A| 83| 
+| arm_sqrt_q31      | 683 | N/A | 131| 
+| arm_cos_f32      | 2134 |  N/A| 53| 
+| arm_cos_q15      | 64|N/A  | 36| 
+| arm_cos_q31      | 68 |  N/A| 46| 
+| arm_sin_f32      | 2047 |  N/A| 55| 
+| arm_sin_q15      | 56 |  N/A| 30| 
+| arm_sin_q31      | 62 |  N/A| 43| 
