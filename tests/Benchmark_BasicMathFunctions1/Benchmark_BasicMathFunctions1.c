@@ -1,4 +1,3 @@
-
 #include <math.h>
 #include <stdio.h>
 #include "arm_math.h"
@@ -6,7 +5,6 @@
 #include "utils.h"
 #include "string_lib.h"
 #include "bar.h"
-
 
 #define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define MAX_BLOCKSIZE     32
@@ -26,7 +24,6 @@
   -1.5937295764474768,  -1.4409644319010200,  0.5711476236581780,
   -0.3998855777153632,   0.6899973754643451
 };
-
 
  float32_t srcB_buf_f32[MAX_BLOCKSIZE] =
 {
@@ -86,6 +83,20 @@
    0x610A,  0x5419,   0x3501,
    0x9100,  0x4469
 };
+/*
+ srcA_buf_q15 = {0.9146, 0.152, 0.167,
+		0.5372, 0.137, 0.22366,
+		0.64, 0.0869, -0.96857, 	
+		-0.8666,0.403, 0.29, 
+		0.209, 0.6, 0.868, 
+		0.305, 0.0088, -0.116
+		-0.654, 0.8, 0.927
+		0.66, -0.94, 0.427
+		0.268,0.04,-0.237
+		0.758, 0.657, 0.4141
+		-0.867,0.5344
+}		
+*/
  q15_t srcB_buf_q15[MAX_BLOCKSIZE] =
 {
    0x7512,  0x1375,   0x1565,
@@ -130,7 +141,6 @@
 };
 
 
-
 float32_t result_f32[MAX_BLOCKSIZE];  /* Final ouput */
 q7_t result_q7[MAX_BLOCKSIZE];
 q15_t result_q15[MAX_BLOCKSIZE];
@@ -139,7 +149,6 @@ q31_t result_q31[MAX_BLOCKSIZE];
 q63_t result_q63_1;
 q31_t result_q31_1;
 float32_t result_f32_1;
-int * ptr = &result_q63_1;
 
 int i = 0 ;
 int32_t main(void)
@@ -154,6 +163,7 @@ int32_t main(void)
   set_gpio_pin_value(6, 0);
 /*Tests*/
 /*abs*/
+
   set_gpio_pin_value(6, 1);	
   arm_abs_f32( srcA_buf_f32,result_f32,MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
@@ -161,8 +171,10 @@ int32_t main(void)
   printf("\narm_abs_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",(int)(result_f32[i]*100));  
+      printf("%d ",(int)(result_f32[i]*1000));  
     }
+  printf("\n");
+
 #endif
   set_gpio_pin_value(5, 1);
   arm_abs_q7(srcA_buf_q7,result_q7,MAX_BLOCKSIZE);
@@ -171,8 +183,13 @@ int32_t main(void)
   printf("\narm_abs_q7:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",result_q7[i]);  
+      printf("0x%X ",result_q7[i]);  
     }
+/*Results from pulpino were compared with results from ARM m4 and also were checked by hand*/
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x75 0x13 0x15 0x44 0x11 0x1C 0x52 0x0B 0x7D 0x6F 0x33  0x25 0x1A 0x4D 0x6F 0x26 0x01 0x0F 0x54 0x66 0x76 0x54 0x79  0x36 0x22 0x33 0x1F 0x61 0x54 0x35 0x6F 0x49");
+  printf("\n");
 #endif
   set_gpio_pin_value(6, 1);	
   arm_abs_q15(srcA_buf_q15,result_q15,MAX_BLOCKSIZE);
@@ -181,8 +198,12 @@ int32_t main(void)
   printf("\narm_abs_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",result_q15[i]);  
+      printf("0x%X ",result_q15[i]);  
     }
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x7512 0x1375 0x1565 0x44C3 0x1188 0x1CA1 0x5264 0x0B20 0x7CFB 0x6EEE 0x3399 0x2518 0x1AB2 0x4D01 0x6F23 0x26FF 0x0121 0x0EDD 0x53B9 0x6688 0x76A2 0x5476 0x78AA 0x36B3 0x2245 0x3373 0x1E57 0x610A 0x5419 0x3501 0x6F00 0x4469");
+  printf("\n");
 #endif
   set_gpio_pin_value(5, 1);	
   arm_abs_q31(srcA_buf_q31,result_q31,MAX_BLOCKSIZE);
@@ -191,9 +212,14 @@ int32_t main(void)
   printf("\narm_abs_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",result_q31[i]);  
+      printf("0x%X ",result_q31[i]);  
     }
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x75122542 0x1375A138 0x15654473 0x44C34463 0x118854C3 0x1CA18291 0x5264E236 0x0B200590 0x7CFA6589 0x6EED68ED 0x3399D123 0x2518BBD1 0x1AB2037A 0x4D01D1F1 0x6F237531 0x26FF5569 0x01213159 0x0EDC3289 0x53B8ABAA 0x6688A12E 0x76A2FF96 0x54761269 0x78A92BC8 0x36B3B697 0x22459643 0x3373C368 0x1E56FE2D 0x610A0540 0x54199643 0x350112B5 0x6EFFFBCA 0x4469AA15");
+  printf("\n");
 #endif
+
 /*add*/
 
   set_gpio_pin_value(6, 1);	
@@ -203,18 +229,24 @@ int32_t main(void)
   printf("\narm_add_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",(int)(result_f32[i]*100));  
+      printf("%d ",(int)(result_f32[i]*1000));  
     }
+  printf("\n");
 #endif
   set_gpio_pin_value(5, 1);	
   arm_add_q7(srcA_buf_q7, srcB_buf_q7, result_q7, MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
+/*negatvie number are printed with FFFFFF before it because it is signed*/
   printf("\narm_add_q7:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",result_q7[i]);  
+      printf("0x%X ",result_q7[i]);  
     }
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x7F 0x26 0x2A 0x7F 0x22 0x38 0x7F 0x16 0x80 0x80 0x66 0x4A 0x34 0x7F 0x7F 0x4C 0x2 0xE2 0x80 0x7F 0x7F 0x7F 0x80 0x6C 0x44 0x66 0xC2 0x7F 0x7F 0x6A 0x80 0x7F");
+  printf("\n");
 #endif
   set_gpio_pin_value(6, 1);	
   arm_add_q15(srcA_buf_q15, srcB_buf_q15, result_q15, MAX_BLOCKSIZE);
@@ -224,8 +256,12 @@ int32_t main(void)
   printf("\narm_add_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",result_q15[i]);  
+      printf("0x%X ",result_q15[i]);  
     }
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x7FFF 0x26EA 0x2ACA 0x7FFF 0x2310 0x3942 0x7FFF 0x1640 0x8000 0x8000 0x6732 0x4A30 0x3564 0x7FFF 0x7FFF 0x4DFE 0x242 0xE246 0x8000 0x7FFF 0x7FFF 0x7FFF 0x8000 0x6D66 0x448A 0x66E6 0xC352 0x7FFF 0x7FFF 0x6A02 0x8000 0x7FFF");
+  printf("\n");
 #endif
   set_gpio_pin_value(5, 1);	
   arm_add_q31(srcA_buf_q31, srcB_buf_q31, result_q31, MAX_BLOCKSIZE);
@@ -234,44 +270,64 @@ int32_t main(void)
   printf("\narm_add_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",result_q31[i]);  
+      printf("0x%X ",result_q31[i]);  
     }
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x7FFFFFFF 0x26EB4270 0x2ACA88E6 0x7FFFFFFF 0x2310A986 0x39430522 0x7FFFFFFF 0x16400B20 0x80000000 0x80000000 0x6733A246 0x4A3177A2 0x356406F4 0x7FFFFFFF 0x7FFFFFFF 0x4DFEAAD2 0x24262B2 0xE2479AEE 0x80000000 0x7FFFFFFF 0x7FFFFFFF 0x7FFFFFFF 0x80000000 0x6D676D2E 0x448B2C86 0x66E786D0 0xC35203A6 0x7FFFFFFF 0x7FFFFFFF 0x6A02256A 0x80000000 0x7FFFFFFF");
+  printf("\n");
 #endif
+
 /*dot product*/
   set_gpio_pin_value(6, 1);	
-  arm_dot_prod_q15(srcA_buf_q15,srcB_buf_q15,MAX_BLOCKSIZE,&result_q63_1);/*output format Q34.30*/
+  arm_dot_prod_q15(srcA_buf_q15,srcB_buf_q15,MAX_BLOCKSIZE,&result_q63_1);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
+ /*int pointer to print the long long on two halfs as printf doesn't print long long*/
+  int * ptr = &result_q63_1;
+  ptr++;
   printf("\narm_dot_prod_q15:\n");  
-  printf("%X ",*(ptr++));
-  printf("%X ",*(ptr++));
-
+  printf("0x%X",*(ptr--));
+  printf("%X ",*(ptr));
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x2B4B3CAF7");
+  printf("\n");
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_dot_prod_q31(srcA_buf_q31,srcB_buf_q31,MAX_BLOCKSIZE,&result_q63_1); /*output format Q16.48*/
+  arm_dot_prod_q31(srcA_buf_q31,srcB_buf_q31,MAX_BLOCKSIZE,&result_q63_1);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
   printf("\narm_dot_prod_q31:\n");  
   ptr = &result_q63_1;
-  printf("%X ",*(ptr++));
-  printf("%X ",*(ptr++));
-
+  ptr++;
+  printf("0x%X",*(ptr--));
+  printf("%X ",*(ptr));
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0xAD2DD380D7254");
+  printf("\n");
 #endif
   set_gpio_pin_value(6, 1);	
   arm_dot_prod_f32(srcA_buf_f32,srcB_buf_f32,MAX_BLOCKSIZE,&result_f32_1);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
   printf("\narm_dot_prod_f32:\n");  
-  printf("%d ",(int)(result_f32_1*100));
+  printf("%d ",1000*((int)result_f32_1));
+  printf("\n");
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_dot_prod_q7(srcA_buf_q7,srcB_buf_q7,MAX_BLOCKSIZE,&result_q31_1);/*output format Q18.14*/
+  arm_dot_prod_q7(srcA_buf_q7,srcB_buf_q7,MAX_BLOCKSIZE,&result_q31_1);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
   printf("\narm_dot_prod_q7:\n");  
-  printf("%X ",result_q31_1);  
-
+  printf("0x%X ",result_q31_1);  
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x0002B420");
+  printf("\n");
 #endif
+
 /*Mult*/
   set_gpio_pin_value(6, 1);
   arm_mult_f32(srcA_buf_f32, srcB_buf_f32, result_f32, MAX_BLOCKSIZE);
@@ -280,8 +336,9 @@ int32_t main(void)
   printf("\narm_mult_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",(int)(result_f32[i]*100));  
+      printf("%d ",(int)(result_f32[i]*1000));  
     }
+  printf("\n");
 #endif
   set_gpio_pin_value(5, 1);
   arm_mult_q31(srcA_buf_q31, srcB_buf_q31, result_q31, MAX_BLOCKSIZE);
@@ -290,8 +347,12 @@ int32_t main(void)
   printf("\narm_mult_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",result_q31[i]);  
+      printf("0x%X ",result_q31[i]);  
     }
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x6B132EAF 0x02F557F6 0x03938A93 0x24F0A28B 0x0266C7B8 0x066774EA 0x35099158 0x00F788F7 0x7A070E8E 0x6021C4AE 0x14CD4B7F 0x0AC0515C 0x059148FB 0x2E54309C 0x607F8913 0x0BE1980C 0x00028D60 0x01B9A5DB 0x36C2890E 0x522252B8 0x6DF556CD 0x37BB6513 0x71BE11AC 0x17609E61 0x092D1DA8 0x14AEA869 0x07310244 0x499130BD 0x37419A55 0x15F2E380 0x6041F8B2 0x24909BF0");
+  printf("\n");
 #endif
   set_gpio_pin_value(6, 1);
   arm_mult_q15(srcA_buf_q15, srcB_buf_q15, result_q15, MAX_BLOCKSIZE);
@@ -300,8 +361,12 @@ int32_t main(void)
   printf("\narm_mult_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",result_q15[i]);  
+      printf("0x%X ",result_q15[i]);  
     }
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x6B12 0x02F5 0x0393 0x24F0 0x0266 0x0667 0x3508 0x00F7 0x7A08 0x6022 0x14CC 0x0ABF 0x0591 0x2E53 0x607E 0x0BE1 0x0002 0x01B9 0x36C2 0x5221 0x6DF3 0x37BB 0x71BF 0x1760 0x092C 0x14AE 0x0731 0x4991 0x3740 0x15F2 0x6042 0x248F");
+  printf("\n");
 #endif
   set_gpio_pin_value(5, 1);
   arm_mult_q7(srcA_buf_q7, srcB_buf_q7, result_q7, MAX_BLOCKSIZE);
@@ -310,13 +375,15 @@ int32_t main(void)
   printf("\narm_mult_q7:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
-      printf("%d ",result_q7[i]);  
+      printf("0x%X ",result_q7[i]);  
     }
+  printf("\n");
+  printf("\nCorrect answer:\n");
+  printf("0x6A 0x02 0x03 0x24 0x02 0x06 0x34 0x00 0x7A 0x60 0x14 0x0A 0x05 0x2E 0x60 0x0B 0x00 0x01 0x37 0x51 0x6C 0x37 0x72 0x16 0x09 0x14 0x07 0x49 0x37 0x15 0x60 0x29 ");
+  printf("\n");
 #endif
 
   printf("End\n");
 
   return 0 ;
 }
-
-
