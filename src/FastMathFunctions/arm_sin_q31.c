@@ -66,24 +66,24 @@ q31_t arm_sin_q31(
   int32_t index;                                 /* Index variables */
   q31_t a, b;                                    /* Four nearest output values */
   q31_t fract;                                   /* Temporary values for fractional values */
+  q63_t temp1 = 0x80000000;
 
   /* Calculate the nearest index */
   index = (uint32_t)x >> FAST_MATH_Q31_SHIFT;
- // printf("index %d\n",index);
+  //printf("index %d\n",index);
   /* Calculation of fractional value */
   fract = (x - (index << FAST_MATH_Q31_SHIFT)) << 9;
- // printf("fract = %d\n",fract);
+  //printf("fract = %X\n",fract);
   /* Read two nearest values of input value from the sin table */
   a = sinTable_q31[index];
   b = sinTable_q31[index+1];
- // printf("a = %d\n",a);
- // printf("b= %d\n",b);
+  //printf("a = %X\n",a);
+  //printf("b= %X\n",b);
   /* Linear interpolation process */
-  sinVal = (q63_t)((0x80000000-fract)*a) >> 32;
- // printf("sinVal1= %d\n",sinVal);
-
+  sinVal = ((q63_t)(temp1-(q63_t)fract)*(q63_t)a )>> 32;
+  //printf("sinVal1= %X\n",sinVal);
   sinVal = (q31_t)((((q63_t)sinVal << 32) + ((q63_t)fract*b)) >> 32);
- // printf("sinVal2= %d\n",sinVal);
+  //printf("sinVal2= %X\n",sinVal);
   return sinVal << 1;
 }
 
