@@ -70,8 +70,37 @@ void arm_abs_q15(
   uint32_t blockSize)
 {
   uint32_t blkCnt;                               /* loop counter */
-
   q15_t in;                                      /* Temporary input variable */
+#if defined (USE_DSP_RISCV)
+
+  q31_t inA1, inA2;
+
+  /*loop Unrolling */
+  blkCnt = blockSize >> 1u;
+  while (blkCnt > 0u)
+  {
+    /* C = A + B */
+    /* Add and then store the results in the destination buffer. */
+    inA1 = *pSrc++;
+    inA2 = *pSrc++;
+    *pDst++ = (inA1 > 0) ? inA1:(q15_t)clip((-inA1),-32768,32767);
+    *pDst++ = (inA2 > 0) ? inA2 :(q15_t)clip((-inA2),-32768,32767);
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+  blkCnt = blockSize % 0x2u;
+  while (blkCnt > 0u)
+  {
+    /* C = A + B */
+    /* Add and then store the results in the destination buffer. */
+    *pDst++ = (in > 0) ? in :(q15_t)clip((-inA2),-32768,32767);;
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+#else
+
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
@@ -87,7 +116,7 @@ void arm_abs_q15(
     /* Decrement the loop counter */
     blkCnt--;
   }
-
+#endif
 
 }
 

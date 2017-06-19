@@ -80,9 +80,7 @@ void arm_mult_f32(
 {
   uint32_t blkCnt;                               /* loop counters */
 
-  /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
-
 
   while(blkCnt > 0u)
   {

@@ -72,11 +72,8 @@ void arm_mult_q31(
   uint32_t blockSize)
 {
   uint32_t blkCnt;                               /* loop counters */
-
-  /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
-
-  while(blkCnt > 0u)
+  while (blkCnt > 0u)
   {
     /* C = A * B */
     /* Multiply the inputs and then store the results in the destination buffer. */
@@ -86,7 +83,7 @@ void arm_mult_q31(
     /* Decrement the blockSize loop counter */
     blkCnt--;
   }
-  
+
 }
 
 /**    

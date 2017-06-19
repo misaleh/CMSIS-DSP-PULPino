@@ -77,6 +77,42 @@ void arm_dot_prod_q15(
   q63_t sum = 0;                                 /* Temporary result storage */
   uint32_t blkCnt;                               /* loop counter */
 
+#if defined (USE_DSP_RISCV)
+
+  shortV *VectInA;
+  shortV *VectInB;
+
+  /*loop Unrolling */
+  blkCnt = blockSize >> 1u;
+
+  while (blkCnt > 0u)
+  {
+    /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
+    /* Calculate dot product and then store the result in a temporary buffer. */
+    VectInA =  (shortV*)pSrcA;
+    VectInB =  (shortV*)pSrcB;
+    pSrcA+=2;
+    pSrcB+=2;
+    sum += dotpv2(*VectInA, *VectInB);
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+  blkCnt = blockSize % 0x2u;
+
+  while (blkCnt > 0u)
+  {
+    /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
+    /* Calculate dot product and then store the results in a temporary buffer. */
+    sum +=  muls(*pSrcA++,*pSrcB++); 
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+
+#else
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
@@ -89,7 +125,7 @@ void arm_dot_prod_q15(
     /* Decrement the loop counter */
     blkCnt--;
   }
-
+#endif
 
   /* Store the result in the destination buffer in 34.30 format */
   *result = sum;

@@ -76,8 +76,31 @@ void arm_abs_q7(
   uint32_t blkCnt;                               /* loop counter */
   q7_t in;                                       /* Input value1 */
 
-  blkCnt = blockSize;
+#if defined (USE_DSP_RISCV)
 
+
+  q31_t in1, in2, in3, in4;                      /* temporary input variables */
+  q31_t out1, out2, out3, out4;                  /* temporary output variables */
+  shortV VectInA;
+  shortV VectInC; 
+  /*loop Unrolling */
+  blkCnt = blockSize >> 1u;
+
+  while (blkCnt > 0u)
+  {
+    VectInA[0] = (short)pSrc[0];
+    VectInA[1] = (short)pSrc[1];
+    VectInC = abs2(VectInA); 
+    *pDst++ =(q7_t)clip(VectInC[0],-128,127);
+    *pDst++ =(q7_t)clip(VectInC[1],-128,127);
+    pSrc+=2;
+    blkCnt--;
+  }
+
+  blkCnt = blockSize % 0x2u;
+#else
+  blkCnt = blockSize;
+#endif
   while(blkCnt > 0u)
   {
     /* C = |A| */

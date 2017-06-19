@@ -71,14 +71,39 @@ void arm_abs_q31(
   uint32_t blockSize)
 {
   uint32_t blkCnt;                               /* loop counter */
-  q31_t in;                                      /* Input value */
+  q31_t in,out;                                      /* Input value */
 
-  /* Run the below code for Cortex-M0 */
 
-  /* Initialize blkCnt with number of samples */
+
+#if defined (USE_DSP_RISCV)
+
+  /*loop Unrolling */
   blkCnt = blockSize;
 
+  while(blkCnt > 0u)
+  {
+    /* C = |A| */
+    /* Calculate absolute value of the input (if -1 then saturated to 0x7fffffff) and then store the results in the destination buffer. */
+    in = *pSrc++;
+    if(in == 0x80000000)
+    {
+	*pDst++ = INT32_MAX;
+    }
+    else
+    {
+         asm volatile ("p.abs %[d], %[a]"
+                : [d] "=r" (out)
+                : [a] "r"  (in));
+         *pDst++ = out;
+     }
+    blkCnt--;
+  }
 
+
+#else
+
+  /* Initialize blkCnt with number of samples */
+blkCnt = blockSize;
 
   while(blkCnt > 0u)
   {
@@ -90,7 +115,7 @@ void arm_abs_q31(
     /* Decrement the loop counter */
     blkCnt--;
   }
-
+#endif 
 }
 
 /**    

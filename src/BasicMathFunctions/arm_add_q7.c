@@ -41,7 +41,9 @@
 * -------------------------------------------------------------------- */
 
 #include "arm_math.h"
-
+#define DATA_WIDTH 7
+#define SATURATION ((1 << (DATA_WIDTH -1)) -1)
+#define SAT (-(1 << (DATA_WIDTH -1)))
 /**    
  * @ingroup groupMath    
  */
@@ -73,6 +75,42 @@ void arm_add_q7(
 {
   uint32_t blkCnt;                               /* loop counter */
 
+
+#if defined (USE_DSP_RISCV)
+
+  shortV VectInA;
+  shortV VectInB;  
+  shortV VectInC; 
+  /*loop Unrolling */
+  blkCnt = blockSize >> 1u;
+
+  while (blkCnt > 0u)
+  {
+    VectInA[0] = (short)pSrcA[0];
+    VectInA[1] = (short)pSrcA[1];
+    VectInB[0] = (short)pSrcB[0];
+    VectInB[1] = (short)pSrcB[1];
+    VectInC = add2v(VectInA,VectInB); 
+    *pDst++ =(q7_t)clip(VectInC[0],-128,127);
+    *pDst++ =(q7_t)clip(VectInC[1],-128,127);
+    pSrcA+=2;
+    pSrcB+=2;
+    blkCnt--;
+  }
+
+  blkCnt = blockSize % 0x2u;
+
+  while (blkCnt > 0u)
+  {
+    /* C = A + B */
+    /* Add and then store the results in the destination buffer. */
+    *pDst++ =(q7_t)clip((*pSrcA++ + *pSrcB++),-128,127);
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+#else
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
@@ -81,11 +119,10 @@ void arm_add_q7(
     /* C = A + B */
     /* Add and then store the results in the destination buffer. */
     *pDst++ = (q7_t) __SSAT((q15_t) * pSrcA++ + *pSrcB++, 8);
-
     /* Decrement the loop counter */
     blkCnt--;
   }
-
+#endif
 
 
 }

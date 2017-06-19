@@ -74,8 +74,22 @@ void arm_mult_q15(
 {
   uint32_t blkCnt;                               /* loop counters */
 
-  /* Run the below code for Cortex-M0 */
+#if defined (USE_DSP_RISCV)
 
+  q31_t mul1;                  /* temporary variables */
+
+  blkCnt = blockSize;
+  while (blkCnt > 0u)
+  {
+
+    mul1 = mulsN(*pSrcA++, *pSrcB++,15);
+    *pDst++ =  (q15_t)clip(mul1,-32768,32767);
+    blkCnt--;
+  }
+
+
+
+#else
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
@@ -88,6 +102,7 @@ void arm_mult_q15(
     /* Decrement the blockSize loop counter */
     blkCnt--;
   }
+#endif
 }
 
 /**    

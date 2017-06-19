@@ -295,7 +295,31 @@ extern "C"
 {
 #endif
 
+#define USE_DSP_RISCV
 
+
+/*
+*Risc-v DSP built-ins
+*/
+
+#define clipu(a, zero, max)           __builtin_pulp_clipu(a, zero, max)
+#define clip(a, min, max)    	      __builtin_pulp_clip(a, min, max)
+#define addnr(a,b, Norm, Round)       __builtin_pulp_addRN(a, b, Norm, Round)
+#define subnr(a,b, Norm, Round)       __builtin_pulp_subRN(a, b, Norm, Round)
+#define add4v(va,vb)  		      __builtin_pulp_add4(va, vb)
+#define add2v(va,vb)  		      __builtin_pulp_add2(va, vb)
+#define sumdotpv4(a, b, c)            __builtin_pulp_sdotsp4(a, b, c)
+#define sumdotpv2(a, b, c)            __builtin_pulp_sdotsp2(a, b, c)
+#define dotpv4(a, b)                  __builtin_pulp_dotsp4(a, b)
+#define dotpv2(a, b)                  __builtin_pulp_dotsp2(a, b)
+#define shufflev4(a, b, c)            __builtin_pulp_shuffle2h(a, b, c)
+#define mac(a, b, c)         __builtin_pulp_mac(a, b, c)
+#define muls(a, b)         __builtin_pulp_muls(a, b)
+#define abs2(a)         __builtin_pulp_abs2(a)
+#define abs4(a)         __builtin_pulp_abs4(a)
+#define mulsN(a, b,c)         __builtin_pulp_mulsN(a, b,c)
+typedef signed char charV __attribute__((vector_size (4)));
+typedef signed short shortV __attribute__((vector_size (4)));
   /**
    * @brief Macros required for reciprocal calculation in Normalized LMS
    */

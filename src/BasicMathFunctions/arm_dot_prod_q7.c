@@ -78,6 +78,40 @@ void arm_dot_prod_q7(
 
   q31_t sum = 0;                                 /* Temporary variables to store output */
 
+#if defined (USE_DSP_RISCV)
+
+  charV *VectInA;
+  charV *VectInB;
+
+  /*loop Unrolling */
+  blkCnt = blockSize >> 2u;
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+   ** a second loop below computes the remaining 1 to 3 samples. */
+  while (blkCnt > 0u)
+  {
+    VectInA =  (charV*)pSrcA;
+    VectInB =  (charV*)pSrcB;
+    pSrcA+=4;
+    pSrcB+=4;
+    sum = sumdotpv4(*VectInA, *VectInB, sum);
+    blkCnt--;
+  }
+
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = blockSize % 0x4u;
+
+  while (blkCnt > 0u)
+  {
+    /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
+    /* Dot product and then store the results in a temporary buffer. */
+    sum =  mac(*pSrcA++,*pSrcB++,sum);
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+#else
+
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
   while(blkCnt > 0u)
@@ -85,12 +119,13 @@ void arm_dot_prod_q7(
     /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
     /* Dot product and then store the results in a temporary buffer. */
     sum += (q31_t) ((q15_t) * pSrcA++ * *pSrcB++);
-
     /* Decrement the loop counter */
     blkCnt--;
   }
   /* Store the result in the destination buffer in 18.14 format */
+#endif
   *result = sum;
+
 }
 
 /**    
