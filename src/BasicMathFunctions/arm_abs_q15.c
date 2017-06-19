@@ -73,18 +73,19 @@ void arm_abs_q15(
   q15_t in;                                      /* Temporary input variable */
 #if defined (USE_DSP_RISCV)
 
-  q31_t inA1, inA2;
-
+  shortV *VectInA;
+  shortV VectInC; 
   /*loop Unrolling */
   blkCnt = blockSize >> 1u;
   while (blkCnt > 0u)
   {
     /* C = A + B */
     /* Add and then store the results in the destination buffer. */
-    inA1 = *pSrc++;
-    inA2 = *pSrc++;
-    *pDst++ = (inA1 > 0) ? inA1:(q15_t)clip((-inA1),-32768,32767);
-    *pDst++ = (inA2 > 0) ? inA2 :(q15_t)clip((-inA2),-32768,32767);
+    VectInA = (shortV*)pSrc;
+    VectInC = abs2(*VectInA); 
+    *pDst++ = ( VectInC[0] == -32768)?0x7fff:VectInC[0];
+    *pDst++ = ( VectInC[1] == -32768)?0x7fff:VectInC[1];
+    pSrc+=2;
     /* Decrement the loop counter */
     blkCnt--;
   }
@@ -94,7 +95,8 @@ void arm_abs_q15(
   {
     /* C = A + B */
     /* Add and then store the results in the destination buffer. */
-    *pDst++ = (in > 0) ? in :(q15_t)clip((-inA2),-32768,32767);;
+    in = *pSrc++;
+    *pDst++ = (in > 0) ? in :(q15_t)clip((-in),-32768,32767);;
     /* Decrement the loop counter */
     blkCnt--;
   }

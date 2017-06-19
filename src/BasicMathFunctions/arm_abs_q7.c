@@ -81,23 +81,25 @@ void arm_abs_q7(
 
   q31_t in1, in2, in3, in4;                      /* temporary input variables */
   q31_t out1, out2, out3, out4;                  /* temporary output variables */
-  shortV VectInA;
-  shortV VectInC; 
+  charV *VectInA;
+  charV VectInC; 
   /*loop Unrolling */
-  blkCnt = blockSize >> 1u;
+  blkCnt = blockSize >> 2u;
 
   while (blkCnt > 0u)
   {
-    VectInA[0] = (short)pSrc[0];
-    VectInA[1] = (short)pSrc[1];
-    VectInC = abs2(VectInA); 
-    *pDst++ =(q7_t)clip(VectInC[0],-128,127);
-    *pDst++ =(q7_t)clip(VectInC[1],-128,127);
-    pSrc+=2;
+    VectInA = (charV*)pSrc;
+    VectInC = abs4(*VectInA); 
+    *pDst++ = ( VectInC[0] == -128)?0x7f:VectInC[0];
+    *pDst++ = ( VectInC[1] == -128)?0x7f:VectInC[1];
+    *pDst++ = ( VectInC[2] == -128)?0x7f:VectInC[2];
+    *pDst++ = ( VectInC[3] == -128)?0x7f:VectInC[3];
+    
+    pSrc+=4;
     blkCnt--;
   }
 
-  blkCnt = blockSize % 0x2u;
+  blkCnt = blockSize % 0x4u;
 #else
   blkCnt = blockSize;
 #endif
