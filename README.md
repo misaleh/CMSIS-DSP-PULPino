@@ -4,6 +4,7 @@ This [project](https://summerofcode.withgoogle.com/projects/?sp-search=Mostafa#5
 
 This Repo is still under development.
 
+To use DSP extension, add `#define USE_DSP_RISCV` in arm_math.h
 #### Ported Modules
 BasicMathFunctions
 
@@ -19,24 +20,27 @@ ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
 
 Results from pulpino were compared with results from ARM m4 and also were checked by hand.
 
-| Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
+Improvements of DSP extension(Imp) = (Old - New_DSP)*100/Old
+
+
+| Function        | Puplino Cycles           | Puplino DSP Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_abs_f32      | 170 |  | 221| 
-| arm_abs_q7      | 270 |  | 297| 
-| arm_abs_q15      | 253  |  | 293| 
-| arm_abs_q31      | 283  |  | 282| 
-| arm_add_f32      | 5942  |  | 295| 
-| arm_add_q7      | 404 |  | 109| 
-| arm_add_q15      | 434 |  | 168| 
-| arm_add_q31      | 570 |  | 290| 
-| arm_dot_prod_q15      | 368 |  |144 | 
-| arm_dot_prod_q31      | 624 |  |504 | 
-| arm_dot_prod_f32      | 11222 |  | 311| 
-| arm_dot_prod_q7      | 173 |  | 144| 
-| arm_mult_f32      | 5712 |  | 295| 
-| arm_mult_q31      | 776 |  | 354| 
-| arm_mult_q15      | 331 |  | 238| 
-| arm_mult_q7      | 334 |  | 322| 
+| arm_abs_f32      | 170 | N/A| 221| 
+| arm_abs_q7      | 270 |  205 (24.1%)| 297| 
+| arm_abs_q15      | 253  |  219 (13.4%)| 293| 
+| arm_abs_q31      | 283  |  267 (5.7%)| 282| 
+| arm_add_f32      | 5942  | N/A | 295| 
+| arm_add_q7      | 404 | 367 (9.2%)| 109| 
+| arm_add_q15      | 434 | 217 (50%)| 168| 
+| arm_add_q31      | 570 | N/A | 290| 
+| arm_dot_prod_q15      | 368 |219 (40.5%)  |144 | 
+| arm_dot_prod_q31      | 624 |  N/A|504 | 
+| arm_dot_prod_f32      | 11222 | N/A | 311| 
+| arm_dot_prod_q7      | 173 | 89 (48.6%) | 144| 
+| arm_mult_f32      | 5712 | N/A | 295| 
+| arm_mult_q31      | 776 |  N/A| 354| 
+| arm_mult_q15      | 331 | 238 (28.1%)| 238| 
+| arm_mult_q7      | 334 | 270(19.2%) | 322 | 
 | arm_negate_f32      | 167 |  | 221| 
 | arm_negate_q7      | 154  |  | 92| 
 | arm_negate_q15      | 222  |  | 132| 
