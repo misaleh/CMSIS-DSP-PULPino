@@ -36,6 +36,7 @@
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE. 
+
  Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)
 * -------------------------------------------------------------------- */
 
@@ -103,7 +104,6 @@ void arm_shift_q31(
     /* Decrement the loop counter */
     blkCnt--;
   }
-
 
 }
 

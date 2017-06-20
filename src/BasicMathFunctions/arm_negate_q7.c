@@ -35,9 +35,9 @@
 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.   
+* POSSIBILITY OF SUCH DAMAGE. 
 
- Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)
+ Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)  
 * -------------------------------------------------------------------- */
 
 #include "arm_math.h"
@@ -71,10 +71,40 @@ void arm_negate_q7(
 {
   uint32_t blkCnt;                               /* loop counter */
   q7_t in;
+#if defined (USE_DSP_RISCV)
+  q31_t input;                                   /* Input values1-4 */
+  q31_t zero = 0x00000000;
+  charV *VectInA;
+  charV VectInC; 
+
+  /*loop Unrolling */
+  blkCnt = blockSize >> 2u;
+
+  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+   ** a second loop below computes the remaining 1 to 3 samples. */
+  while (blkCnt > 0u)
+  {
+    VectInA = (charV*)pSrc;
+    VectInC = neg4(*VectInA); 
+    *pDst++ = ( VectInC[0] == -128)?0x7f:VectInC[0];
+    *pDst++ = ( VectInC[1] == -128)?0x7f:VectInC[1];
+    *pDst++ = ( VectInC[2] == -128)?0x7f:VectInC[2];
+    *pDst++ = ( VectInC[3] == -128)?0x7f:VectInC[3];
+    
+    pSrc+=4;
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+   ** No loop unrolling is used. */
+  blkCnt = blockSize % 0x4u;
+
+#else
 
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
-
+#endif
   while(blkCnt > 0u)
   {
     /* C = -A */

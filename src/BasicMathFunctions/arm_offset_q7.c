@@ -35,9 +35,9 @@
 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.   
+* POSSIBILITY OF SUCH DAMAGE. 
 
- Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)
+ Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)  
 * -------------------------------------------------------------------- */
 
 #include "arm_math.h"
@@ -72,6 +72,38 @@ void arm_offset_q7(
   uint32_t blockSize)
 {
   uint32_t blkCnt;                               /* loop counter */
+
+#if defined (USE_DSP_RISCV)
+
+  shortV VectInA;
+  shortV VectInB;  
+  shortV VectInC; 
+  /*loop Unrolling */
+  blkCnt = blockSize >> 1u;
+  while (blkCnt > 0u)
+  {
+    VectInA[0] = (short)(*pSrc++);
+    VectInA[1] = (short)(*pSrc++);
+    VectInB = pack2(offset,offset);
+    VectInC = add2v(VectInA,VectInB); 
+    *pDst++ =(q7_t)clip(VectInC[0],-128,127);
+    *pDst++ =(q7_t)clip(VectInC[1],-128,127);
+    blkCnt--;
+  }
+
+  blkCnt = blockSize % 0x2u;
+
+  while (blkCnt > 0u)
+  {
+    /* C = A + B */
+    /* Add and then store the results in the destination buffer. */
+    *pDst++ =(q7_t)clip((*pSrc++ +offset ),-128,127);
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+#else
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
@@ -84,7 +116,9 @@ void arm_offset_q7(
     /* Decrement the loop counter */
     blkCnt--;
   }
+#endif
 }
+
 
 /**    
  * @} end of offset group    

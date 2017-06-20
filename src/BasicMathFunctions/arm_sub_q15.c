@@ -35,9 +35,9 @@
 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.  
+* POSSIBILITY OF SUCH DAMAGE. 
 
- Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)
+ Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino) 
 * -------------------------------------------------------------------- */
 
 #include "arm_math.h"
@@ -74,7 +74,41 @@ void arm_sub_q15(
   uint32_t blkCnt;                               /* loop counter */
 
 
-  /* Run the below code for Cortex-M0 */
+
+#if defined (USE_DSP_RISCV)
+  q31_t inA1, inA2, inB1, inB2;
+
+  /*loop Unrolling */
+  blkCnt = blockSize >> 1u;
+  while (blkCnt > 0u)
+  {
+    /* C = A + B */
+    /* Add and then store the results in the destination buffer. */
+    inA1 = *pSrcA++;
+    inA2 = *pSrcA++;
+    inB1 = *pSrcB++;
+    inB2 = *pSrcB++;
+
+    *pDst++ =(q15_t)clip((inA1 - inB1),-32768,32767);
+    *pDst++ =(q15_t)clip((inA2 - inB2),-32768,32767);
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+  blkCnt = blockSize % 0x2u;
+
+  while (blkCnt > 0u)
+  {
+    /* C = A + B */
+    /* Add and then store the results in the destination buffer. */
+    *pDst++ = (q15_t)clip((*pSrcA++ - *pSrcB++),-32768,32767);
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+#else
+
 
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
@@ -88,7 +122,9 @@ void arm_sub_q15(
     /* Decrement the loop counter */
     blkCnt--;
   }
+#endif
 }
+
 
 /**    
  * @} end of BasicSub group    

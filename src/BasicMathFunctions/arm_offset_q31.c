@@ -73,7 +73,6 @@ void arm_offset_q31(
 {
   uint32_t blkCnt;                               /* loop counter */
 
-
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 

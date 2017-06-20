@@ -73,17 +73,50 @@ void arm_offset_q15(
 {
   uint32_t blkCnt;                               /* loop counter */
 
+#if defined (USE_DSP_RISCV)
+  q31_t inA1, inA2, inB1, inB2;
+
+  /*loop Unrolling */
+  blkCnt = blockSize >> 1u;
+  while (blkCnt > 0u)
+  {
+    /* C = A + B */
+    /* Add and then store the results in the destination buffer. */
+    inA1 = *pSrc++;
+    inA2 = *pSrc++;
+
+    *pDst++ =(q15_t)clip((inA1 + offset),-32768,32767);
+    *pDst++ =(q15_t)clip((inA2 + offset),-32768,32767);
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+  blkCnt = blockSize % 0x2u;
+
+  while (blkCnt > 0u)
+  {
+    /* C = A + B */
+    /* Add and then store the results in the destination buffer. */
+    *pDst++ = (q15_t)clip((*pSrc++ + offset),-32768,32767);
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+#else
+
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
+
   while(blkCnt > 0u)
   {
     /* C = A + offset */
     /* Add offset and then store the results in the destination buffer. */
     *pDst++ = (q15_t) __SSAT(((q31_t) * pSrc++ + offset), 16);
-
     /* Decrement the loop counter */
     blkCnt--;
   }
+#endif
 }
 
 /**    

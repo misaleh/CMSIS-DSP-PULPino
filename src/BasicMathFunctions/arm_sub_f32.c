@@ -81,6 +81,7 @@ void arm_sub_f32(
 {
   uint32_t blkCnt;                               /* loop counter */
 
+
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
   while(blkCnt > 0u)
@@ -88,7 +89,6 @@ void arm_sub_f32(
     /* C = A - B */
     /* Subtract and then store the results in the destination buffer. */
     *pDst++ = (*pSrcA++) - (*pSrcB++);
-
     /* Decrement the loop counter */
     blkCnt--;
   }

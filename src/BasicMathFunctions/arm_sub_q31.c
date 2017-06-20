@@ -85,8 +85,6 @@ void arm_sub_q31(
     /* Decrement the loop counter */
     blkCnt--;
   }
-
-
 }
 
 /**    

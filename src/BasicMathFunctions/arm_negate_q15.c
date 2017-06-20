@@ -75,7 +75,29 @@ void arm_negate_q15(
   uint32_t blkCnt;                               /* loop counter */
   q15_t in;
   /* Initialize blkCnt with number of samples */
+#if defined (USE_DSP_RISCV)
+
+  shortV *VectInA;
+  shortV VectInC; 
+  /*loop Unrolling */
+  blkCnt = blockSize >> 1u;
+  while (blkCnt > 0u)
+  {
+    /* C = A + B */
+    /* Add and then store the results in the destination buffer. */
+    VectInA = (shortV*)pSrc;
+    VectInC = neg2(*VectInA); 
+    *pDst++ = ( VectInC[0] == -32768)?0x7fff:VectInC[0];
+    *pDst++ = ( VectInC[1] == -32768)?0x7fff:VectInC[1];
+    pSrc+=2;
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+  blkCnt = blockSize % 0x2u;
+#else
   blkCnt = blockSize;
+#endif
   while(blkCnt > 0u)
   {
     /* C = -A */
@@ -86,6 +108,7 @@ void arm_negate_q15(
     /* Decrement the loop counter */
     blkCnt--;
   }
+
 }
 
 /**        

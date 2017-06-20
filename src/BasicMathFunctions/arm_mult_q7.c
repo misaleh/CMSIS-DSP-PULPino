@@ -69,7 +69,8 @@ void arm_mult_q7(
   {
     /* C = A * B */
     /* Multiply the inputs and store the results in temporary variables */
-    //out1 = muls(*pSrcA++, *pSrcB++);
+    //out1 = mulsN(*pSrcA++, *pSrcB++,7);
+    //*pDst++ =  (q7_t)clip( out1,-128,127);
     *pDst++ =  (q7_t)clip((((q15_t) (*pSrcA++) * (*pSrcB++)) >> 7),-128,127);
     /* Decrement the blockSize loop counter */
     blkCnt--;

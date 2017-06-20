@@ -74,6 +74,7 @@ void arm_negate_q31(
 
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
+
   while(blkCnt > 0u)
   {
     /* C = -A */

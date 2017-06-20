@@ -41,9 +41,7 @@
 * -------------------------------------------------------------------- */
 
 #include "arm_math.h"
-#define DATA_WIDTH 7
-#define SATURATION ((1 << (DATA_WIDTH -1)) -1)
-#define SAT (-(1 << (DATA_WIDTH -1)))
+
 /**    
  * @ingroup groupMath    
  */

@@ -35,9 +35,9 @@
 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.   
+* POSSIBILITY OF SUCH DAMAGE.  
 
- Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)
+ Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino) 
 * ---------------------------------------------------------------------------- */
 #include "arm_math.h"
 
@@ -84,6 +84,8 @@ void arm_offset_f32(
 
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
+
+
   while(blkCnt > 0u)
   {
     /* C = A + offset */
