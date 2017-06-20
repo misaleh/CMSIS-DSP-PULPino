@@ -41,25 +41,25 @@ Improvements of DSP extension(Imp) = (Old - New_DSP)*100/Old
 | arm_mult_q31      | 776 |  N/A| 354| 
 | arm_mult_q15      | 331 | 238 (28.1%)| 238| 
 | arm_mult_q7      | 334 | 270(19.2%) | 322 | 
-| arm_negate_f32      | 167 |  | 221| 
-| arm_negate_q7      | 154  |  | 92| 
-| arm_negate_q15      | 222  |  | 132| 
-| arm_negate_q31      | 267  |  | 216| 
-| arm_offset_f32      | 5995 |  | 223| 
-| arm_offset_q7      | 371 |  | 100| 
-| arm_offset_q15      | 400 |  | 133| 
-| arm_offset_q31      | 577 |  | 216| 
-| arm_scale_f32      | 5903 |  | 191| 
-| arm_scale_q7      | 409 |  | 295| 
-| arm_scale_q15      | 438 |  | 246| 
-| arm_scale_q31      | 657 |  | 379| 
-| arm_shift_q7      | 373 |  |300 | 
-| arm_shift_q15      | 405 |  | 236| 
-| arm_shift_q31      | 674|  | 369| 
-| arm_sub_f32      | 6068 |  |295 | 
-| arm_sub_q7      | 430 |  | 109| 
-| arm_sub_q15      | 460 |  | 168| 
-| arm_sub_q31      | 654 |  | 290| 
+| arm_negate_f32      | 167 | N/A | 221| 
+| arm_negate_q7      | 154  |  199(-29%)| 92| 
+| arm_negate_q15      | 222  |  217(2.3%)| 132| 
+| arm_negate_q31      | 267  | N/A | 216| 
+| arm_offset_f32      | 5995 |  N/A| 223| 
+| arm_offset_q7      | 371 |  263(29.1%)| 100| 
+| arm_offset_q15      | 400 | 184(54%) | 133| 
+| arm_offset_q31      | 577 | N/A | 216| 
+| arm_scale_f32      | 5903 | N/A | 191| 
+| arm_scale_q7      | 409 | 239(41.6%) | 295| 
+| arm_scale_q15      | 438 | 240(45.2%) | 246| 
+| arm_scale_q31      | 657 | N/A | 379| 
+| arm_shift_q7      | 373 |  N/A |300 | 
+| arm_shift_q15      | 405 |  N/A | 236| 
+| arm_shift_q31      | 674|  N/A | 369| 
+| arm_sub_f32      | 6068 | N/A |295 | 
+| arm_sub_q7      | 430 |  372(13.5%)| 109| 
+| arm_sub_q15      | 460 | 224(51.3%) | 168| 
+| arm_sub_q31      | 654 | N/A | 290| 
 
 **FastMathFunctions**
 
