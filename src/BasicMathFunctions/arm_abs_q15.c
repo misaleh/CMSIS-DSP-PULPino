@@ -96,7 +96,7 @@ void arm_abs_q15(
     /* C = A + B */
     /* Add and then store the results in the destination buffer. */
     in = *pSrc++;
-    *pDst++ = (in > 0) ? in :(q15_t)clip((-in),-32768,32767);;
+    *pDst++ = (in > 0) ? in :(q15_t)clip((q31_t)(-in),-32768,32767);
     /* Decrement the loop counter */
     blkCnt--;
   }
