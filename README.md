@@ -82,7 +82,7 @@ sqrt for float use the built in sqrt function while sqrt for fixed point use  Ne
 | arm_sqrt_q31      | 683 | N/A | 131| 
 | arm_cos_f32      | 2134 |  N/A| 53| 
 | arm_cos_q15      | 64|N/A  | 36| 
-| arm_cos_q31      | 68 |  N/A| 46| 
+| arm_cos_q31      | 75 |  N/A| 46| 
 | arm_sin_f32      | 2047 |  N/A| 55| 
 | arm_sin_q15      | 56 |  N/A| 30| 
-| arm_sin_q31      | 62 |  N/A| 43| 
+| arm_sin_q31      | 69 |  N/A| 43| 
