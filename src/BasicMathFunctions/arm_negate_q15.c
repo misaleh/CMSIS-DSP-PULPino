@@ -84,11 +84,14 @@ void arm_negate_q15(
   while (blkCnt > 0u)
   {
     /* C = A + B */
-    /* Add and then store the results in the destination buffer. */
+    /* read 2 elements from source buffer */
     VectInA = (shortV*)pSrc;
-    VectInC = neg2(*VectInA); 
+    /*find the negative*/
+    VectInC = neg2(*VectInA);
+    /*check for saturation*/ 
     *pDst++ = ( VectInC[0] == -32768)?0x7fff:VectInC[0];
     *pDst++ = ( VectInC[1] == -32768)?0x7fff:VectInC[1];
+    /*increment source buffer*/
     pSrc+=2;
     /* Decrement the loop counter */
     blkCnt--;

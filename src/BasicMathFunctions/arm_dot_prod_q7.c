@@ -89,11 +89,15 @@ void arm_dot_prod_q7(
    ** a second loop below computes the remaining 1 to 3 samples. */
   while (blkCnt > 0u)
   {
+    /*read 4 elements from each buffer*/
     VectInA =  (charV*)pSrcA;
     VectInB =  (charV*)pSrcB;
+    /*increment source buffers*/
     pSrcA+=4;
     pSrcB+=4;
+    /* sumdotpv4 to perform dot product for the 4 pairs and accumulate the sum */
     sum = sumdotpv4(*VectInA, *VectInB, sum);
+    /*decrement loop counter*/
     blkCnt--;
   }
 
@@ -104,7 +108,7 @@ void arm_dot_prod_q7(
   while (blkCnt > 0u)
   {
     /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
-    /* Dot product and then store the results in a temporary buffer. */
+    /* multiply and accumulate to perform dot product for 1 pair*/
     sum =  mac(*pSrcA++,*pSrcB++,sum);
     /* Decrement the loop counter */
     blkCnt--;

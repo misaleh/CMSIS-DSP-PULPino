@@ -82,11 +82,12 @@ void arm_add_q15(
   {
     /* C = A + B */
     /* Add and then store the results in the destination buffer. */
+   /*read 2 elements from each buffer*/
     inA1 = *pSrcA++;
     inA2 = *pSrcA++;
     inB1 = *pSrcB++;
     inB2 = *pSrcB++;
-
+   /*add and saturate them*/
     *pDst++ =(q15_t)clip((inA1 + inB1),-32768,32767);
     *pDst++ =(q15_t)clip((inA2 + inB2),-32768,32767);
 

@@ -93,6 +93,8 @@ void arm_dot_prod_q31(
   {
     /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
     /* Calculate dot product and then store the result in a temporary buffer. */
+
+    /*read 4 elements from each buffer*/
     inA1 = *pSrcA++;
     inA2 = *pSrcA++;
     inA3 = *pSrcA++;
@@ -101,7 +103,7 @@ void arm_dot_prod_q31(
     inB2 = *pSrcB++;
     inB3 = *pSrcB++;
     inB4 = *pSrcB++;
-
+    /* multiply and accumulate then normalize*/
     sum += ((q63_t) inA1 * inB1) >> 14u;
     sum += ((q63_t) inA2 * inB2) >> 14u;
     sum += ((q63_t) inA3 * inB3) >> 14u;

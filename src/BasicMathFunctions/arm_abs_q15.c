@@ -75,17 +75,18 @@ void arm_abs_q15(
 
   shortV *VectInA;
   shortV VectInC; 
-  /*loop Unrolling */
-  blkCnt = blockSize >> 1u;
+
+  blkCnt = blockSize >> 1u; /*divide by 2, to operate on 2 elements in the same loop*/
   while (blkCnt > 0u)
   {
     /* C = A + B */
     /* Add and then store the results in the destination buffer. */
     VectInA = (shortV*)pSrc;
-    VectInC = abs2(*VectInA); 
-    *pDst++ = ( VectInC[0] == -32768)?0x7fff:VectInC[0];
+    VectInC = abs2(*VectInA); /*abs of 2 elements at the same time*/
+    /* check for saturation*/
+    *pDst++ = ( VectInC[0] == -32768)?0x7fff:VectInC[0]; 
     *pDst++ = ( VectInC[1] == -32768)?0x7fff:VectInC[1];
-    pSrc+=2;
+    pSrc+=2; /*inc src buffer for next loop*/
     /* Decrement the loop counter */
     blkCnt--;
   }

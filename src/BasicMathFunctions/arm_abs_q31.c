@@ -84,19 +84,21 @@ void arm_abs_q31(
   {
     /* C = |A| */
     /* Calculate absolute value of the input (if -1 then saturated to 0x7fffffff) and then store the results in the destination buffer. */
-    in = *pSrc++;
+    in = *pSrc++; /*read from source buffer and increment it for next read */
+   /*check for saturation*/
     if(in == 0x80000000)
     {
-	*pDst++ = INT32_MAX;
+	*pDst++ = INT32_MAX; 
     }
     else
     {
+    /*inline assembly to preform abs with in one instruction*/
          asm volatile ("p.abs %[d], %[a]"
                 : [d] "=r" (out)
                 : [a] "r"  (in));
-         *pDst++ = out;
+         *pDst++ = out; /*write the output to destination buffer*/
      }
-    blkCnt--;
+    blkCnt--; /*decrement loop counter*/
   }
 
 

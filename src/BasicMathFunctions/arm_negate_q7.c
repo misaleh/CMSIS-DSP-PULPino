@@ -84,13 +84,16 @@ void arm_negate_q7(
    ** a second loop below computes the remaining 1 to 3 samples. */
   while (blkCnt > 0u)
   {
+    /*read 4 elements*/
     VectInA = (charV*)pSrc;
-    VectInC = neg4(*VectInA); 
+    /*find the negative*/
+    VectInC = neg4(*VectInA);
+    /*check for saturation the save to destination buffer*/ 
     *pDst++ = ( VectInC[0] == -128)?0x7f:VectInC[0];
     *pDst++ = ( VectInC[1] == -128)?0x7f:VectInC[1];
     *pDst++ = ( VectInC[2] == -128)?0x7f:VectInC[2];
     *pDst++ = ( VectInC[3] == -128)?0x7f:VectInC[3];
-    
+    /*increment source buffer*/
     pSrc+=4;
     /* Decrement the loop counter */
     blkCnt--;

@@ -84,20 +84,24 @@ void arm_add_q7(
 
   while (blkCnt > 0u)
   {
+   /*read 2 elements from each source*/
     VectInA[0] = (short)pSrcA[0];
     VectInA[1] = (short)pSrcA[1];
     VectInB[0] = (short)pSrcB[0];
     VectInB[1] = (short)pSrcB[1];
+  /*add them*/
     VectInC = add2v(VectInA,VectInB); 
+  /*clip to saturate the result*/
     *pDst++ =(q7_t)clip(VectInC[0],-128,127);
     *pDst++ =(q7_t)clip(VectInC[1],-128,127);
+  /*increment source buffers*/
     pSrcA+=2;
     pSrcB+=2;
+  /*decrement loop counter*/
     blkCnt--;
   }
 
   blkCnt = blockSize % 0x2u;
-
   while (blkCnt > 0u)
   {
     /* C = A + B */
@@ -128,3 +132,4 @@ void arm_add_q7(
 /**    
  * @} end of BasicAdd group    
  */
+

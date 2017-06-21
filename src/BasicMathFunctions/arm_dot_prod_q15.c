@@ -88,11 +88,13 @@ void arm_dot_prod_q15(
   while (blkCnt > 0u)
   {
     /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
-    /* Calculate dot product and then store the result in a temporary buffer. */
+    /*read 2 elements from each buffer */
     VectInA =  (shortV*)pSrcA;
     VectInB =  (shortV*)pSrcB;
+    /*increment source buffers */
     pSrcA+=2;
     pSrcB+=2;
+    /*dotpv2 to perform dot product, then accumulate the sum*/
     sum += dotpv2(*VectInA, *VectInB);
 
     /* Decrement the loop counter */
@@ -104,7 +106,7 @@ void arm_dot_prod_q15(
   while (blkCnt > 0u)
   {
     /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
-    /* Calculate dot product and then store the results in a temporary buffer. */
+    /* muls perform multiplication */
     sum +=  muls(*pSrcA++,*pSrcB++); 
 
     /* Decrement the loop counter */

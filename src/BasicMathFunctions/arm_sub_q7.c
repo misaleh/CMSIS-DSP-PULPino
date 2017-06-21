@@ -84,15 +84,20 @@ void arm_sub_q7(
 
   while (blkCnt > 0u)
   {
+    /*read 2 elements from each source*/
     VectInA[0] = (short)pSrcA[0];
     VectInA[1] = (short)pSrcA[1];
     VectInB[0] = (short)pSrcB[0];
     VectInB[1] = (short)pSrcB[1];
+    /*subract them*/
     VectInC = sub2(VectInA,VectInB); 
+    /*saturate the results then save to destination buufer*/
     *pDst++ =(q7_t)clip(VectInC[0],-128,127);
     *pDst++ =(q7_t)clip(VectInC[1],-128,127);
+    /*increment source buffer*/
     pSrcA+=2;
     pSrcB+=2;
+    /*decrement loop counter*/
     blkCnt--;
   }
 
@@ -101,9 +106,8 @@ void arm_sub_q7(
   while (blkCnt > 0u)
   {
     /* C = A + B */
-    /* Add and then store the results in the destination buffer. */
+    /* subtract then saturate*/
     *pDst++ =(q7_t)clip((*pSrcA++ - *pSrcB++),-128,127);
-
     /* Decrement the loop counter */
     blkCnt--;
   }

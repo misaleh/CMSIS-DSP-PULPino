@@ -81,9 +81,11 @@ void arm_mult_q15(
   blkCnt = blockSize;
   while (blkCnt > 0u)
   {
-
+   /*mulsN perform multiplication the normalization*/
     mul1 = mulsN(*pSrcA++, *pSrcB++,15);
+   /*saturate teh result then save it to the destination buffer*/
     *pDst++ =  (q15_t)clip(mul1,-32768,32767);
+   /* decrement loop counter*/
     blkCnt--;
   }
 

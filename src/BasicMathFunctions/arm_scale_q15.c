@@ -84,6 +84,7 @@ void arm_scale_q15(
   blkCnt = blockSize;
   while (blkCnt > 0u)
   {
+    /*multiply by scale then shift and saturate*/
     *pDst++ =  (q15_t)clip((((q31_t) (*pSrc++) *scaleFract ) >> kShift),-32768,32767);
     blkCnt--;
   }

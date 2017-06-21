@@ -82,12 +82,17 @@ void arm_offset_q7(
   blkCnt = blockSize >> 1u;
   while (blkCnt > 0u)
   {
+    /*read 2 elements from memory*/
     VectInA[0] = (short)(*pSrc++);
     VectInA[1] = (short)(*pSrc++);
+    /*pack to copies from offest*/
     VectInB = pack2(offset,offset);
+    /*add the packed offset to the memory read*/
     VectInC = add2v(VectInA,VectInB); 
+    /*check for saturation then save to destination buffer*/
     *pDst++ =(q7_t)clip(VectInC[0],-128,127);
     *pDst++ =(q7_t)clip(VectInC[1],-128,127);
+    /* Decrement the loop counter */
     blkCnt--;
   }
 

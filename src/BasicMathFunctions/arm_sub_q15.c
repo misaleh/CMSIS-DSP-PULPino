@@ -82,13 +82,13 @@ void arm_sub_q15(
   blkCnt = blockSize >> 1u;
   while (blkCnt > 0u)
   {
-    /* C = A + B */
-    /* Add and then store the results in the destination buffer. */
+
+    /* read 2 elements from each source*/
     inA1 = *pSrcA++;
     inA2 = *pSrcA++;
     inB1 = *pSrcB++;
     inB2 = *pSrcB++;
-
+    /*subract then saturate*/
     *pDst++ =(q15_t)clip((inA1 - inB1),-32768,32767);
     *pDst++ =(q15_t)clip((inA2 - inB2),-32768,32767);
 

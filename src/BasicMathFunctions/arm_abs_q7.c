@@ -88,15 +88,16 @@ void arm_abs_q7(
 
   while (blkCnt > 0u)
   {
-    VectInA = (charV*)pSrc;
-    VectInC = abs4(*VectInA); 
+    VectInA = (charV*)pSrc; 
+    VectInC = abs4(*VectInA); /*calculate the absolute of 4 q7 at the same time */
+    /*check for each one to saturate it*/
     *pDst++ = ( VectInC[0] == -128)?0x7f:VectInC[0];
     *pDst++ = ( VectInC[1] == -128)?0x7f:VectInC[1];
     *pDst++ = ( VectInC[2] == -128)?0x7f:VectInC[2];
     *pDst++ = ( VectInC[3] == -128)?0x7f:VectInC[3];
     
-    pSrc+=4;
-    blkCnt--;
+    pSrc+=4; /*inc pointer for next loop*/
+    blkCnt--; /*dec loop counter*/
   }
 
   blkCnt = blockSize % 0x4u;
