@@ -69,7 +69,7 @@ Test cases are the same in the two benchmarks.
 
 All Sin and Cosine functions uses tables but with interpolation.
 
-sqrt for float use the built in functions sqrt function while sqrt for fixed point use  Newton-Raphson algorithm.
+sqrt for float use the built in sqrt function while sqrt for fixed point use  Newton-Raphson algorithm.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
