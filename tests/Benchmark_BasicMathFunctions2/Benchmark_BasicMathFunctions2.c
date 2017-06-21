@@ -1,6 +1,6 @@
 #include <math.h>
 #include <stdio.h>
-#include "arm_math.h"
+#include "riscv_math.h"
 #include "gpio.h" //for indication for benchmarking
 #include "utils.h"
 #include "string_lib.h"
@@ -152,20 +152,20 @@ int32_t main(void)
 /*Tests*/
 /*negate*/
   set_gpio_pin_value(6, 1);	
-  arm_negate_f32( srcA_buf_f32,result_f32,MAX_BLOCKSIZE);
+  riscv_negate_f32( srcA_buf_f32,result_f32,MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_negate_f32:\n");  
+  printf("\nriscv_negate_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("%d ",(int)(result_f32[i]*1000));  
     }
 #endif
   set_gpio_pin_value(5, 1);
-  arm_negate_q7(srcA_buf_q7,result_q7,MAX_BLOCKSIZE);
+  riscv_negate_q7(srcA_buf_q7,result_q7,MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_negate_q7:\n");  
+  printf("\nriscv_negate_q7:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q7[i]);  
@@ -176,10 +176,10 @@ int32_t main(void)
   printf("\n");
 #endif
   set_gpio_pin_value(6, 1);	
-  arm_negate_q15(srcA_buf_q15,result_q15,MAX_BLOCKSIZE);
+  riscv_negate_q15(srcA_buf_q15,result_q15,MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_negate_q15:\n");  
+  printf("\nriscv_negate_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q15[i]);  
@@ -190,10 +190,10 @@ int32_t main(void)
   printf("\n");
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_negate_q31(srcA_buf_q31,result_q31,MAX_BLOCKSIZE);
+  riscv_negate_q31(srcA_buf_q31,result_q31,MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_negate_q31:\n");  
+  printf("\nriscv_negate_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q31[i]);  
@@ -207,20 +207,20 @@ int32_t main(void)
 /*offset*/
 
   set_gpio_pin_value(6, 1);	
-  arm_offset_f32(srcA_buf_f32, 1.2, result_f32, MAX_BLOCKSIZE);
+  riscv_offset_f32(srcA_buf_f32, 1.2, result_f32, MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_offset_f32:\n");  
+  printf("\nriscv_offset_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("%d ",(int)(result_f32[i]*1000));  
     }
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_offset_q7(srcA_buf_q7, 0x15, result_q7, MAX_BLOCKSIZE);
+  riscv_offset_q7(srcA_buf_q7, 0x15, result_q7, MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_offset_q7:\n");  
+  printf("\nriscv_offset_q7:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q7[i]);  
@@ -231,11 +231,11 @@ int32_t main(void)
   printf("\n");
 #endif
   set_gpio_pin_value(6, 1);	
-  arm_offset_q15(srcA_buf_q15, 0x225A, result_q15, MAX_BLOCKSIZE);
+  riscv_offset_q15(srcA_buf_q15, 0x225A, result_q15, MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
 
 #ifdef PRINT_OUTPUT
-  printf("\narm_offset_q15:\n");  
+  printf("\nriscv_offset_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q15[i]);  
@@ -246,10 +246,10 @@ int32_t main(void)
   printf("\n");
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_offset_q31(srcA_buf_q31, 0x33457193, result_q31, MAX_BLOCKSIZE);
+  riscv_offset_q31(srcA_buf_q31, 0x33457193, result_q31, MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_offset_q31:\n");  
+  printf("\nriscv_offset_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q31[i]);  
@@ -263,20 +263,20 @@ int32_t main(void)
 /*Scale*/
 
   set_gpio_pin_value(6, 1);	
-  arm_scale_f32(srcA_buf_f32, 1.2, result_f32, MAX_BLOCKSIZE);
+  riscv_scale_f32(srcA_buf_f32, 1.2, result_f32, MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_scale_f32:\n");  
+  printf("\nriscv_scale_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("%d ",(int)(result_f32[i]*1000));  
     }
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_scale_q7(srcA_buf_q7, 0x15,1, result_q7, MAX_BLOCKSIZE);
+  riscv_scale_q7(srcA_buf_q7, 0x15,1, result_q7, MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_scale_q7:\n");  
+  printf("\nriscv_scale_q7:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q7[i]);  
@@ -287,11 +287,11 @@ int32_t main(void)
   printf("\n");
 #endif
   set_gpio_pin_value(6, 1);	
-  arm_scale_q15(srcA_buf_q15, 0x225A,1, result_q15, MAX_BLOCKSIZE);
+  riscv_scale_q15(srcA_buf_q15, 0x225A,1, result_q15, MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
 
 #ifdef PRINT_OUTPUT
-  printf("\narm_scale_q15:\n");  
+  printf("\nriscv_scale_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q15[i]);  
@@ -302,10 +302,10 @@ int32_t main(void)
   printf("\n");
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_scale_q31(srcA_buf_q31, 0x33457193,1, result_q31, MAX_BLOCKSIZE);
+  riscv_scale_q31(srcA_buf_q31, 0x33457193,1, result_q31, MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_scale_q31:\n");  
+  printf("\nriscv_scale_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q31[i]);  
@@ -319,10 +319,10 @@ int32_t main(void)
 /*Shift*/
 
   set_gpio_pin_value(6, 1);	
-  arm_shift_q7(srcA_buf_q7, 3, result_q7, MAX_BLOCKSIZE);
+  riscv_shift_q7(srcA_buf_q7, 3, result_q7, MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_shift_q7:\n");  
+  printf("\nriscv_shift_q7:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q7[i]);  
@@ -333,11 +333,11 @@ int32_t main(void)
   printf("\n");
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_shift_q15(srcA_buf_q15, 2, result_q15, MAX_BLOCKSIZE);
+  riscv_shift_q15(srcA_buf_q15, 2, result_q15, MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 
 #ifdef PRINT_OUTPUT
-  printf("\narm_shift_q15:\n");  
+  printf("\nriscv_shift_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q15[i]);  
@@ -348,10 +348,10 @@ int32_t main(void)
   printf("\n");
 #endif
   set_gpio_pin_value(6, 1);	
-  arm_shift_q31(srcA_buf_q31, 1, result_q31, MAX_BLOCKSIZE);
+  riscv_shift_q31(srcA_buf_q31, 1, result_q31, MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_shift_q31:\n");  
+  printf("\nriscv_shift_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q31[i]);  
@@ -365,30 +365,30 @@ int32_t main(void)
 
 /*sub*/
   set_gpio_pin_value(5, 1);	
-  arm_sub_f32(srcA_buf_f32, srcB_buf_f32, result_f32, MAX_BLOCKSIZE);
+  riscv_sub_f32(srcA_buf_f32, srcB_buf_f32, result_f32, MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_sub_f32:\n");  
+  printf("\nriscv_sub_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("%d ",(int)(result_f32[i]*1000));  
     }
 #endif
   set_gpio_pin_value(6, 1);	
-  arm_sub_q7(srcA_buf_q7, srcB_buf_q7, result_q7, MAX_BLOCKSIZE);
+  riscv_sub_q7(srcA_buf_q7, srcB_buf_q7, result_q7, MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_sub_q7:\n");  
+  printf("\nriscv_sub_q7:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q7[i]);  
     }
 #endif
   set_gpio_pin_value(5, 1);	
-  arm_sub_q15(srcA_buf_q15, srcB_buf_q15, result_q15, MAX_BLOCKSIZE);
+  riscv_sub_q15(srcA_buf_q15, srcB_buf_q15, result_q15, MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_sub_q15:\n");  
+  printf("\nriscv_sub_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q15[i]);  
@@ -396,10 +396,10 @@ int32_t main(void)
 #endif
 
   set_gpio_pin_value(6, 1);	
-  arm_sub_q31(srcA_buf_q31, srcB_buf_q31, result_q31, MAX_BLOCKSIZE);
+  riscv_sub_q31(srcA_buf_q31, srcB_buf_q31, result_q31, MAX_BLOCKSIZE);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
-  printf("\narm_sub_q31:\n");  
+  printf("\nriscv_sub_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
       printf("0x%X ",result_q31[i]);  
