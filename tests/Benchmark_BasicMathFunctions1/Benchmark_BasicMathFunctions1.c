@@ -9,7 +9,13 @@
 #define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define MAX_BLOCKSIZE     32
 
-
+/*
+*Each function has a GPIO pin (5 and 6 alternatively ) set before it runs and is cleared after it finish running
+to measure the time of execution of each function.
+*Define PRINT_OUTPUT to print the results to check for the functionality of the functions(may be slow)
+*Also the correct results are printed for the current vectors which are calculated from the orignal library 
+and also were checked by hand
+*/
  float32_t srcA_buf_f32[MAX_BLOCKSIZE] =
 {
   -0.4325648115282207,  -1.6655843782380970,  0.1253323064748307,
@@ -185,7 +191,7 @@ int32_t main(void)
     {
       printf("0x%X ",result_q7[i]);  
     }
-/*Results from pulpino were compared with results from ARM m4 and also were checked by hand*/
+//Results from pulpino were compared with results from ARM m4 and also were checked by hand
   printf("\n");
   printf("\nCorrect answer:\n");
   printf("0x75 0x13 0x15 0x44 0x11 0x1C 0x52 0x0B 0x7D 0x6F 0x33  0x25 0x1A 0x4D 0x6F 0x26 0x01 0x0F 0x54 0x66 0x76 0x54 0x79  0x36 0x22 0x33 0x1F 0x61 0x54 0x35 0x6F 0x49");
@@ -237,7 +243,7 @@ int32_t main(void)
   arm_add_q7(srcA_buf_q7, srcB_buf_q7, result_q7, MAX_BLOCKSIZE);
   set_gpio_pin_value(5, 0);
 #ifdef PRINT_OUTPUT
-/*negatvie number are printed with FFFFFF before it because it is signed*/
+//negatvie number are printed with FFFFFF before it because it is signed
   printf("\narm_add_q7:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
     {
@@ -283,7 +289,7 @@ int32_t main(void)
   arm_dot_prod_q15(srcA_buf_q15,srcB_buf_q15,MAX_BLOCKSIZE,&result_q63_1);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
- /*int pointer to print the long long on two halfs as printf doesn't print long long*/
+ //int pointer to print the long long on two halfs as printf doesn't print long long
   int * ptr = &result_q63_1;
   ptr++;
   printf("\narm_dot_prod_q15:\n");  

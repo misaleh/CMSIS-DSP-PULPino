@@ -7,6 +7,13 @@
 #include "bar.h"
 
 #define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
+/*
+*Each function has a GPIO pin (5 and 6 alternatively ) set before it runs and is cleared after it finish running
+to measure the time of execution of each function.
+*Define PRINT_OUTPUT to print the results to check for the functionality of the functions(may be slow)
+*Also the correct results are printed for the current values which are calculated from the orignal library 
+and also were checked by hand
+*/
 
 /* ouput variables*/
 float32_t result_f32;  

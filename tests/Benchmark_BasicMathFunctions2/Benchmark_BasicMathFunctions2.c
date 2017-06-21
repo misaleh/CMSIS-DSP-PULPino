@@ -7,7 +7,13 @@
 #include "bar.h"
 #define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define MAX_BLOCKSIZE     32
-
+/*
+*Each function has a GPIO pin (5 and 6 alternatively ) set before it runs and is cleared after it finish running
+to measure the time of execution of each function.
+*Define PRINT_OUTPUT to print the results to check for the functionality of the functions(may be slow)
+*Also the correct results are printed for the current vectors which are calculated from the orignal library 
+and also were checked by hand
+*/
 
  float32_t srcA_buf_f32[MAX_BLOCKSIZE] =
 {
@@ -253,6 +259,7 @@ int32_t main(void)
   printf("0x7FFFFFFF 0x46BB12CB 0x48AAB606 0x7808B5F6 0x44CDC656 0x4FE6F424 0x7FFFFFFF 0x3E657723 0xB64B0C0A 0xC45808A6 0x66DF42B6 0x585E2D64 0x4DF7750D 0x7FFFFFFF 0x7FFFFFFF 0x5A44C6FC 0x3466A2EC 0x24693F0A 0xDF8CC5E9 0x7FFFFFFF 0x7FFFFFFF 0x7FFFFFFF 0xBA9C45CB 0x69F9282A 0x558B07D6 0x66B934FB 0x14EE7366 0x7FFFFFFF 0x7FFFFFFF 0x68468448 0xC44575C9 0x77AF1BA8");
   printf("\n");
 #endif
+
 /*Scale*/
 
   set_gpio_pin_value(6, 1);	
@@ -353,7 +360,9 @@ int32_t main(void)
   printf("\nCorrect answer:\n");
   printf("0x7FFFFFFF 0x26EB4270 0x2ACA88E6 0x7FFFFFFF 0x2310A986 0x39430522 0x7FFFFFFF 0x16400B20 0x80000000 0x80000000 0x6733A246 0x4A3177A2 0x356406F4 0x7FFFFFFF 0x7FFFFFFF 0x4DFEAAD2 0x24262B2 0xE2479AEE 0x80000000 0x7FFFFFFF 0x7FFFFFFF 0x7FFFFFFF 0x80000000 0x6D676D2E 0x448B2C86 0x66E786D0 0xC35203A6 0x7FFFFFFF 0x7FFFFFFF 0x6A02256A 0x80000000 0x7FFFFFFF ");
   printf("\n");
+
 #endif
+
 /*sub*/
   set_gpio_pin_value(5, 1);	
   arm_sub_f32(srcA_buf_f32, srcB_buf_f32, result_f32, MAX_BLOCKSIZE);
@@ -396,6 +405,7 @@ int32_t main(void)
       printf("0x%X ",result_q31[i]);  
     }
 #endif
+
   printf("\nEnd\n");
   return 0 ;
 }
