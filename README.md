@@ -4,7 +4,11 @@ This [project](https://summerofcode.withgoogle.com/projects/?sp-search=Mostafa#5
 
 This Repo is still under development.
 
-To use DSP extension, add `#define USE_DSP_RISCV` in arm_math.h
+The names of files and functions are renamed from arm to riscv, Check  examples or the tests for more clarification.
+
+To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
+
+
 #### Ported Modules
 BasicMathFunctions
 
