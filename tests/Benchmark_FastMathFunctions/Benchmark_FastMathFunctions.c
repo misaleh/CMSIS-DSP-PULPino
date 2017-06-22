@@ -23,6 +23,9 @@ int i = 0 ;
 q15_t angle_q15 = 0x7FFF ; /*360*/
 q31_t angle_q31 = 0x7FFFFFFF ; /*360*/
 int angle =360;
+volatile float32_t test_f= 4.2;
+volatile q15_t test_q15 = 0x1245;
+volatile q31_t test_q31 = 0x48A3617B;
 int32_t main(void)
 {
 
@@ -35,8 +38,9 @@ int32_t main(void)
   set_gpio_pin_value(6, 0);
 /*Tests*/
 /*sqrt*/
+  test_f +=2.0;
   set_gpio_pin_value(6, 1);	
-  riscv_sqrt_f32(4.1,&result_f32);
+  riscv_sqrt_f32(test_f,&result_f32);
   set_gpio_pin_value(6, 0);
 #ifdef PRINT_OUTPUT
   printf("\nriscv_sqrt_f32:\n");  
@@ -88,7 +92,7 @@ int32_t main(void)
   printf("0x%X ",result_q31); 
   printf("\n");
   printf("Correct answer = 0x7641AF3C \n"); 
-#endif*/
+#endif
 /*sin*/
   set_gpio_pin_value(6, 1);	
   result_f32=riscv_sin_f32(0.9);
