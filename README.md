@@ -77,7 +77,7 @@ sqrt for float use the built in sqrt function while sqrt for fixed point use  Ne
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_sqrt_f32      | 38 |N/A  | 26| 
+| arm_sqrt_f32      | 1432 |N/A  | 26| 
 | arm_sqrt_q15      | 723 |  N/A| 83| 
 | arm_sqrt_q31      | 683 | N/A | 131| 
 | arm_cos_f32      | 2134 |  N/A| 53| 
