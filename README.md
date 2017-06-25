@@ -13,6 +13,8 @@ To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 BasicMathFunctions
 
 FastMathFunctions
+
+ComplexMathFunctions
 #### Benchmarks
 **BasicMathFunctions**
 
@@ -86,3 +88,27 @@ sqrt for float use the built in sqrt function while sqrt for fixed point use  Ne
 | arm_sin_f32      | 2047 |  N/A| 55| 
 | arm_sin_q15      | 56 |  N/A| 30| 
 | arm_sin_q31      | 69 |  N/A| 43| 
+
+**ComplexMathFunctions**
+These Benchmarks are performed on vectors of size 32 (16 complex numbers).
+
+| Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
+| ------------- |:-------------:| -----:| -----:|
+| arm_cmplx_conj_f32      |  157|  | | 
+| arm_cmplx_conj_q31      |  205|  | | 
+| arm_cmplx_conj_q15      |  213| | | 
+| arm_cmplx_dot_prod_f32      | 22820|  | | 
+| arm_cmplx_dot_prod_q31      | 1045|| | 
+| arm_cmplx_dot_prod_q15      | 523 |  | | 
+| arm_cmplx_mag_f32      |  31306|  | | 
+| arm_cmplx_mag_q31      |  10791|  | | 
+| arm_cmplx_mag_q15      |  11577|  | | 
+| arm_cmplx_mag_squared_f32      | 8419 |  | | 
+| arm_cmplx_mag_squared_q31      | 299 |  | | 
+| arm_cmplx_mag_squared_q15      |  267| | | 
+| arm_cmplx_mult_cmplx_f32      | 17106|  | | 
+| arm_cmplx_mult_cmplx_q31      |591 || | 
+| arm_cmplx_mult_cmplx_q15      |  302|  | | 
+| arm_cmplx_mult_real_f32      | 5703 |  | | 
+| arm_cmplx_mult_real_q31      |  752|  | | 
+| arm_cmplx_mult_real_q15      |  336|  | | 
