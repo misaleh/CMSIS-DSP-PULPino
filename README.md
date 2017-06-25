@@ -90,6 +90,7 @@ sqrt for float use the built in sqrt function while sqrt for fixed point use  Ne
 | arm_sin_q31      | 69 |  N/A| 43| 
 
 **ComplexMathFunctions**
+
 These Benchmarks are performed on vectors of size 32 (16 complex numbers).
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
