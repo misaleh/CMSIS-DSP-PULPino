@@ -93,6 +93,8 @@ sqrt for float use the built in sqrt function while sqrt for fixed point use  Ne
 
 These Benchmarks are performed on vectors of size 32 (16 complex numbers).
 
+Most of the optimizations are in q15 data type, as float is not supported, and also q31 can't use many from the extended instructions as SIMD instructions and clip.
+
 | Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
 | arm_cmplx_conj_f32      |  157|  N/A|181 | 
