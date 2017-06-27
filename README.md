@@ -95,21 +95,21 @@ These Benchmarks are performed on vectors of size 32 (16 complex numbers).
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_cmplx_conj_f32      |  157|  |181 | 
-| arm_cmplx_conj_q31      |  205|  | 173| 
-| arm_cmplx_conj_q15      |  213| | 142| 
-| arm_cmplx_dot_prod_f32      | 22820|  |379 | 
-| arm_cmplx_dot_prod_q31      | 1045| | 796| 
-| arm_cmplx_dot_prod_q15      | 523 |  |294 | 
-| arm_cmplx_mag_f32      |  31306|  | 512| 
-| arm_cmplx_mag_q31      |  10791|  | 2367| 
-| arm_cmplx_mag_q15      |  11577|  | 1430| 
-| arm_cmplx_mag_squared_f32      | 8419 |  |181 | 
-| arm_cmplx_mag_squared_q31      | 299 |  | 324| 
-| arm_cmplx_mag_squared_q15      |  267| | 134| 
-| arm_cmplx_mult_cmplx_f32      | 17106|  | 364| 
-| arm_cmplx_mult_cmplx_q31      |591 | | 366| 
-| arm_cmplx_mult_cmplx_q15      |  302|  | 366| 
-| arm_cmplx_mult_real_f32      | 5703 |  | 236| 
-| arm_cmplx_mult_real_q31      |  752|  | 302| 
-| arm_cmplx_mult_real_q15      |  336|  | 211| 
+| arm_cmplx_conj_f32      |  157|  N/A|181 | 
+| arm_cmplx_conj_q31      |  205|  N/A| 173| 
+| arm_cmplx_conj_q15      |  213|174(18.3%) | 142| 
+| arm_cmplx_dot_prod_f32      | 22820| N/A |379 | 
+| arm_cmplx_dot_prod_q31      | 1045| N/A| 796| 
+| arm_cmplx_dot_prod_q15      | 523 |N/A  |294 | 
+| arm_cmplx_mag_f32      |  31306| N/A | 512| 
+| arm_cmplx_mag_q31      |  10791|  N/A| 2367| 
+| arm_cmplx_mag_q15      |  11577| 11365(1.8%)| 1430| 
+| arm_cmplx_mag_squared_f32      | 8419 |N/A |181 | 
+| arm_cmplx_mag_squared_q31      | 299 |  N/A| 324| 
+| arm_cmplx_mag_squared_q15      |  267| 122(54.3%)| 134| 
+| arm_cmplx_mult_cmplx_f32      | 17106|  N/A| 364| 
+| arm_cmplx_mult_cmplx_q31      |591 | N/A| 366| 
+| arm_cmplx_mult_cmplx_q15      |  302|238 (21.2%)  | 366| 
+| arm_cmplx_mult_real_f32      | 5703 |  N/A| 236| 
+| arm_cmplx_mult_real_q31      |  752|  N/A| 302| 
+| arm_cmplx_mult_real_q15      |  336| 238(29.2%) | 211| 
