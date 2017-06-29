@@ -105,7 +105,7 @@ void riscv_shift_q15(
       /* Shift the input and then store the result in the destination buffer. */
       VectInA = (shortV*)pSrc; 
       VectInB = pack2(-shiftBits,-shiftBits);
-      VectInC = sra2(*VectInA,VectInB); /*calculate the absolute of 4 q7 at the same time */
+      VectInC = sra2(*VectInA,VectInB); 
       *pDst++ = VectInC[0];
       *pDst++ = VectInC[1];
       pSrc+=2;

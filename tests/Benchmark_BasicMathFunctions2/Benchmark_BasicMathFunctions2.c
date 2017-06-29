@@ -329,7 +329,7 @@ int32_t main(void)
   printf("\n");
 #endif
 
-/*Shift*/
+/*Shift Left*/
 
   SET_GPIO_6() ;	
   riscv_shift_q7(srcA_buf_q7, 3, result_q7, MAX_BLOCKSIZE);
@@ -375,7 +375,42 @@ int32_t main(void)
   printf("\n");
 
 #endif
+/*Shift Right*/
 
+  SET_GPIO_6() ;	
+  riscv_shift_q7(srcA_buf_q7, -3, result_q7, MAX_BLOCKSIZE);
+  CLR_GPIO_6() ;
+#ifdef PRINT_OUTPUT
+  printf("\nriscv_shift_q7:\n");  
+  for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
+    {
+      printf("0x%X ",result_q7[i]);  
+    }
+  printf("\n");
+#endif
+  SET_GPIO_5() ;	
+  riscv_shift_q15(srcA_buf_q15, -2, result_q15, MAX_BLOCKSIZE);
+  CLR_GPIO_5() ;
+
+#ifdef PRINT_OUTPUT
+  printf("\nriscv_shift_q15:\n");  
+  for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
+    {
+      printf("0x%X ",result_q15[i]);  
+    }
+  printf("\n");
+#endif
+  SET_GPIO_6() ;	
+  riscv_shift_q31(srcA_buf_q31, -1, result_q31, MAX_BLOCKSIZE);
+  CLR_GPIO_6() ;
+#ifdef PRINT_OUTPUT
+  printf("\nriscv_shift_q31:\n");  
+  for(i = 0 ; i < MAX_BLOCKSIZE ; i++)
+    {
+      printf("0x%X ",result_q31[i]);  
+    }
+  printf("\n");
+#endif
 /*sub*/
 
   SET_GPIO_5() ;	
