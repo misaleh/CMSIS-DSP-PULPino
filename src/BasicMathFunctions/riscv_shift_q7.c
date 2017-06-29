@@ -83,12 +83,55 @@ void riscv_shift_q7(
   /* Getting the sign of shiftBits */
   sign = (shiftBits & 0x80);
 
+#if defined (USE_DSP_RISCV)
+
+  charV *VectInA;
+  charV VectInC,VectInB; 
+  blkCnt = blockSize >> 2u;
+  if(sign == 0u)
+  {
+    /* Initialize blkCnt with number of samples */
+    while(blkCnt > 0u)
+    {
+      /* C = A << shiftBits */
+      /* Shift the input and then store the result in the destination buffer. */
+      *pDst++ = (q7_t) clip(((q15_t) * pSrc++ << shiftBits), -128 , 127);
+      *pDst++ = (q7_t) clip(((q15_t) * pSrc++ << shiftBits), -128 , 127);
+      *pDst++ = (q7_t) clip(((q15_t) * pSrc++ << shiftBits), -128 , 127);
+      *pDst++ = (q7_t) clip(((q15_t) * pSrc++ << shiftBits), -128 , 127);
+      /* Decrement the loop counter */
+      blkCnt--;
+    }
+  }
+  else
+  {
+
+    /* Initialize blkCnt with number of samples */
+    while(blkCnt > 0u)
+    {
+      /* C = A >> shiftBits */
+      /* Shift the input and then store the result in the destination buffer. */
+      VectInA = (charV*)pSrc; 
+      VectInB = pack4(-shiftBits,-shiftBits,-shiftBits,-shiftBits);
+      VectInC = sra4(*VectInA,VectInB); /*calculate the absolute of 4 q7 at the same time */
+      *pDst++ = VectInC[0];
+      *pDst++ = VectInC[1];
+      *pDst++ = VectInC[2];
+      *pDst++ = VectInC[3];
+      pSrc+=4;
+     
+      /* Decrement the loop counter */
+      blkCnt--;
+    }
+  }
+  blkCnt = blockSize % 0x4u;
+#else
+    blkCnt = blockSize;
+#endif
   /* If the shift value is positive then do right shift else left shift */
   if(sign == 0u)
   {
     /* Initialize blkCnt with number of samples */
-    blkCnt = blockSize;
-
     while(blkCnt > 0u)
     {
       /* C = A << shiftBits */
@@ -102,8 +145,6 @@ void riscv_shift_q7(
   else
   {
     /* Initialize blkCnt with number of samples */
-    blkCnt = blockSize;
-
     while(blkCnt > 0u)
     {
       /* C = A >> shiftBits */
