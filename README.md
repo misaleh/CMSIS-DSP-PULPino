@@ -31,41 +31,41 @@ Improvements of DSP extension(Imp) = (Old - New_DSP)*100/Old
 
 | Function        | Puplino Cycles           | Puplino DSP Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_abs_f32      | 170 | N/A| 221| 
-| arm_abs_q7      | 270 |  205 (24.1%)| 297| 
-| arm_abs_q15      | 253  |  219 (13.4%)| 293| 
-| arm_abs_q31      | 283  |  267 (5.7%)| 282| 
-| arm_add_f32      | 5942  | N/A | 295| 
-| arm_add_q7      | 404 | 367 (9.2%)| 109| 
-| arm_add_q15      | 434 | 217 (50%)| 168| 
-| arm_add_q31      | 570 | N/A | 290| 
-| arm_dot_prod_q15      | 368 |219 (40.5%)  |144 | 
-| arm_dot_prod_q31      | 624 |  N/A|504 | 
-| arm_dot_prod_f32      | 11222 | N/A | 311| 
-| arm_dot_prod_q7      | 173 | 89 (48.6%) | 144| 
-| arm_mult_f32      | 5712 | N/A | 295| 
-| arm_mult_q31      | 776 |  N/A| 354| 
-| arm_mult_q15      | 331 | 238 (28.1%)| 238| 
-| arm_mult_q7      | 334 | 270(19.2%) | 322 | 
-| arm_negate_f32      | 167 | N/A | 221| 
-| arm_negate_q7      | 154  |  199(-29%)| 92| 
-| arm_negate_q15      | 222  |  217(2.3%)| 132| 
-| arm_negate_q31      | 267  | N/A | 216| 
-| arm_offset_f32      | 5995 |  N/A| 223| 
-| arm_offset_q7      | 371 |  263(29.1%)| 100| 
-| arm_offset_q15      | 400 | 184(54%) | 133| 
-| arm_offset_q31      | 577 | N/A | 216| 
-| arm_scale_f32      | 5903 | N/A | 191| 
-| arm_scale_q7      | 409 | 239(41.6%) | 295| 
-| arm_scale_q15      | 438 | 240(45.2%) | 246| 
-| arm_scale_q31      | 657 | N/A | 379| 
-| arm_shift_q7      | 373 |  N/A |300 | 
-| arm_shift_q15      | 405 |  N/A | 236| 
-| arm_shift_q31      | 674|  N/A | 369| 
-| arm_sub_f32      | 6068 | N/A |295 | 
-| arm_sub_q7      | 430 |  372(13.5%)| 109| 
-| arm_sub_q15      | 460 | 224(51.3%) | 168| 
-| arm_sub_q31      | 654 | N/A | 290| 
+| arm_abs_f32      | 142 | N/A| 221| 
+| arm_abs_q7      | 261 |  172 (51.7%)| 297| 
+| arm_abs_q15      | 220  |  183(16.8%)| 293| 
+| arm_abs_q31      | 252  |  235 (6.7%)| 282| 
+| arm_add_f32      | 5922  | N/A | 295| 
+| arm_add_q7      | 370 | 337 (8.9%)| 109| 
+| arm_add_q15      | 399 | 188 (52.9%)| 168| 
+| arm_add_q31      | 539 | N/A | 290| 
+| arm_dot_prod_q15      | 334 |185 (44.6%)  |144 | 
+| arm_dot_prod_q31      | 589 |  N/A|504 | 
+| arm_dot_prod_f32      | 11193 | N/A | 311| 
+| arm_dot_prod_q7      | 140 | 55 (60.7%) | 144| 
+| arm_mult_f32      | 5720 | N/A | 295| 
+| arm_mult_q31      | 746 |  N/A| 354| 
+| arm_mult_q15      | 302 | 203 (32.8%)| 238| 
+| arm_mult_q7      | 300 | 234(22%) | 322 | 
+| arm_negate_f32      | 139 | N/A | 221| 
+| arm_negate_q7      | 122  |  N/A| 92| 
+| arm_negate_q15      | 188  |  184(2.1%)| 132| 
+| arm_negate_q31      | 236  | N/A | 216| 
+| arm_offset_f32      | 5959 |  N/A| 223| 
+| arm_offset_q7      | 336 | 230(31.5%)| 100| 
+| arm_offset_q15      | 364 | 150(58.8%) | 133| 
+| arm_offset_q31      | 545 | N/A | 216| 
+| arm_scale_f32      | 5810 | N/A | 191| 
+| arm_scale_q7      | 375 | 205(45.3%) | 295| 
+| arm_scale_q15      | 404 | 205(49.3%) | 246| 
+| arm_scale_q31      | 621 | N/A | 379| 
+| arm_shift_q7      | 338 |  N/A |300 | 
+| arm_shift_q15      | 370 |  N/A | 236| 
+| arm_shift_q31      | 640|  N/A | 369| 
+| arm_sub_f32      | 6033 | N/A |295 | 
+| arm_sub_q7      | 395 |  337(14.7%)| 109| 
+| arm_sub_q15      | 425 | 189(55.5%) | 168| 
+| arm_sub_q31      | 619 | N/A | 290| 
 
 **FastMathFunctions**
 
