@@ -8,7 +8,19 @@
 //#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define MAX_BLOCKSIZE     32
 #define NUM_SAMPLES  16  /*size of array 32. num of elements are 16 as each 2 elements represnt a complex number */
+/*
+  this macros used for benchmarking, they are not friendly as they affect other GPIOs, but the main purpose here is to minimize the overhead,
+a more fierndly version will be
+#define SET_GPIO_6()     *(volatile int*) (GPIO_REG_PADOUT) |=  0x20;
+#define CLR_GPIO_6()    *(volatile int*) (GPIO_REG_PADOUT) &=  0xDF;
+#define SET_GPIO_5()     *(volatile int*) (GPIO_REG_PADOUT) |=  0x10;
+#define CLR_GPIO_5()     *(volatile int*) (GPIO_REG_PADOUT) &=  0xEF;
+*/
 
+#define SET_GPIO_6()     *(volatile int*) (GPIO_REG_PADOUT) =  0x20;
+#define CLR_GPIO_6()    *(volatile int*) (GPIO_REG_PADOUT) =  0x00;
+#define SET_GPIO_5()     *(volatile int*) (GPIO_REG_PADOUT) =  0x10;
+#define CLR_GPIO_5()     *(volatile int*) (GPIO_REG_PADOUT) =  0x00;
 
 /*
 *Each function has a GPIO pin (5 and 6 alternatively ) set before it runs and is cleared after it finish running
@@ -151,13 +163,13 @@ int32_t main(void)
   set_gpio_pin_direction(5, DIR_OUT);
   set_pin_function(6, FUNC_GPIO);
   set_gpio_pin_direction(6, DIR_OUT);
-  set_gpio_pin_value(5, 0);
-  set_gpio_pin_value(6, 0);
+  CLR_GPIO_5();
+  CLR_GPIO_6();
 /*Tests*/
 /*Complex Conjugate*/
-  set_gpio_pin_value(6, 1);	
+  SET_GPIO_6();	
   riscv_cmplx_conj_f32( srcA_buf_f32,result_f32,NUM_SAMPLES);
-  set_gpio_pin_value(6, 0);
+  CLR_GPIO_6();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_conj_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
@@ -165,9 +177,9 @@ int32_t main(void)
       printf("%d + i%d\n",(int)(result_f32[i]*100),(int)(result_f32[i+1]*100));  
     }
 #endif
-  set_gpio_pin_value(5, 1);	
+  SET_GPIO_5();	
   riscv_cmplx_conj_q31(srcA_buf_q31,result_q31,NUM_SAMPLES);
-  set_gpio_pin_value(5, 0);
+  CLR_GPIO_5();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_conj_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
@@ -194,9 +206,9 @@ int32_t main(void)
 0x91000436 + 0xiBB9655EB");
   printf("\n");
 #endif
-  set_gpio_pin_value(6, 1);	
+  SET_GPIO_6();	
   riscv_cmplx_conj_q15(srcA_buf_q15,result_q15,NUM_SAMPLES);
-  set_gpio_pin_value(6, 0);
+  CLR_GPIO_6();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_conj_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
@@ -224,16 +236,16 @@ int32_t main(void)
   printf("\n");
 #endif
 /*Complex Dot Product*/
-  set_gpio_pin_value(5, 1);	
+  SET_GPIO_5();	
   riscv_cmplx_dot_prod_f32( srcA_buf_f32,srcB_buf_f32,NUM_SAMPLES,&real_f32,&img_f32);
-  set_gpio_pin_value(5, 0);
+  CLR_GPIO_5();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_dot_prod_f32:\n");  
   printf("%d + i%d\n",(int)(real_f32*100),(int)(img_f32*100));  
 #endif
-  set_gpio_pin_value(6, 1);	
+  SET_GPIO_6();	
   riscv_cmplx_dot_prod_q31(srcA_buf_q31,srcB_buf_q31,NUM_SAMPLES,&real_q63,&img_q63);
-  set_gpio_pin_value(6, 0);
+  CLR_GPIO_6();
 
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_dot_prod_q31:\n");  
@@ -249,9 +261,9 @@ int32_t main(void)
   printf("\nCorrect answer:\n");
   printf("0x2927C892B96BC + i0x22D6ABC4110A6 \n");
 #endif
-  set_gpio_pin_value(5, 1);	
+  SET_GPIO_5();	
   riscv_cmplx_dot_prod_q15(srcA_buf_q15,srcB_buf_q15,NUM_SAMPLES,&real_q31,&img_q31);
-  set_gpio_pin_value(5, 0);
+  CLR_GPIO_5();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_dot_prod_q15:\n");  
   printf("0x%X + 0xi%X\n",real_q31,img_q31);  
@@ -261,9 +273,10 @@ int32_t main(void)
 #endif
 
 /*Complex Magnitude*/
-  set_gpio_pin_value(6, 1);	
+
+  SET_GPIO_6();	
   riscv_cmplx_mag_f32(srcA_buf_f32,result_f32,NUM_SAMPLES);
-  set_gpio_pin_value(6, 0);
+  CLR_GPIO_6();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mag_f32:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
@@ -271,9 +284,9 @@ int32_t main(void)
       printf("%d\n",(int)(result_f32[i]*100));  
     }
 #endif
-  set_gpio_pin_value(5, 1);	
+  SET_GPIO_5();	
   riscv_cmplx_mag_q31(srcA_buf_q31,result_q31,NUM_SAMPLES); //output 2.30
-  set_gpio_pin_value(5, 0);
+  CLR_GPIO_5();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mag_q31:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
@@ -300,9 +313,9 @@ int32_t main(void)
 0x4131CA9E ");
   printf("\n");
 #endif
-  set_gpio_pin_value(6, 1);	
+  SET_GPIO_6();	
   riscv_cmplx_mag_q15(srcA_buf_q15,result_q15,NUM_SAMPLES); //output 2.14
-  set_gpio_pin_value(6, 0);
+  CLR_GPIO_6();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mag_q15:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
@@ -331,9 +344,9 @@ int32_t main(void)
 #endif
 
 /*Complex Magnitude Squared*/
-  set_gpio_pin_value(5, 1);	
+  SET_GPIO_5();	
   riscv_cmplx_mag_squared_f32(srcA_buf_f32,result_f32,NUM_SAMPLES);
-  set_gpio_pin_value(5, 0);
+  CLR_GPIO_5();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mag_squared_f32:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
@@ -341,9 +354,9 @@ int32_t main(void)
       printf("%d\n",(int)(result_f32[i]*100));  
     }
 #endif
-  set_gpio_pin_value(6, 1);	
+  SET_GPIO_6();	
   riscv_cmplx_mag_squared_q31(srcA_buf_q31,result_q31,NUM_SAMPLES);//output 3.29
-  set_gpio_pin_value(6, 0);
+  CLR_GPIO_6();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mag_squared_q31:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
@@ -370,9 +383,9 @@ int32_t main(void)
 0x2134A528");
   printf("\n");
 #endif
-  set_gpio_pin_value(5, 1);	
+  SET_GPIO_5();	
   riscv_cmplx_mag_squared_q15(srcA_buf_q15,result_q15,NUM_SAMPLES); //output 3.13
-  set_gpio_pin_value(5, 0);
+  CLR_GPIO_5();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mag_squared_q15:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
@@ -401,9 +414,10 @@ int32_t main(void)
 #endif
 
 /*Complex-by-Complex Multiplication*/
-  set_gpio_pin_value(6, 1);	
+
+  SET_GPIO_6();	
   riscv_cmplx_mult_cmplx_f32(srcA_buf_f32, srcB_buf_f32, result_f32, NUM_SAMPLES);
-  set_gpio_pin_value(6, 0);
+  CLR_GPIO_6();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mult_cmplx_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
@@ -411,9 +425,9 @@ int32_t main(void)
       printf("%d + i%d\n",(int)(result_f32[i]*100),(int)(result_f32[i+1]*100));  
     }
 #endif
-  set_gpio_pin_value(5, 1);	
+  SET_GPIO_5();	
   riscv_cmplx_mult_cmplx_q31(srcA_buf_q31, srcB_buf_q31, result_q31, NUM_SAMPLES); //output 3.29
-  set_gpio_pin_value(5, 0);
+  CLR_GPIO_5();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mult_cmplx_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
@@ -440,9 +454,9 @@ int32_t main(void)
 0x0EEC5730 + i0xE2563060");
   printf("\n");
 #endif
-  set_gpio_pin_value(6, 1);	
+  SET_GPIO_6();	
   riscv_cmplx_mult_cmplx_q15(srcA_buf_q15, srcB_buf_q15, result_q15, NUM_SAMPLES); //output 3.13
-  set_gpio_pin_value(6, 0);
+  CLR_GPIO_6();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mult_cmplx_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
@@ -472,9 +486,9 @@ int32_t main(void)
 
 /*Complex-by-Real Multiplication*/
 
-  set_gpio_pin_value(5, 1);	
+  SET_GPIO_5();	
   riscv_cmplx_mult_real_f32(srcA_buf_f32, src_real_f32, result_f32, NUM_SAMPLES);
-  set_gpio_pin_value(5, 0);
+  CLR_GPIO_5();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mult_real_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
@@ -482,9 +496,9 @@ int32_t main(void)
       printf("%d + i%d\n",(int)(result_f32[i]*100),(int)(result_f32[i+1]*100));  
     }
 #endif
-  set_gpio_pin_value(6, 1);	
+  SET_GPIO_6();	
   riscv_cmplx_mult_real_q31(srcA_buf_q31, src_real_q31, result_q31, NUM_SAMPLES);
-  set_gpio_pin_value(6, 0);
+  CLR_GPIO_6();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mult_real_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
@@ -511,9 +525,9 @@ int32_t main(void)
 0xDE2E9537 + i0x14D7D6A5");
   printf("\n");
 #endif
-  set_gpio_pin_value(5, 1);	
+  SET_GPIO_5();	
   riscv_cmplx_mult_real_q15(srcA_buf_q15, src_real_q15, result_q15, NUM_SAMPLES);
-  set_gpio_pin_value(5, 0);
+  CLR_GPIO_5();
 #ifdef PRINT_OUTPUT
   printf("\nriscv_cmplx_mult_real_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
