@@ -118,3 +118,36 @@ Most of the optimizations are in q15 data type, as float is not supported, and a
 | arm_cmplx_mult_real_f32      | 5689 |  N/A| 236| 
 | arm_cmplx_mult_real_q31      |  717|  N/A| 302| 
 | arm_cmplx_mult_real_q15      |  302| 203(32.8%) | 211| 
+
+**StatisticsFunctions**
+
+These Benchmarks are performed on vectors of size 32 
+
+
+| Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
+| ------------- |:-------------:| -----:| -----:|
+| arm_max_f32      | 7361 |  | | 
+| arm_max_q7      |  296| | | 
+| arm_max_q15       |  294|  | | 
+| arm_max_q31        | 266 |  | | 
+| arm_mean_f32       | 6323 |  | | | 
+| arm_mean_q7       | 136 |  | | 
+| arm_mean_q15       | 136 |  | | 
+| arm_mean_q31        | 403 |  | | 
+| arm_min_f32       | 7246 |  | | 
+| arm_min_q7        | 291 |  | | 
+| arm_min_q15       | 291 |  | | 
+| arm_min_q31       | 259 |  | | 
+| arm_power_f32      | 11005 |  | | 
+| arm_power_q7        | 106 |  | | 
+| arm_power_q15       | 300 |  | | 
+| arm_power_q31      | 556 |  | | 
+| arm_rms_f32       | 12923 |  | | 
+| arm_rms_q15        | 1132 |  | | 
+| arm_rms_q31      | 1345 |  | | 
+| arm_std_f32        | 19715 |  | | 
+| arm_std_q15       | 1309 |  | | 
+| arm_std_q31      | 1807 |  | | 
+| arm_var_f32       | 18177 |  | | 
+| arm_var_q15      | 641 |  | | 
+| arm_var_q31       | 1142 |  | | 
