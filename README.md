@@ -121,33 +121,34 @@ Most of the optimizations are in q15 data type, as float is not supported, and a
 
 **StatisticsFunctions**
 
-These Benchmarks are performed on vectors of size 32 
+These Benchmarks are performed on vectors of size 32.
 
+Functions that need square root operations, use the functions from FastMath as rms and var.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_max_f32      | 7361 |  | | 
-| arm_max_q7      |  296| | | 
-| arm_max_q15       |  294|  | | 
-| arm_max_q31        | 266 |  | | 
-| arm_mean_f32       | 6323 |  | | | 
-| arm_mean_q7       | 136 |  | | 
-| arm_mean_q15       | 136 |  | | 
-| arm_mean_q31        | 403 |  | | 
-| arm_min_f32       | 7246 |  | | 
-| arm_min_q7        | 291 |  | | 
-| arm_min_q15       | 291 |  | | 
-| arm_min_q31       | 259 |  | | 
-| arm_power_f32      | 11005 |  | | 
-| arm_power_q7        | 106 |  | | 
-| arm_power_q15       | 300 |  | | 
-| arm_power_q31      | 556 |  | | 
-| arm_rms_f32       | 12923 |  | | 
-| arm_rms_q15        | 1132 |  | | 
-| arm_rms_q31      | 1345 |  | | 
-| arm_std_f32        | 19715 |  | | 
-| arm_std_q15       | 1309 |  | | 
-| arm_std_q31      | 1807 |  | | 
-| arm_var_f32       | 18177 |  | | 
-| arm_var_q15      | 641 |  | | 
-| arm_var_q31       | 1142 |  | | 
+| arm_max_f32      | 7361 |  | 322| 
+| arm_max_q7      |  296| | 283| 
+| arm_max_q15       |  294|  |283 | 
+| arm_max_q31        | 266 |  |283 | 
+| arm_mean_f32       | 6323 |   |172 | 
+| arm_mean_q7       | 136 |  | 146| 
+| arm_mean_q15       | 136 |   |148 | 
+| arm_mean_q31        | 403 |  |397 | 
+| arm_min_f32       | 7246 |  |322 | 
+| arm_min_q7        | 291 |  | 283| 
+| arm_min_q15       | 291 |  | 283| 
+| arm_min_q31       | 259 |  | 283| 
+| arm_power_f32      | 11005 |  | 232| 
+| arm_power_q7        | 106 |  | 109| 
+| arm_power_q15       | 300 |  | 107| 
+| arm_power_q31      | 556 |  | 434| 
+| arm_rms_f32       | 12923 |  | 268| 
+| arm_rms_q15        | 1132 |  | 386| 
+| arm_rms_q31      | 1345 |  | 765| 
+| arm_std_f32        | 19715 |  | 345| 
+| arm_std_q15       | 1309 |  | 628| 
+| arm_std_q31      | 1807 |  | 1121| 
+| arm_var_f32       | 18177 |  | 455| 
+| arm_var_q15      | 641 |  | 551| 
+| arm_var_q31       | 1142 |  | 993| 
