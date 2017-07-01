@@ -81,7 +81,6 @@ void riscv_std_q15(
   q31_t meanOfSquares, squareOfMean;             /* square of mean and mean of square */
   uint32_t blkCnt;                               /* loop counter */
   q63_t sumOfSquares = 0;                        /* Accumulator */
-   /* Run the below code for Cortex-M0 */
   q15_t in;                                      /* input value */
 
 	if(blockSize == 1)
@@ -89,6 +88,47 @@ void riscv_std_q15(
 		*pResult = 0;
 		return;
 	}
+#if defined (USE_DSP_RISCV)
+  blkCnt = blockSize>>1;
+  shortV *VectInA;
+  short ones[4] = {0x01,0x01};
+  shortV *VectInB =(shortV*)ones; 
+  while(blkCnt > 0u)
+  {
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+    VectInA = (shortV*)pSrc;
+    sumOfSquares += dotpv2(*VectInA, *VectInA);
+    sum = sumdotpv2(*VectInA, *VectInB, sum);
+    pSrc+=2;
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+  blkCnt = blockSize%0x02;
+  while(blkCnt > 0u)
+  {
+    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
+    /* Compute Sum of squares of the input samples     
+     * and then store the result in a temporary variable, sumOfSquares. */
+    in = *pSrc++;
+    sumOfSquares += (in * in);
+
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+    /* Compute sum of all input values and then store the result in a temporary variable, sum. */
+    sum += in;
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+  meanOfSquares = (q31_t)(sumOfSquares / (q63_t)(blockSize - 1));
+
+  /* Compute square of mean */
+  squareOfMean = (q31_t) ((q63_t)sum * sum / (q63_t)(blockSize * (blockSize - 1)));
+
+  /* mean of the squares minus the square of the mean. */
+  /* Compute standard deviation and store the result to the destination */
+  riscv_sqrt_q15(clip((meanOfSquares - squareOfMean) >> 15, -32768,32767), pResult);
+#else
 
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
@@ -119,7 +159,7 @@ void riscv_std_q15(
   /* mean of the squares minus the square of the mean. */
   /* Compute standard deviation and store the result to the destination */
   riscv_sqrt_q15(__SSAT((meanOfSquares - squareOfMean) >> 15, 16u), pResult);
-
+#endif
 
 }
 

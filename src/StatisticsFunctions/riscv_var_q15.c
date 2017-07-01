@@ -91,7 +91,39 @@ void riscv_var_q15(
 		*pResult = 0;
 		return;
 	}
+#if defined (USE_DSP_RISCV)
+  blkCnt = blockSize>>1;
+  shortV *VectInA;
+  short ones[4] = {0x01,0x01};
+  shortV *VectInB =(shortV*)ones; 
+  while(blkCnt > 0u)
+  {
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+    VectInA = (shortV*)pSrc;
+    sumOfSquares += dotpv2(*VectInA, *VectInA);
+    sum = sumdotpv2(*VectInA, *VectInB, sum);
+    pSrc+=2;
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+  blkCnt = blockSize%0x02;
+  while(blkCnt > 0u)
+  {
+    /* C = (A[0] * A[0] + A[1] * A[1] + ... + A[blockSize-1] * A[blockSize-1]) */
+    /* Compute Sum of squares of the input samples     
+     * and then store the result in a temporary variable, sumOfSquares. */
+    in = *pSrc++;
+    sumOfSquares += (in * in);
 
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+    /* Compute sum of all input values and then store the result in a temporary variable, sum. */
+    sum += in;
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+#else
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
 
@@ -110,7 +142,7 @@ void riscv_var_q15(
     /* Decrement the loop counter */
     blkCnt--;
   }
-
+#endif
   /* Compute Mean of squares of the input samples     
    * and then store the result in a temporary variable, meanOfSquares. */
   meanOfSquares = (q31_t) (sumOfSquares / (q63_t)(blockSize - 1));

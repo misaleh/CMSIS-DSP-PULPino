@@ -78,7 +78,31 @@ void riscv_mean_q7(
 {
   q31_t sum = 0;                                 /* Temporary result storage */
   uint32_t blkCnt;                               /* loop counter */
+#if defined (USE_DSP_RISCV)
+  blkCnt = blockSize>>2;
+  char ones[4] = {0x01,0x01,0x01,0x01};
+  charV *VectInA;
+  charV *VectInB =(charV*)ones; 
 
+  while(blkCnt > 0u)
+  {
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+    VectInA = (charV*)pSrc;
+    sum = sumdotpv4(*VectInA, *VectInB, sum);
+    pSrc+=4;
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+  blkCnt = blockSize%0x04;
+  while(blkCnt > 0u)
+  {
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+    sum += *pSrc++;
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+#else
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
   while(blkCnt > 0u)
@@ -92,7 +116,8 @@ void riscv_mean_q7(
 
   /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) / blockSize  */
   /* Store the result to the destination */
-  *pResult = (q7_t) (sum / (int32_t) blockSize);
+#endif
+  *pResult = (q7_t)(sum / (int32_t)blockSize);
 }
 
 /**    

@@ -80,7 +80,29 @@ void riscv_power_q7(
   q31_t sum = 0;                                 /* Temporary result storage */
   q7_t in;                                       /* Temporary variable to store input */
   uint32_t blkCnt;                               /* loop counter */
+#if defined (USE_DSP_RISCV)
+  blkCnt = blockSize>>2;
 
+  charV *VectInA;
+  while(blkCnt > 0u)
+  {
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+    VectInA = (charV*)pSrc;
+    sum = sumdotpv4(*VectInA, *VectInA, sum);
+    pSrc+=4;
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+  blkCnt = blockSize%0x04;
+  while(blkCnt > 0u)
+  {
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+    sum += *pSrc++;
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+#else
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
 
@@ -94,7 +116,7 @@ void riscv_power_q7(
     /* Decrement the loop counter */
     blkCnt--;
   }
-
+#endif
   /* Store the result in 18.14 format  */
   *pResult = sum;
 }

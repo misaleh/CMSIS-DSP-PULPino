@@ -78,7 +78,30 @@ void riscv_rms_q15(
 
   q15_t in;                                      /* temporary variable to store the input value */
   uint32_t blkCnt;                               /* loop counter */
+#if defined (USE_DSP_RISCV)
+  blkCnt = blockSize>>1;
+  shortV *VectInA;
 
+  while(blkCnt > 0u)
+  {
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+    VectInA = (shortV*)pSrc;
+    sum += dotpv2(*VectInA, *VectInA);
+    pSrc+=2;
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+  blkCnt = blockSize%0x02;
+  while(blkCnt > 0u)
+  {
+    /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
+    sum += *pSrc++;
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+  riscv_sqrt_q15(clip((sum / (q63_t)blockSize) >> 15,-32768,32767), pResult);
+#else
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
 
@@ -96,6 +119,7 @@ void riscv_rms_q15(
   /* Truncating and saturating the accumulator to 1.15 format */
   /* Store the result in the destination */
   riscv_sqrt_q15(__SSAT((sum / (q63_t)blockSize) >> 15, 16), pResult);
+#endif
 }
 
 /**    
