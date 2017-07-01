@@ -15,6 +15,8 @@ BasicMathFunctions
 FastMathFunctions
 
 ComplexMathFunctions
+
+StatisticsFunctions
 #### Benchmarks
 **BasicMathFunctions**
 
@@ -80,7 +82,7 @@ All Sin and Cosine functions uses tables but with interpolation.
 
 sqrt for float use the built in sqrt function while sqrt for fixed point use  Newton-Raphson algorithm.
 
-| Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
+| Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
 | arm_sqrt_f32      | 1404 |N/A  | 26| 
 | arm_sqrt_q15      | 700 |  N/A| 83| 
@@ -98,7 +100,7 @@ These Benchmarks are performed on vectors of size 32 (16 complex numbers).
 
 Most of the optimizations are in q15 data type, as float is not supported, and also q31 can't use many from the extended instructions as SIMD instructions and clip.
 
-| Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
+| Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
 | arm_cmplx_conj_f32      |  125|  N/A|181 | 
 | arm_cmplx_conj_q31      |  171|  N/A| 173| 
@@ -125,30 +127,30 @@ These Benchmarks are performed on vectors of size 32.
 
 Functions that need square root operations, use the functions from FastMath as rms and var.
 
-| Function        | Puplino Cycles           | Puplino DSP  Cycles|  ARM M4 Cycles|
+| Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_max_f32      | 7361 |  | 322| 
-| arm_max_q7      |  296| | 283| 
-| arm_max_q15       |  294|  |283 | 
-| arm_max_q31        | 266 |  |283 | 
-| arm_mean_f32       | 6323 |   |172 | 
-| arm_mean_q7       | 136 |  | 146| 
-| arm_mean_q15       | 136 |   |148 | 
-| arm_mean_q31        | 403 |  |397 | 
-| arm_min_f32       | 7246 |  |322 | 
-| arm_min_q7        | 291 |  | 283| 
-| arm_min_q15       | 291 |  | 283| 
-| arm_min_q31       | 259 |  | 283| 
-| arm_power_f32      | 11005 |  | 232| 
-| arm_power_q7        | 106 |  | 109| 
-| arm_power_q15       | 300 |  | 107| 
-| arm_power_q31      | 556 |  | 434| 
-| arm_rms_f32       | 12923 |  | 268| 
-| arm_rms_q15        | 1132 |  | 386| 
-| arm_rms_q31      | 1345 |  | 765| 
-| arm_std_f32        | 19715 |  | 345| 
-| arm_std_q15       | 1309 |  | 628| 
-| arm_std_q31      | 1807 |  | 1121| 
-| arm_var_f32       | 18177 |  | 455| 
-| arm_var_q15      | 641 |  | 551| 
-| arm_var_q31       | 1142 |  | 993| 
+| arm_max_f32      | 7361 | N/A | 322| 
+| arm_max_q7      |  296| N/A| 283| 
+| arm_max_q15       |  294|  N/A|283 | 
+| arm_max_q31        | 266 |  N/A|283 | 
+| arm_mean_f32       | 6323 |   N/A|172 | 
+| arm_mean_q7       | 136 |  74(45.6%)| 146| 
+| arm_mean_q15       | 136 |  102(25%) |148 | 
+| arm_mean_q31        | 403 |  N/A|397 | 
+| arm_min_f32       | 7246 | N/A |322 | 
+| arm_min_q7        | 291 | N/A | 283| 
+| arm_min_q15       | 291 |N/A  | 283| 
+| arm_min_q31       | 259 |  N/A| 283| 
+| arm_power_f32      | 11005 |  N/A| 232| 
+| arm_power_q7        | 106 | 43 (59.4%)| 109| 
+| arm_power_q15       | 300 | 165(45%) | 107| 
+| arm_power_q31      | 556 |N/A  | 434| 
+| arm_rms_f32       | 12923 |  N/A| 268| 
+| arm_rms_q15        | 1132 |  993(12.3%)| 386| 
+| arm_rms_q31      | 1345 | N/A | 765| 
+| arm_std_f32        | 19715 |N/A  | 345| 
+| arm_std_q15       | 1309 |  1154(11.8%)| 628| 
+| arm_std_q31      | 1807 | N/A | 1121| 
+| arm_var_f32       | 18177 | N/A | 455| 
+| arm_var_q15      | 641 | 489(23.7%) | 551| 
+| arm_var_q31       | 1142 | N/A | 993| 
