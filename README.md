@@ -1,6 +1,6 @@
 ## CMSIS DSD for PULPino
 This is a port of ARM CMSIS DSP [library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html) to [PULPino](https://github.com/pulp-platform/pulpino) microcontroller.
-This [project](https://summerofcode.withgoogle.com/projects/?sp-search=Mostafa#5599084384616448) is part of GSOC 2017 
+This [project](https://summerofcode.withgoogle.com/projects/?sp-search=Mostafa#5599084384616448) is part of GSoC 2017 
 
 This Repo is still under development.
 
@@ -142,7 +142,7 @@ Functions that need square root operations, use the functions from FastMath as r
 | arm_min_q15       | 291 |N/A  | 283| 
 | arm_min_q31       | 259 |  N/A| 283| 
 | arm_power_f32      | 11005 |  N/A| 232| 
-| arm_power_q7        | 106 | 43 (59.4%)| 109| 
+| arm_power_q7        | 106 | 43(59.4%)| 109| 
 | arm_power_q15       | 300 | 165(45%) | 107| 
 | arm_power_q31      | 556 |N/A  | 434| 
 | arm_rms_f32       | 12923 |  N/A| 268| 
@@ -154,3 +154,32 @@ Functions that need square root operations, use the functions from FastMath as r
 | arm_var_f32       | 18177 | N/A | 455| 
 | arm_var_q15      | 641 | 489(23.7%) | 551| 
 | arm_var_q31       | 1142 | N/A | 993| 
+
+**MatrixFunctions**
+
+These Benchmarks are performed on matrices of size 4x4.
+
+| Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
+| ------------- |:-------------:| -----:| -----:|
+| arm_mat_add_f32      | 2843 |  |  | 
+| arm_mat_add_q15      | 214 | | | 
+| arm_mat_add_q31       |  318|  | | 
+| arm_mat_cmplx_mult_f32        | 78646 |  | | 
+| arm_mat_cmplx_mult_q15       | 2981 |   | | 
+| arm_mat_cmplx_mult_q31      | 3543 |  |  | 
+| arm_mat_inverse_f32      | 35145 | | | 
+| arm_mat_inverse_f64       | 62500 |  | | 
+| arm_mat_mult_f32      | 16701 |  |  | 
+| arm_mat_mult_q15      | 1106 | | | 
+| arm_mat_mult_q31       | 1278 |  | | 
+| arm_mat_mult_fast_q15      | 844 |  |  | 
+| arm_mat_mult_fast_q31      | 1094 | | | 
+| arm_mat_scale_f32       | 2138 |  | | 
+| arm_mat_scale_q15      | 216 |  |  | 
+| arm_mat_scale_q31      | 312 | | | 
+| arm_mat_sub_f32       | 2410 |  | | 
+| arm_mat_sub_q15     | 216 |  |  | 
+| arm_mat_sub_q31     |  334| | | 
+| arm_mat_trans_f32       |  113|  | | 
+| arm_mat_trans_q15       |  113|  | | 
+| arm_mat_trans_q31       |  114|  | | 
