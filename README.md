@@ -161,25 +161,25 @@ These Benchmarks are performed on matrices of size 4x4.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_mat_add_f32      | 2843 |  |  | 
-| arm_mat_add_q15      | 214 | | | 
-| arm_mat_add_q31       |  318|  | | 
-| arm_mat_cmplx_mult_f32        | 78646 |  | | 
-| arm_mat_cmplx_mult_q15       | 2981 |   | | 
-| arm_mat_cmplx_mult_q31      | 3543 |  |  | 
-| arm_mat_inverse_f32      | 35145 | | | 
-| arm_mat_inverse_f64       | 62500 |  | | 
-| arm_mat_mult_f32      | 16701 |  |  | 
-| arm_mat_mult_q15      | 1106 | | | 
-| arm_mat_mult_q31       | 1278 |  | | 
-| arm_mat_mult_fast_q15      | 844 |  |  | 
-| arm_mat_mult_fast_q31      | 1094 | | | 
-| arm_mat_scale_f32       | 2138 |  | | 
-| arm_mat_scale_q15      | 216 |  |  | 
-| arm_mat_scale_q31      | 312 | | | 
-| arm_mat_sub_f32       | 2410 |  | | 
-| arm_mat_sub_q15     | 216 |  |  | 
-| arm_mat_sub_q31     |  334| | | 
-| arm_mat_trans_f32       |  113|  | | 
-| arm_mat_trans_q15       |  113|  | | 
-| arm_mat_trans_q31       |  114|  | | 
+| arm_mat_add_f32      | 2843 | |190  | 
+| arm_mat_add_q15      | 214 | |124|
+| arm_mat_add_q31       |  318| | 172|
+| arm_mat_cmplx_mult_f32        | 78646 | |1992  | 
+| arm_mat_cmplx_mult_q15       | 2981 |  |1606 | 
+| arm_mat_cmplx_mult_q31      | 3543 | |3516 | 
+| arm_mat_inverse_f32      | 35145 | |2994 |
+| arm_mat_inverse_f64       | 62500 |  |20765 | 
+| arm_mat_mult_f32      | 16701 |   |1067 | 
+| arm_mat_mult_q15      | 1106 |  |946|
+| arm_mat_mult_q31       | 1278 |  |1531 | 
+| arm_mat_mult_fast_q15      | 844 | |743 | 
+| arm_mat_mult_fast_q31      | 1094 |  |643| 
+| arm_mat_scale_f32       | 2138 |  |144 | 
+| arm_mat_scale_q15      | 216 |  |156 | 
+| arm_mat_scale_q31      | 312 |  |227 | 
+| arm_mat_sub_f32       | 2410 |  |190| 
+| arm_mat_sub_q15     | 216 |   |122 | 
+| arm_mat_sub_q31     |  334|   |172|
+| arm_mat_trans_f32       |  113|  |268 | 
+| arm_mat_trans_q15       |  113|  |202|
+| arm_mat_trans_q31       |  114|  | 262 |
