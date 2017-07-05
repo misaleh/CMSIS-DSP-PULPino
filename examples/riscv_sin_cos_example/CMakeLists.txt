@@ -1,1 +1,0 @@
-add_application(riscv_sin_cos_example_f32 riscv_sin_cos_example_f32.c)

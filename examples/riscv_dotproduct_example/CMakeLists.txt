@@ -1,1 +1,0 @@
-add_application(riscv_dotproduct_example_f32 riscv_dotproduct_example_f32.c)
