@@ -17,6 +17,8 @@ FastMathFunctions
 ComplexMathFunctions
 
 StatisticsFunctions
+
+MatrixFunctions
 #### Benchmarks
 **BasicMathFunctions**
 
@@ -161,25 +163,25 @@ These Benchmarks are performed on matrices of size 4x4.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_mat_add_f32      | 2843 | |190  | 
-| arm_mat_add_q15      | 214 | |124|
-| arm_mat_add_q31       |  318| | 172|
-| arm_mat_cmplx_mult_f32        | 78646 | |1992  | 
-| arm_mat_cmplx_mult_q15       | 2981 |  |1606 | 
-| arm_mat_cmplx_mult_q31      | 3543 | |3516 | 
-| arm_mat_inverse_f32      | 35145 | |2994 |
-| arm_mat_inverse_f64       | 62500 |  |20765 | 
-| arm_mat_mult_f32      | 16701 |   |1067 | 
-| arm_mat_mult_q15      | 1106 |  |946|
-| arm_mat_mult_q31       | 1278 |  |1531 | 
-| arm_mat_mult_fast_q15      | 844 | |743 | 
-| arm_mat_mult_fast_q31      | 1094 |  |643| 
-| arm_mat_scale_f32       | 2138 |  |144 | 
-| arm_mat_scale_q15      | 216 |  |156 | 
-| arm_mat_scale_q31      | 312 |  |227 | 
-| arm_mat_sub_f32       | 2410 |  |190| 
-| arm_mat_sub_q15     | 216 |   |122 | 
-| arm_mat_sub_q31     |  334|   |172|
-| arm_mat_trans_f32       |  113|  |268 | 
-| arm_mat_trans_q15       |  113|  |202|
-| arm_mat_trans_q31       |  114|  | 262 |
+| arm_mat_add_f32      | 2843 | N/A|190  | 
+| arm_mat_add_q15      | 214 | 112(47.7%)|124|
+| arm_mat_add_q31       |  318|N/A | 172|
+| arm_mat_cmplx_mult_f32        | 78646 | N/A|1992  | 
+| arm_mat_cmplx_mult_q15       | 2981 | 2764(7.3%) |1606 | 
+| arm_mat_cmplx_mult_q31      | 3543 | N/A|3516 | 
+| arm_mat_inverse_f32      | 35145 |N/A |2994 |
+| arm_mat_inverse_f64       | 62500 | N/A |20765 | 
+| arm_mat_mult_f32      | 16701 |  N/A |1067 | 
+| arm_mat_mult_q15      | 1106 | 1020(7.8%) |946|
+| arm_mat_mult_q31       | 1278 | N/A |1531 | 
+| arm_mat_mult_fast_q15      | 844 |815(3.4%) |743 | 
+| arm_mat_mult_fast_q31      | 1094 |  N/A|643| 
+| arm_mat_scale_f32       | 2138 | N/A |144 | 
+| arm_mat_scale_q15      | 216 |  117(45.8%)|156 | 
+| arm_mat_scale_q31      | 312 | N/A |227 | 
+| arm_mat_sub_f32       | 2410 | N/A |190| 
+| arm_mat_sub_q15     | 216 | 112(48.1%)  |122 | 
+| arm_mat_sub_q31     |  334| N/A  |172|
+| arm_mat_trans_f32       |  113| N/A |268 | 
+| arm_mat_trans_q15       |  113| N/A |202|
+| arm_mat_trans_q31       |  114| N/A | 262 |
