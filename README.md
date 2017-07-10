@@ -185,3 +185,31 @@ These Benchmarks are performed on matrices of size 4x4.
 | arm_mat_trans_f32       |  113| N/A |268 | 
 | arm_mat_trans_q15       |  113| N/A |202|
 | arm_mat_trans_q31       |  114| N/A | 262 |
+
+
+**SupportFunction**
+
+These Benchmarks are performed on vectors of size 32.
+
+| Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
+| ------------- |:-------------:| -----:| -----:|
+| arm_copy_f32      | 106|  | | 
+| arm_copy_q7      | 68|  | | 
+| arm_copy_q15      |88 |  | | 
+| arm_copy_q31      | 106|  | | 
+| arm_fill_f32      | 72|  | | 
+| arm_fill_q7      |84 |  | | 
+| arm_fill_q15      |61 |  | | 
+| arm_fill_q31      | 72|  | | 
+| arm_float_to_q7      |7944 |  | | 
+| arm_float_to_q15      | 8008|  | | 
+| arm_float_to_q31      | 50888|  | | 
+| arm_q7_to_float      |8800 |  | | 
+| arm_q7_to_q15      | 138|  | | 
+| arm_q7_to_q31      | 138|  | | 
+| arm_q15_to_float      |8832 |  | | 
+| arm_q15_to_q7      | 138|  | | 
+| arm_q15_to_q31      |136 |  | | 
+| arm_q31_to_float      |8854 |  | | 
+| arm_q31_to_q7      | 138|  | | 
+| arm_q31_to_q15      | 137|  | | 
