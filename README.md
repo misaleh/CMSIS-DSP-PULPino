@@ -193,23 +193,23 @@ These Benchmarks are performed on vectors of size 32.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_copy_f32      | 106|  | | 
-| arm_copy_q7      | 68|  | | 
-| arm_copy_q15      |88 |  | | 
-| arm_copy_q31      | 106|  | | 
-| arm_fill_f32      | 72|  | | 
-| arm_fill_q7      |84 |  | | 
-| arm_fill_q15      |61 |  | | 
-| arm_fill_q31      | 72|  | | 
-| arm_float_to_q7      |7944 |  | | 
-| arm_float_to_q15      | 8008|  | | 
-| arm_float_to_q31      | 50888|  | | 
-| arm_q7_to_float      |8800 |  | | 
-| arm_q7_to_q15      | 138|  | | 
-| arm_q7_to_q31      | 138|  | | 
-| arm_q15_to_float      |8832 |  | | 
-| arm_q15_to_q7      | 138|  | | 
-| arm_q15_to_q31      |136 |  | | 
-| arm_q31_to_float      |8854 |  | | 
-| arm_q31_to_q7      | 138|  | | 
-| arm_q31_to_q15      | 137|  | | 
+| arm_copy_f32      | 106|  |189 | 
+| arm_copy_q7      | 68|  | 94| 
+| arm_copy_q15      |88 |  | 126| 
+| arm_copy_q31      | 106|  | 182| 
+| arm_fill_f32      | 72|  | 135| 
+| arm_fill_q7      |84 |  | 89| 
+| arm_fill_q15      |61 |  | 98| 
+| arm_fill_q31      | 72|  | 118| 
+| arm_float_to_q7      |7944 |  |559 | 
+| arm_float_to_q15      | 8008|  | 534| 
+| arm_float_to_q31      | 50888|  | 1566| 
+| arm_q7_to_float      |8800 |  | 328| 
+| arm_q7_to_q15      | 138|  | 156| 
+| arm_q7_to_q31      | 138|  | 182| 
+| arm_q15_to_float      |8832 |  | 182| 
+| arm_q15_to_q7      | 138|  | 270| 
+| arm_q15_to_q31      |136 |  | 206| 
+| arm_q31_to_float      |8854 |  | 182| 
+| arm_q31_to_q7      | 138|  | 156| 
+| arm_q31_to_q15      | 137|  | 182| 
