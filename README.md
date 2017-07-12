@@ -10,15 +10,18 @@ To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 
 #### Ported Modules
-BasicMathFunctions
+1) BasicMathFunctions
 
-FastMathFunctions
+2) FastMathFunctions
 
-ComplexMathFunctions
+3) ComplexMathFunctions
 
-StatisticsFunctions
+4) StatisticsFunctions
 
-MatrixFunctions
+5) MatrixFunctions
+
+6) SupportFunction
+
 #### Benchmarks
 **BasicMathFunctions**
 
@@ -194,22 +197,22 @@ These Benchmarks are performed on vectors of size 32.
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
 | arm_copy_f32      | 106|  |189 | 
-| arm_copy_q7      | 68|  | 94| 
-| arm_copy_q15      |88 |  | 126| 
+| arm_copy_q7      | 68|  43(36.8%)| 94| 
+| arm_copy_q15      |88 | 67(23.9%) | 126| 
 | arm_copy_q31      | 106|  | 182| 
 | arm_fill_f32      | 72|  | 135| 
-| arm_fill_q7      |84 |  | 89| 
-| arm_fill_q15      |61 |  | 98| 
+| arm_fill_q7      |84 | 42(50%) | 89| 
+| arm_fill_q15      |61 |  52(14.8%)| 98| 
 | arm_fill_q31      | 72|  | 118| 
-| arm_float_to_q7      |7944 |  |559 | 
-| arm_float_to_q15      | 8008|  | 534| 
+| arm_float_to_q7      |7944 | 7802(1.8%) |559 | 
+| arm_float_to_q15      | 8008| 7802(2.6%) | 534| 
 | arm_float_to_q31      | 50888|  | 1566| 
 | arm_q7_to_float      |8800 |  | 328| 
 | arm_q7_to_q15      | 138|  | 156| 
 | arm_q7_to_q31      | 138|  | 182| 
 | arm_q15_to_float      |8832 |  | 182| 
-| arm_q15_to_q7      | 138|  | 270| 
+| arm_q15_to_q7      | 138| 131(5.1%) | 270| 
 | arm_q15_to_q31      |136 |  | 206| 
 | arm_q31_to_float      |8854 |  | 182| 
-| arm_q31_to_q7      | 138|  | 156| 
-| arm_q31_to_q15      | 137|  | 182| 
+| arm_q31_to_q7      | 138|  113(18.1%)| 156| 
+| arm_q31_to_q15      | 137| 118(13.7%) | 182| 
