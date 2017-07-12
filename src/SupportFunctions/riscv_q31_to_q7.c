@@ -74,13 +74,32 @@ void riscv_q31_to_q7(
   q7_t * pDst,
   uint32_t blockSize)
 {
-  q31_t *pIn = pSrc;                             /* Src pointer */
   uint32_t blkCnt;                               /* loop counter */
+  q31_t *pIn = pSrc;
+#if defined (USE_DSP_RISCV)
+ blkCnt = blockSize >> 2u;
+ q7_t out1, out2, out3, out4;
+ charV VectInA;
+  while(blkCnt > 0u)
+  {
+    /* C = (q7_t) A >> 24 */
+    /* convert from q31 to q7 and then store the results in the destination buffer */
+    out1 = (q7_t) (*pIn++ >> 24);
+    out2 = (q7_t) (*pIn++ >> 24);
+    out3 = (q7_t) (*pIn++ >> 24);
+    out4 = (q7_t) (*pIn++ >> 24);
+    /* Decrement the loop counter */
+    VectInA = pack4(out2,out1,out4,out3);
+    *(charV*)pDst  = VectInA;
+    pDst+=4;
+    blkCnt--;
+  }
 
-
+ blkCnt = blockSize % 0x04;
+#else
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
-
+#endif
   while(blkCnt > 0u)
   {
     /* C = (q7_t) A >> 24 */

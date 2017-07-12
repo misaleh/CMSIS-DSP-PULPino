@@ -65,7 +65,31 @@ void riscv_copy_q15(
   uint32_t blockSize)
 {
   uint32_t blkCnt;                               /* loop counter */
+#if defined (USE_DSP_RISCV)
+blkCnt = blockSize >>1;
 
+  while(blkCnt > 0u)
+  {
+    /* C = A */
+    /* Copy and then store the results in the destination buffer */
+   *(shortV*)pDst =  *(shortV*)pSrc;
+   pDst+=2;
+   pSrc+=2;
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+  blkCnt = blockSize % 0x2;
+  while(blkCnt > 0u)
+  {
+    /* C = A */
+    /* Copy and then store the results in the destination buffer */
+   *pDst++ = *pSrc++;
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+#else
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
   while(blkCnt > 0u)
@@ -77,6 +101,7 @@ void riscv_copy_q15(
     /* Decrement the loop counter */
     blkCnt--;
   }
+#endif
 }
 
 /**    

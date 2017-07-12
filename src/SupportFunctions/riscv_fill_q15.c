@@ -66,7 +66,30 @@ void riscv_fill_q15(
   uint32_t blockSize)
 {
   uint32_t blkCnt;                               /* loop counter */
+#if defined (USE_DSP_RISCV)
+  blkCnt = blockSize >>1;
+  shortV VectInA; 
+  VectInA = pack2(value,value);
+  while(blkCnt > 0u)
+  {
+    /* C = A */
+    /* Copy and then store the results in the destination buffer */
+    *(shortV*)pDst = VectInA;
+    pDst+=2;
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+  blkCnt = blockSize % 0x02;
+  while(blkCnt > 0u)
+  {
+    /* C = value */
+    /* Fill the value in the destination buffer */
+    *pDst++ = value;
 
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+#else
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
 
@@ -79,6 +102,7 @@ void riscv_fill_q15(
     /* Decrement the loop counter */
     blkCnt--;
   }
+#endif
 }
 
 /**    

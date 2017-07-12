@@ -99,14 +99,20 @@ void riscv_float_to_q7(
     in = *pIn++;
     in = (in * 128.0f);
     in += in > 0 ? 0.5f : -0.5f;
+#if defined (USE_DSP_RISCV)
+    *pDst++ = (q7_t) clip((q31_t)(in), -128,127);
+#else
     *pDst++ = (q7_t) (__SSAT((q31_t) (in), 8));
-
+#endif
 #else
 
     /* C = A * 128 */
     /* convert from float to q7 and then store the results in the destination buffer */
+#if defined (USE_DSP_RISCV)
+    *pDst++ = (q7_t) clip((q31_t) (*pIn++ * 128.0f), -128,127);
+#else
     *pDst++ = (q7_t) __SSAT((q31_t) (*pIn++ * 128.0f), 8);
-
+#endif
 #endif /*      #ifdef RISCV_MATH_ROUNDING        */
 
     /* Decrement the loop counter */

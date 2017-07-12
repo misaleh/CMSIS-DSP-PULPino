@@ -100,13 +100,20 @@ void riscv_float_to_q15(
     in = *pIn++;
     in = (in * 32768.0f);
     in += in > 0 ? 0.5f : -0.5f;
+#if defined (USE_DSP_RISCV)
+    *pDst++ = (q15_t)clip((q31_t)(in), -32768,32767)
+#else
     *pDst++ = (q15_t) (__SSAT((q31_t) (in), 16));
-
+#endif
 #else
 
     /* C = A * 32768 */
     /* convert from float to q15 and then store the results in the destination buffer */
+#if defined (USE_DSP_RISCV)
+    *pDst++ = (q15_t) clip((q31_t) (*pIn++ * 32768.0f), -32768,32767);
+#else
     *pDst++ = (q15_t) __SSAT((q31_t) (*pIn++ * 32768.0f), 16);
+#endif
 
 #endif /*      #ifdef RISCV_MATH_ROUNDING        */
 

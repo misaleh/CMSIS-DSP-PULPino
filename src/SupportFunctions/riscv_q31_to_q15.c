@@ -76,11 +76,29 @@ void riscv_q31_to_q15(
 {
   q31_t *pIn = pSrc;                             /* Src pointer */
   uint32_t blkCnt;                               /* loop counter */
+#if defined (USE_DSP_RISCV)
+ blkCnt = blockSize >> 1u;
+ q15_t out1, out2;
+ shortV VectInA;
+  while(blkCnt > 0u)
+  {
+    /* C = (q7_t) A >> 24 */
+    /* convert from q31 to q7 and then store the results in the destination buffer */
+    out1 = (q15_t) (*pIn++ >> 16);
+    out2 = (q15_t) (*pIn++ >> 16);
 
+    VectInA = pack2(out1,out2);
+    *(shortV*)pDst  = VectInA;
+    pDst+=2;
+    blkCnt--;
+  }
+
+ blkCnt = blockSize % 0x02;
+#else
 
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
-
+#endif
   while(blkCnt > 0u)
   {
     /* C = (q15_t) A >> 16 */
