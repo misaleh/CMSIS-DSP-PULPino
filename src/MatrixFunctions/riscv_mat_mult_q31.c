@@ -175,7 +175,6 @@ riscv_status riscv_mat_mult_q31(
   return (status);
 }
 
-
 /**    
  * @} end of MatrixMult group    
  */

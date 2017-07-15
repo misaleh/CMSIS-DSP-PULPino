@@ -116,7 +116,6 @@ riscv_status riscv_mat_scale_q31(
 
     /* Set status as RISCV_MATH_SUCCESS */
     status = RISCV_MATH_SUCCESS;
-
   }
 
   /* Return to application */

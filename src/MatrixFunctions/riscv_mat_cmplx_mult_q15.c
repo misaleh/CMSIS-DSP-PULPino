@@ -98,8 +98,6 @@ riscv_status riscv_mat_cmplx_mult_q15(
 
   q15_t in;                                      /* Temporary variable to hold the input value */
   q15_t a, b, c, d;
-
-
 #ifdef RISCV_MATH_MATRIX_CHECK
   /* Check for matrix mismatch condition */
   if ((pSrcA->numCols != pSrcB->numRows) ||
@@ -110,6 +108,177 @@ riscv_status riscv_mat_cmplx_mult_q15(
   }
   else
 #endif
+#if defined (USE_DSP_RISCV)
+{
+    shortV VectInA;
+    shortV VectInB; 
+    /* Matrix transpose */
+    do
+    {
+
+      /* The pointer px is set to starting address of the column being processed */
+      px = pSrcBT + i;
+
+
+      col = numColsB;
+
+      while (col > 0u)
+      {
+        /* Read two elements from the row */
+        in = *pInB++;
+        *px = in;
+        in = *pInB++;
+        px[1] = in;
+
+
+        /* Update the pointer px to point to the next row of the transposed matrix */
+        px += numRowsB * 2;
+
+        /* Decrement the column loop counter */
+        col--;
+      }
+
+      i = i + 2u;
+
+      /* Decrement the row loop counter */
+      row--;
+
+    } while (row > 0u);
+
+    /* Reset the variables for the usage in the following multiplication process */
+    row = numRowsA;
+    i = 0u;
+    px = pDst->pData;
+
+    /* The following loop performs the dot-product of each row in pSrcA with each column in pSrcB */
+    /* row loop */
+    do
+    {
+      /* For every row wise process, the column loop counter is to be initiated */
+      col = numColsB;
+
+      /* For every row wise process, the pIn2 pointer is set
+       ** to the starting address of the transposed pSrcB data */
+      pInB = pSrcBT;
+
+      /* column loop */
+      do
+      {
+        /* Set the variable sum, that acts as accumulator, to zero */
+        sumReal = 0;
+        sumImag = 0;
+
+        /* Apply loop unrolling and compute 2 MACs simultaneously. */
+        colCnt = numColsA >> 1;
+
+        /* Initiate the pointer pIn1 to point to the starting address of the column being processed */
+        pInA = pSrcA->pData + i * 2;
+
+
+        /* matrix multiplication */
+        while (colCnt > 0u)
+        {
+          /* c(m,n) = a(1,1)*b(1,1) + a(1,2) * b(2,1) + .... + a(m,p)*b(p,n) */
+
+
+
+          /* read real and imag values from pSrcA buffer */
+          a = *pInA;
+          b = *(pInA + 1u);
+          /* read real and imag values from pSrcB buffer */
+          c = *pInB;
+          d = *(pInB + 1u);
+          VectInA[0] = a;
+          VectInA[1] = -b;
+          VectInB[0] = c;
+          VectInB[1] = d;
+          /* Multiply and Accumlates */
+          sumReal += dotpv2(VectInA,VectInB);
+          VectInA[1] = b;
+          VectInB[0] = d;
+          VectInB[1] = c;
+          sumImag += dotpv2(VectInA,VectInB);
+         /* sumReal += (q31_t) a *c;
+          sumImag += (q31_t) a *d;
+          sumReal -= (q31_t) b *d;
+          sumImag += (q31_t) b *c;*/
+
+          /* read next real and imag values from pSrcA buffer */
+          a = *(pInA + 2u);
+          b = *(pInA + 3u);
+          /* read next real and imag values from pSrcB buffer */
+          c = *(pInB + 2u);
+          d = *(pInB + 3u);
+
+          /* update pointer */
+          pInA += 4u;
+
+          /* Multiply and Accumlates */
+          VectInA[0] = a;
+          VectInA[1] = -b;
+          VectInB[0] = c;
+          VectInB[1] = d;
+          /* Multiply and Accumlates */
+          sumReal += dotpv2(VectInA,VectInB);
+          VectInA[1] = b;
+          VectInB[0] = d;
+          VectInB[1] = c;
+          sumImag += dotpv2(VectInA,VectInB);
+          /* update pointer */
+          pInB += 4u;
+
+
+          /* Decrement the loop counter */
+          colCnt--;
+        }
+
+        /* process odd column samples */
+        if ((numColsA & 0x1u) > 0u)
+        {
+          /* c(m,n) = a(1,1)*b(1,1) + a(1,2) * b(2,1) + .... + a(m,p)*b(p,n) */
+
+
+
+          /* read real and imag values from pSrcA and pSrcB buffer */
+          a = *pInA++;
+          b = *pInA++;
+          c = *pInB++;
+          d = *pInB++;
+
+          /* Multiply and Accumlates */
+          VectInA[0] = a;
+          VectInA[1] = -b;
+          VectInB[0] = c;
+          VectInB[1] = d;
+          /* Multiply and Accumlates */
+          sumReal += dotpv2(VectInA,VectInB);
+          VectInA[1] = b;
+          VectInB[0] = d;
+          VectInB[1] = c;
+          sumImag += dotpv2(VectInA,VectInB);
+
+        }
+
+        /* Saturate and store the result in the destination buffer */
+        *px++ = (q15_t) (clip(sumReal >> 15, -32768,32767));
+        *px++ = (q15_t) (clip(sumImag >> 15,-32768,32767));
+        /* Decrement the column loop counter */
+        col--;
+
+      } while (col > 0u);
+
+      i = i + numColsA;
+
+      /* Decrement the row loop counter */
+      row--;
+
+    } while (row > 0u);
+
+    /* set status as RISCV_MATH_SUCCESS */
+    status = RISCV_MATH_SUCCESS;
+}
+#else
+
   {
     /* Matrix transpose */
     do
@@ -222,6 +391,8 @@ riscv_status riscv_mat_cmplx_mult_q15(
         {
           /* c(m,n) = a(1,1)*b(1,1) + a(1,2) * b(2,1) + .... + a(m,p)*b(p,n) */
 
+
+
           /* read real and imag values from pSrcA and pSrcB buffer */
           a = *pInA++;
           b = *pInA++;
@@ -237,13 +408,10 @@ riscv_status riscv_mat_cmplx_mult_q15(
         }
 
         /* Saturate and store the result in the destination buffer */
-#if defined (USE_DSP_RISCV)
-        *px++ = (q15_t) (clip(sumReal >> 15, -32768,32767));
-        *px++ = (q15_t) (clip(sumImag >> 15,-32768,32767));
-#else
+
         *px++ = (q15_t) (__SSAT(sumReal >> 15, 16));
         *px++ = (q15_t) (__SSAT(sumImag >> 15, 16));
-#endif
+
         /* Decrement the column loop counter */
         col--;
 
@@ -259,6 +427,7 @@ riscv_status riscv_mat_cmplx_mult_q15(
     /* set status as RISCV_MATH_SUCCESS */
     status = RISCV_MATH_SUCCESS;
   }
+#endif
 
   /* Return to application */
   return (status);

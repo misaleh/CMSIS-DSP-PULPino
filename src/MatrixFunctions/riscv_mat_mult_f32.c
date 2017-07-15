@@ -154,6 +154,7 @@ riscv_status riscv_mat_mult_f32(
 
         /* Update the pointer pIn2 to point to the  starting address of the next column */
         pIn2 = pInB + (numColsB - col);
+
       } while(col > 0u);
 
       /* Update the pointer pInA to point to the  starting address of the next row */

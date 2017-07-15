@@ -204,6 +204,7 @@ riscv_status riscv_mat_mult_fast_q31(
 
         /* Decrement the column loop counter */
         col--;
+
       } while(col > 0u);
 
       /* Update the pointer pInA to point to the  starting address of the next row */

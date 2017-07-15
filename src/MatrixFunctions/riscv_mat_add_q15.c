@@ -106,6 +106,7 @@ riscv_status riscv_mat_add_q15(
       /* Decrement the loop counter */
       blkCnt--;
     }
+
 #else
     /* Initialize blkCnt with number of samples */
     blkCnt = (uint32_t) numSamples;

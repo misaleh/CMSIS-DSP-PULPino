@@ -104,6 +104,7 @@ riscv_status riscv_mat_add_q31(
       *pOut++ = (q31_t) clip_q63_to_q31((q63_t) inA1 + inB1);
       /* Decrement the loop counter */
       blkCnt--;
+
     }
 
     /* set status as RISCV_MATH_SUCCESS */

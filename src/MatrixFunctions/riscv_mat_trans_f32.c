@@ -123,7 +123,6 @@ riscv_status riscv_mat_trans_f32(
 
     /* Set status as RISCV_MATH_SUCCESS */
     status = RISCV_MATH_SUCCESS;
-
   }
 
   /* Return to application */

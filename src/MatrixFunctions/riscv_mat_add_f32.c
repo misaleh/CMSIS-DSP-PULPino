@@ -99,6 +99,7 @@ riscv_status riscv_mat_add_f32(
 
     /* Total number of samples in the input matrix */
     numSamples = (uint32_t) pSrcA->numRows * pSrcA->numCols;
+
     /* Initialize blkCnt with number of samples */
     blkCnt = numSamples;
 

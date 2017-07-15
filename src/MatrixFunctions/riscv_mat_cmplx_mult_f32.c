@@ -107,6 +107,7 @@ riscv_status riscv_mat_cmplx_mult_f32(
   }
   else
 #endif /*      #ifdef RISCV_MATH_MATRIX_CHECK    */
+
   {
     /* The following loop performs the dot-product of each row in pSrcA with each column in pSrcB */
     /* row loop */

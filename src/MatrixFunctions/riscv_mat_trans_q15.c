@@ -111,7 +111,6 @@ riscv_status riscv_mat_trans_q15(
 
     /* set status as RISCV_MATH_SUCCESS */
     status = RISCV_MATH_SUCCESS;
-
   }
   /* Return to application */
   return (status);

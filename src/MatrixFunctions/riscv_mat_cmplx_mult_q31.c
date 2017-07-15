@@ -177,6 +177,7 @@ riscv_status riscv_mat_cmplx_mult_q31(
       /* Update the pointer pInA to point to the  starting address of the next row */
       i = i + numColsB;
       pInA = pInA + 2 * numColsA;
+
       /* Decrement the row loop counter */
       row--;
 

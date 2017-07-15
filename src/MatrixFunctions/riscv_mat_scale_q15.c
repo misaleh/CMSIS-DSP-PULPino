@@ -106,7 +106,6 @@ riscv_status riscv_mat_scale_q15(
 #else
       *pOut++ = (q15_t)(__SSAT(((q31_t) (*pIn++) * scaleFract) >> totShift, 16));
 #endif
-
       /* Decrement the numSamples loop counter */
       blkCnt--;
     }

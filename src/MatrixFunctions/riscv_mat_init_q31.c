@@ -73,8 +73,10 @@ void riscv_mat_init_q31(
 {
   /* Assign Number of Rows */
   S->numRows = nRows;
+
   /* Assign Number of Columns */
   S->numCols = nColumns;
+
   /* Assign Data pointer */
   S->pData = pData;
 }

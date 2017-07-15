@@ -105,7 +105,8 @@ riscv_status riscv_mat_mult_fast_q15(
 
   q15_t in;                                      /* Temporary variable to hold the input value */
   q15_t inA1, inA2, inB1, inB2;
-
+  shortV *VectInA;
+  shortV *VectInB; 
 #ifdef RISCV_MATH_MATRIX_CHECK
   /* Check for matrix mismatch condition */
   if((pSrcA->numCols != pSrcB->numRows) ||
@@ -197,6 +198,7 @@ riscv_status riscv_mat_mult_fast_q15(
     row = numRowsA;
     i = 0u;
     px = pDst->pData;
+
     /* The following loop performs the dot-product of each row in pSrcA with each column in pSrcB */
     /* row loop */
     do
@@ -226,7 +228,7 @@ riscv_status riscv_mat_mult_fast_q15(
           /* c(m,n) = a(1,1)*b(1,1) + a(1,2) * b(2,1) + .... + a(m,p)*b(p,n) */
 
 #if defined (USE_DSP_RISCV)
-          inA1 = *pInA++;
+        /*  inA1 = *pInA++;
           inB1 = *pInB++;
           sum =  mac(inA1,inB1,sum);
           inA2 = *pInA++;
@@ -238,6 +240,18 @@ riscv_status riscv_mat_mult_fast_q15(
           inA2 = *pInA++;
           inB2 = *pInB++;
           sum =  mac(inA2,inB2,sum);
+*/
+          VectInA = (shortV*)pInA;
+          VectInB = (shortV*)pInB;
+
+
+          sum = sumdotpv2(*VectInA,*VectInB,sum);
+          VectInA = (shortV*)(pInA+2);
+          VectInB = (shortV*)(pInB+2);
+
+          pInA+=4;
+          pInB+=4;
+          sum = sumdotpv2(*VectInA,*VectInB,sum);
 #else
           inA1 = *pInA++;
           inB1 = *pInB++;

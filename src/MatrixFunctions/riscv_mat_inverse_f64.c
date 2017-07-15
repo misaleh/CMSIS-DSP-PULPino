@@ -292,6 +292,7 @@ riscv_status riscv_mat_inverse_f64(
       /* Temporary pointers for input and destination matrices */
       pInT1 = pIn;
       pOutT1 = pOut;
+
       for (i = 0u; i < numRows; i++)
       {
         /* Check for the pivot element */

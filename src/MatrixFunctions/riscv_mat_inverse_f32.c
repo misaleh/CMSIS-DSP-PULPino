@@ -307,6 +307,7 @@ riscv_status riscv_mat_inverse_f32(
         {
           /* Element of the reference row */
           in = *pInT1;
+
           /* Working pointers for input and destination pivot rows */
           pPRT_in = pPivotRowIn;
           pPRT_pDst = pPivotRowDst;
