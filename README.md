@@ -164,20 +164,24 @@ Functions that need square root operations, use the functions from FastMath as r
 
 These Benchmarks are performed on matrices of size 4x4.
 
+Functions with Fast version, use results or accumulators of size 32 bits instead of 64 bits. For more information refer to [
+CMSIS DSP Software Library
+]( http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html)
+
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
 | arm_mat_add_f32      | 2843 | N/A|190  | 
 | arm_mat_add_q15      | 214 | 112(47.7%)|124|
 | arm_mat_add_q31       |  318|N/A | 172|
 | arm_mat_cmplx_mult_f32        | 78646 | N/A|1992  | 
-| arm_mat_cmplx_mult_q15       | 2981 | 2764(7.3%) |1606 | 
+| arm_mat_cmplx_mult_q15       | 2981 | 2402(19.4%) |1606 | 
 | arm_mat_cmplx_mult_q31      | 3543 | N/A|3516 | 
 | arm_mat_inverse_f32      | 35145 |N/A |2994 |
 | arm_mat_inverse_f64       | 62500 | N/A |20765 | 
 | arm_mat_mult_f32      | 16701 |  N/A |1067 | 
-| arm_mat_mult_q15      | 1106 | 1020(7.8%) |946|
+| arm_mat_mult_q15      | 1106 | 858(22.4%) |946|
 | arm_mat_mult_q31       | 1278 | N/A |1531 | 
-| arm_mat_mult_fast_q15      | 844 |815(3.4%) |743 | 
+| arm_mat_mult_fast_q15      | 844 |635(24.8%) |743 | 
 | arm_mat_mult_fast_q31      | 1094 |  N/A|643| 
 | arm_mat_scale_f32       | 2138 | N/A |144 | 
 | arm_mat_scale_q15      | 216 |  117(45.8%)|156 | 
