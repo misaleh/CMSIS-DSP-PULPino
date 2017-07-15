@@ -205,8 +205,6 @@
 
 
 
-//#include "core_cm4.h"
-
 #include "stdint.h" // for standerd types
 #include "string.h"
 #include "math.h"
@@ -243,6 +241,13 @@ extern "C"
 #define neg2(a)                       __builtin_pulp_neg2(a)
 #define pack2(a,b)                    __builtin_pulp_pack2(a,b)
 #define pack4(a,b,c,d)                __builtin_pulp_pack4(a,b,c,d)
+#define sra2(a,b)                    __builtin_pulp_sra2(a,b)
+#define sra4(a,b)                    __builtin_pulp_sra4(a,b)
+#define sll4(a,b)                    __builtin_pulp_sll4(a,b)
+#define sll2(a,b)                    __builtin_pulp_sll2(a,b)
+#define max4(a,b)                    __builtin_pulp_max4(a,b)
+#define min4(a,b)                    __builtin_pulp_min4(a,b)
+
 
 typedef signed char charV __attribute__((vector_size (4)));
 typedef signed short shortV __attribute__((vector_size (4)));
