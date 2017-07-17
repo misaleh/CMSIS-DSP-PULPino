@@ -201,13 +201,18 @@ CMSIS DSP Software Library
 
 Operations are performed on vectors of size 32.
 
-There is some  functions with opt and/ or fast versions, for example there is 4 funcions for convolution for q15 data type, which are:
-Riscv_conv_q15
-Riscv_conv_fast_q15
-Riscv_conv_opt_q15
-Riscv_conv_fast_opt_q15
+There is some functions with opt and/or fast keywords , for example there is 4 funcions for convolution for q15 data type, which are:
 
-Most of Fast and opt functions are available only for DSP extension(as in ARM).
+- Riscv_conv_q15
+
+- Riscv_conv_fast_q15
+
+- Riscv_conv_opt_q15
+
+- Riscv_conv_fast_opt_q15
+
+
+**Normal Functions**  withiut opt or fast keywords have slower implementation, use 64-bit accumulation to avoid wrap around.
 
 **Fast functions** uses a 32-bit accumulator (may overflow).
 
@@ -217,7 +222,7 @@ From arm documentation:
 
 
 
-**Normal Functions** have slower implementation, uses 64-bit accumulation to avoid wrap around.
+
 
 **Opt** functions have faster implementation using scratch buffers  for optimization(but uses more memory), but with 64 bit accumulator.
 
@@ -226,7 +231,9 @@ From arm documentation:
 >Opt versions are supported for Q15 and Q7. Design uses internal scratch buffer for getting good optimisation. These versions are optimised in cycles and consumes more memory(Scratch memory) compared to Q15 and Q7 versions 
 
 **Opt fast functions** use scratch buffers and 32 bit accumulator. 
-Similar to convolution functions there is partial convolution functions
+
+
+Most of Fast and opt functions are available only for DSP extension(as in ARM).
 
 For more refer to [
 CMSIS DSP Software Library
