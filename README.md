@@ -80,7 +80,7 @@ Improvements of DSP extension(Imp) = (Old - New_DSP)*100/Old
 | arm_sub_q15      | 425 | 189(55.5%) | 168| 
 | arm_sub_q31      | 619 | N/A | 290| 
 
-####FastMath Functions
+#### FastMath Functions
 
 Fast Math Functions doesn't operate on vectors.
 
@@ -102,7 +102,7 @@ sqrt for float use the built in sqrt function while sqrt for fixed point use  Ne
 | arm_sin_q15      | 29 |  N/A| 30| 
 | arm_sin_q31      | 38 |  N/A| 43| 
 
-####Complex Math Functions
+#### Complex Math Functions
 
 These Benchmarks are performed on vectors of size 32 (16 complex numbers).
 
@@ -129,7 +129,7 @@ Most of the optimizations are in q15 data type, as float is not supported, and a
 | arm_cmplx_mult_real_q31      |  717|  N/A| 302| 
 | arm_cmplx_mult_real_q15      |  302| 203(32.8%) | 211| 
 
-####Statistics Functions
+#### Statistics Functions
 
 These Benchmarks are performed on vectors of size 32.
 
@@ -163,7 +163,7 @@ Functions that need square root operations, use the functions from FastMath as r
 | arm_var_q15      | 641 | 489(23.7%) | 551| 
 | arm_var_q31       | 1142 | N/A | 993| 
 
-####Matrix Functions
+#### Matrix Functions
 
 These Benchmarks are performed on matrices of size 4x4.
 
@@ -197,9 +197,44 @@ CMSIS DSP Software Library
 | arm_mat_trans_q31       |  114| N/A | 262 |
 
 
-####Filtering Functions
+#### Filtering Functions
 
-These Benchmarks are performed on vectors of size 32.
+Operations are performed on vectors of size 32.
+
+There is some  functions with opt and/ or fast versions, for example there is 4 funcions for convolution for q15 data type, which are:
+Riscv_conv_q15
+Riscv_conv_fast_q15
+Riscv_conv_opt_q15
+Riscv_conv_fast_opt_q15
+
+Most of Fast and opt functions are available only for DSP extension(as in ARM).
+
+**Fast functions** uses a 32-bit accumulator (may overflow).
+
+From arm documentation:
+
+>Fast versions are supported for Q31 and Q15. Cycles for Fast versions are less compared to Q31 and Q15 of conv and the design requires the input signals should be scaled down to avoid intermediate overflows.
+
+
+
+**Normal Functions** have slower implementation, uses 64-bit accumulation to avoid wrap around.
+
+**Opt** functions have faster implementation using scratch buffers  for optimization(but uses more memory), but with 64 bit accumulator.
+
+From arm documentation:
+ 
+>Opt versions are supported for Q15 and Q7. Design uses internal scratch buffer for getting good optimisation. These versions are optimised in cycles and consumes more memory(Scratch memory) compared to Q15 and Q7 versions 
+
+**Opt fast functions** use scratch buffers and 32 bit accumulator. 
+Similar to convolution functions there is partial convolution functions
+
+For more refer to [
+CMSIS DSP Software Library
+]( http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html)
+
+Init functions are not considered in benchmarking as they are just copying a few pointers and will only be called once in real applications. 
+
+
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
