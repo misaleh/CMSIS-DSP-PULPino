@@ -9,27 +9,30 @@ The names of files and functions are renamed from arm to riscv, Check  examples 
 To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 
-#### Ported Modules
-1) BasicMathFunctions
+### Ported Modules
+1) Basic Math Functions
 
-2) FastMathFunctions
+2) Fast Math Functions
 
-3) ComplexMathFunctions
+3) Complex Math Functions
 
-4) StatisticsFunctions
+4) Statistics Functions
 
-5) MatrixFunctions
+5) Matrix Functions
 
-6) SupportFunction
+6) Support Function
 
-#### Benchmarks
-**BasicMathFunctions**
+### Benchmarks
+
+ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
+
+ARM M4 uses its DSP intsturctions by default.
+
+#### BasicMath Functions
 
 These Benchmarks are performed on vectors of size 32.
 
 It can be seen that floating point arithmetic operations are very slow, the reason is that pulpino does not have a FPU unlike ARM M4.
-
-ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
 
 Results from pulpino were compared with results from ARM m4 and also were checked by hand.
 
@@ -77,7 +80,7 @@ Improvements of DSP extension(Imp) = (Old - New_DSP)*100/Old
 | arm_sub_q15      | 425 | 189(55.5%) | 168| 
 | arm_sub_q31      | 619 | N/A | 290| 
 
-**FastMathFunctions**
+####FastMath Functions
 
 Fast Math Functions doesn't operate on vectors.
 
@@ -99,7 +102,7 @@ sqrt for float use the built in sqrt function while sqrt for fixed point use  Ne
 | arm_sin_q15      | 29 |  N/A| 30| 
 | arm_sin_q31      | 38 |  N/A| 43| 
 
-**ComplexMathFunctions**
+####Complex Math Functions
 
 These Benchmarks are performed on vectors of size 32 (16 complex numbers).
 
@@ -126,7 +129,7 @@ Most of the optimizations are in q15 data type, as float is not supported, and a
 | arm_cmplx_mult_real_q31      |  717|  N/A| 302| 
 | arm_cmplx_mult_real_q15      |  302| 203(32.8%) | 211| 
 
-**StatisticsFunctions**
+####Statistics Functions
 
 These Benchmarks are performed on vectors of size 32.
 
@@ -160,7 +163,7 @@ Functions that need square root operations, use the functions from FastMath as r
 | arm_var_q15      | 641 | 489(23.7%) | 551| 
 | arm_var_q31       | 1142 | N/A | 993| 
 
-**MatrixFunctions**
+####Matrix Functions
 
 These Benchmarks are performed on matrices of size 4x4.
 
@@ -194,29 +197,36 @@ CMSIS DSP Software Library
 | arm_mat_trans_q31       |  114| N/A | 262 |
 
 
-**SupportFunction**
+####Filtering Functions
 
 These Benchmarks are performed on vectors of size 32.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-| arm_copy_f32      | 106| N/A|189 | 
-| arm_copy_q7      | 68|  43(36.8%)| 94| 
-| arm_copy_q15      |88 | 67(23.9%) | 126| 
-| arm_copy_q31      | 106|  N/A| 182| 
-| arm_fill_f32      | 72|N/A  | 135| 
-| arm_fill_q7      |84 | 42(50%) | 89| 
-| arm_fill_q15      |61 |  52(14.8%)| 98| 
-| arm_fill_q31      | 72|  N/A| 118| 
-| arm_float_to_q7      |7944 | 7802(1.8%) |559 | 
-| arm_float_to_q15      | 8008| 7802(2.6%) | 534| 
-| arm_float_to_q31      | 50888| N/A | 1566| 
-| arm_q7_to_float      |8800 | N/A | 328| 
-| arm_q7_to_q15      | 138| N/A | 156| 
-| arm_q7_to_q31      | 138|  N/A| 182| 
-| arm_q15_to_float      |8832 | N/A | 182| 
-| arm_q15_to_q7      | 138| 131(5.1%) | 270| 
-| arm_q15_to_q31      |136 | N/A | 206| 
-| arm_q31_to_float      |8854 |  N/A| 182| 
-| arm_q31_to_q7      | 138|  113(18.1%)| 156| 
-| arm_q31_to_q15      | 137| 118(13.7%) | 182| 
+|   arm_biquad_cas_df1_32x64_q31    |  3855|  |  | 
+|    arm_biquad_cascade_df1_f32   | 50713 |  |  | 
+|  arm_biquad_cascade_df1_q15    |  1778|  |  | 
+|   arm_biquad_cascade_df1_q31   |  2194|  |  | 
+|    arm_biquad_cascade_df1_fast_q15   | N/A |  |  | 
+|   arm_biquad_cascade_df1_fast_q31    | 1818 |  |  | 
+|     arm_biquad_cascade_df2T_f32  |  51629|  |  | 
+|  arm_biquad_cascade_df2T_f64    | 77806 |  |  | 
+|    arm_biquad_cascade_stereo_df2T_f32   |113130 |  |  | 
+|    arm_conv_f32   |  375567|  |  | 
+|     arm_conv_q7  |  18594|  |  | 
+|  arm_conv_q15     | 25044 |  |  | 
+|   arm_conv_q31   |  27919|  |  | 
+|     arm_conv_opt_q7  | N/A |  |  | 
+|     arm_conv_fast_q15  | N/A |  |  | 
+|    arm_conv_opt_q15    | N/A |  |  | 
+|    arm_conv_fast_opt_q15   | N/A |  |  | 
+|    arm_conv_fast_q31   |  10084|  |  | 
+|   arm_conv_partial_f32    | 374605 |  |  | 
+|    arm_conv_partial_q7   |  18114|  |  | 
+|     arm_conv_partial_q15  |  24554|  |  | 
+|     arm_conv_partial_q31  | 27428 |  |  | 
+|   arm_conv_partial_opt_q7   |  N/A|  |  | 
+|   arm_conv_partial_fast_q15    | N/A |  |  | 
+|    arm_conv_partial_opt_q15   | N/A |  |  | 
+|  arm_conv_partial_fast_opt_q15   |  N/A|  |  | 
+|    arm_conv_partial_fast_q31   | 9896 |  |  | 
