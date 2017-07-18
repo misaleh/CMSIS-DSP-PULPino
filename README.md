@@ -1,13 +1,12 @@
 ## CMSIS DSD for PULPino
 This is a port of ARM CMSIS DSP [library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html) to [PULPino](https://github.com/pulp-platform/pulpino) microcontroller.
-This [project](https://summerofcode.withgoogle.com/projects/?sp-search=Mostafa#5599084384616448) is part of GSoC 2017 
+This [project](https://summerofcode.withgoogle.com/projects/#5599084384616448) is part of GSoC 2017 
 
 This Repo is still under development.
 
 The names of files and functions are renamed from arm to riscv, Check  examples or the tests for more clarification.
 
 To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
-
 
 ### Ported Modules
 1) Basic Math Functions
@@ -203,13 +202,13 @@ Operations are performed on vectors of size 32.
 
 There is some functions with opt and/or fast keywords , for example there is 4 funcions for convolution for q15 data type, which are:
 
-- Riscv_conv_q15
+* Riscv_conv_q15
 
-- Riscv_conv_fast_q15
+* Riscv_conv_fast_q15
 
-- Riscv_conv_opt_q15
+* Riscv_conv_opt_q15
 
-- Riscv_conv_fast_opt_q15
+* Riscv_conv_fast_opt_q15
 
 
 **Normal Functions**  withiut opt or fast keywords have slower implementation, use 64-bit accumulation to avoid wrap around.
@@ -245,30 +244,30 @@ Init functions are not considered in benchmarking as they are just copying a few
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-|   arm_biquad_cas_df1_32x64_q31    |  3855|  |  | 
-|    arm_biquad_cascade_df1_f32   | 50713 |  |  | 
-|  arm_biquad_cascade_df1_q15    |  1778|  |  | 
-|   arm_biquad_cascade_df1_q31   |  2194|  |  | 
-|    arm_biquad_cascade_df1_fast_q15   | N/A |  |  | 
-|   arm_biquad_cascade_df1_fast_q31    | 1818 |  |  | 
-|     arm_biquad_cascade_df2T_f32  |  51629|  |  | 
-|  arm_biquad_cascade_df2T_f64    | 77806 |  |  | 
-|    arm_biquad_cascade_stereo_df2T_f32   |113130 |  |  | 
-|    arm_conv_f32   |  375567|  |  | 
-|     arm_conv_q7  |  18594|  |  | 
-|  arm_conv_q15     | 25044 |  |  | 
-|   arm_conv_q31   |  27919|  |  | 
-|     arm_conv_opt_q7  | N/A |  |  | 
-|     arm_conv_fast_q15  | N/A |  |  | 
-|    arm_conv_opt_q15    | N/A |  |  | 
-|    arm_conv_fast_opt_q15   | N/A |  |  | 
-|    arm_conv_fast_q31   |  10084|  |  | 
-|   arm_conv_partial_f32    | 374605 |  |  | 
-|    arm_conv_partial_q7   |  18114|  |  | 
-|     arm_conv_partial_q15  |  24554|  |  | 
-|     arm_conv_partial_q31  | 27428 |  |  | 
-|   arm_conv_partial_opt_q7   |  N/A|  |  | 
-|   arm_conv_partial_fast_q15    | N/A |  |  | 
-|    arm_conv_partial_opt_q15   | N/A |  |  | 
-|  arm_conv_partial_fast_opt_q15   |  N/A|  |  | 
-|    arm_conv_partial_fast_q31   | 9896 |  |  | 
+|   arm_biquad_cas_df1_32x64_q31    |  3855|  |4200  | 
+|    arm_biquad_cascade_df1_f32   | 50713 |  |  661| 
+|  arm_biquad_cascade_df1_q15    |  1778|  |  574| 
+|   arm_biquad_cascade_df1_q31   |  2194|  | 1493 | 
+|    arm_biquad_cascade_df1_fast_q15   | N/A |  |  472| 
+|   arm_biquad_cascade_df1_fast_q31    | 1818 |  |  506| 
+|     arm_biquad_cascade_df2T_f32  |  51629|  |  537| 
+|  arm_biquad_cascade_df2T_f64    | 77806 |  | 36912 | 
+|    arm_biquad_cascade_stereo_df2T_f32   |113130 |  | 1007 | 
+|    arm_conv_f32   |  375567|  | 10844 | 
+|     arm_conv_q7  |  18594|  |9555  | 
+|  arm_conv_q15     | 25044 |  |7749  | 
+|   arm_conv_q31   |  27919|  | 15322 | 
+|     arm_conv_opt_q7  | N/A |  | 4803 | 
+|     arm_conv_fast_q15  | N/A |  |7087  | 
+|    arm_conv_opt_q15    | N/A |  |5942  | 
+|    arm_conv_fast_opt_q15   | N/A |  | 4648 | 
+|    arm_conv_fast_q31   |  10084|  |  9049| 
+|   arm_conv_partial_f32    | 374605 |  |  11038| 
+|    arm_conv_partial_q7   |  18114|  | 9594 | 
+|     arm_conv_partial_q15  |  24554|  |7999  | 
+|     arm_conv_partial_q31  | 27428 |  | 15301 | 
+|   arm_conv_partial_opt_q7   |  N/A|  |  4410| 
+|   arm_conv_partial_fast_q15    | N/A |  |  7263| 
+|    arm_conv_partial_opt_q15   | N/A |  |  5591| 
+|  arm_conv_partial_fast_opt_q15   |  N/A|  |  4295| 
+|    arm_conv_partial_fast_q31   | 9896 |  | 9000 | 
