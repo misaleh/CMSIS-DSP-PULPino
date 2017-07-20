@@ -113,7 +113,7 @@ riscv_status riscv_conv_partial_q31(
     status = RISCV_MATH_SUCCESS;
   }
 
-
+  return (status);
 
 }
 

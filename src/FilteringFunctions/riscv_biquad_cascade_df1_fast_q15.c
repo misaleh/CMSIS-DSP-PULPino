@@ -5,12 +5,12 @@
 * $Revision: 	V.1.4.5
 *    
 * Project: 	    CMSIS DSP Library    
-* Title:	    arm_biquad_cascade_df1_q15.c    
+* Title:	    arm_biquad_cascade_df1_fast_q15.c    
 *    
-* Description:	Processing function for the    
-*				Q15 Biquad cascade DirectFormI(DF1) filter.    
+* Description:	Fast processing function for the    
+*				Q15 Biquad cascade filter.    
 *    
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
+* Target Processor: Cortex-M4/Cortex-M3
 *  
 * Redistribution and use in source and binary forms, with or without 
 * modification, are permitted provided that the following conditions
@@ -36,9 +36,9 @@
 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.   
+* POSSIBILITY OF SUCH DAMAGE. 
 
- Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino) 
+ Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)
 * -------------------------------------------------------------------- */
 
 #include "riscv_math.h"
@@ -53,28 +53,28 @@
  */
 
 /**    
- * @brief Processing function for the Q15 Biquad cascade filter.    
+ * @details    
  * @param[in]  *S points to an instance of the Q15 Biquad cascade structure.    
  * @param[in]  *pSrc points to the block of input data.    
- * @param[out] *pDst points to the location where the output result is written.    
+ * @param[out] *pDst points to the block of output data.    
  * @param[in]  blockSize number of samples to process per call.    
  * @return none.    
  *    
- *    
  * <b>Scaling and Overflow Behavior:</b>    
  * \par    
- * The function is implemented using a 64-bit internal accumulator.    
- * Both coefficients and state variables are represented in 1.15 format and multiplications yield a 2.30 result.    
- * The 2.30 intermediate results are accumulated in a 64-bit accumulator in 34.30 format.    
- * There is no risk of internal overflow with this approach and the full precision of intermediate multiplications is preserved.    
- * The accumulator is then shifted by <code>postShift</code> bits to truncate the result to 1.15 format by discarding the low 16 bits.    
- * Finally, the result is saturated to 1.15 format.    
+ * This fast version uses a 32-bit accumulator with 2.30 format.    
+ * The accumulator maintains full precision of the intermediate multiplication results but provides only a single guard bit.    
+ * Thus, if the accumulator result overflows it wraps around and distorts the result.    
+ * In order to avoid overflows completely the input signal must be scaled down by two bits and lie in the range [-0.25 +0.25).    
+ * The 2.30 accumulator is then shifted by <code>postShift</code> bits and the result truncated to 1.15 format by discarding the low 16 bits.    
  *    
  * \par    
- * Refer to the function <code>riscv_biquad_cascade_df1_fast_q15()</code> for a faster but less precise implementation of this filter for Cortex-M3 and Cortex-M4.    
+ * Refer to the function <code>riscv_biquad_cascade_df1_q15()</code> for a slower implementation of this function which uses 64-bit accumulation to avoid wrap around distortion.  Both the slow and the fast versions use the same instance structure.    
+ * Use the function <code>riscv_biquad_cascade_df1_init_q15()</code> to initialize the filter structure.    
+ *    
  */
 
-void riscv_biquad_cascade_df1_q15(
+void riscv_biquad_cascade_df1_fast_q15(
   const riscv_biquad_casd_df1_inst_q15 * S,
   q15_t * pSrc,
   q15_t * pDst,
@@ -82,25 +82,25 @@ void riscv_biquad_cascade_df1_q15(
 {
   q15_t *pIn = pSrc;                             /*  Source pointer                               */
   q15_t *pOut = pDst;                            /*  Destination pointer                          */
-  q15_t b0, b1, b2, a1, a2;                      /*  Filter coefficients           */
-  q15_t Xn1, Xn2, Yn1, Yn2;                      /*  Filter state variables        */
-  q15_t Xn;                                      /*  temporary input               */
-  q63_t acc;                                     /*  Accumulator                                  */
-  int32_t shift = (15 - (int32_t)S->postShift); /*  Post shift                                   */
+  q31_t in;                                      /*  Temporary variable to hold input value       */
+  q31_t out;                                     /*  Temporary variable to hold output value      */
+  q31_t b0;                                      /*  Temporary variable to hold bo value          */
+  q31_t b1, a1;                                  /*  Filter coefficients                          */
+  q31_t state_in, state_out;                     /*  Filter state variables                       */
+  q31_t acc = 0;                                     /*  Accumulator                                  */
+  int32_t shift = (int32_t) (15 - S->postShift); /*  Post shift                                   */
   q15_t *pState = S->pState;                     /*  State pointer                                */
   q15_t *pCoeffs = S->pCoeffs;                   /*  Coefficient pointer                          */
-  uint32_t sample, stage = (uint32_t)S->numStages;     /*  Stage loop counter                           */
-#if defined (USE_DSP_RISCV)
-
+  uint32_t sample, stage = S->numStages;         /*  Stage loop counter                           */
   shortV *VectInA;
   shortV *VectInB;
   shortV *VectInC;
   shortV *VectInD;
-  shortV *VectInb0;
+  q15_t Xn;   
+
   do
   {
     /* Reading the coefficients */
-
     b0 = *pCoeffs++;
     pCoeffs++;  // skip the 0 coefficient
     VectInA = (shortV*)pCoeffs; /*b1 b2*/
@@ -125,9 +125,9 @@ void riscv_biquad_cascade_df1_q15(
       /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
       /* acc =  b0 * x[n] */
       acc = (q31_t) b0 *Xn;
-      acc += dotpv2(*VectInA,*VectInC);
-      acc += dotpv2(*VectInB,*VectInD);
-      acc =clip((acc >> shift), -32768,32767);
+      acc = sumdotpv2(*VectInA,*VectInC,acc);
+      acc = sumdotpv2(*VectInB,*VectInD,acc);
+      acc = clip((acc >> shift), -32768,32767 );
 
       /* Every time after the output is computed state should be updated. */
       /* The states should be updated as:  */
@@ -137,6 +137,7 @@ void riscv_biquad_cascade_df1_q15(
       /* Yn1 = acc    */
       (*VectInC) = pack2(Xn,(*VectInC)[0]);
       (*VectInD) = pack2(acc,(*VectInD)[0]);
+
       /* Store the output in the destination buffer. */
       *pOut++ = (q15_t) acc;
 
@@ -158,83 +159,9 @@ void riscv_biquad_cascade_df1_q15(
     pState+=2;
 
   } while(--stage);
-#else
-  do
-  {
-    /* Reading the coefficients */
-    b0 = *pCoeffs++;
-    pCoeffs++;  // skip the 0 coefficient
-    b1 = *pCoeffs++;
-    b2 = *pCoeffs++;
-    a1 = *pCoeffs++;
-    a2 = *pCoeffs++;
 
-    /* Reading the state values */
-    Xn1 = pState[0];
-    Xn2 = pState[1];
-    Yn1 = pState[2];
-    Yn2 = pState[3];
 
-    /*      The variables acc holds the output value that is computed:         
-     *    acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2]         
-     */
 
-    sample = blockSize;
-
-    while(sample > 0u)
-    {
-      /* Read the input */
-      Xn = *pIn++;
-
-      /* acc =  b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] + a1 * y[n-1] + a2 * y[n-2] */
-      /* acc =  b0 * x[n] */
-      acc = (q31_t) b0 *Xn;
-
-      /* acc +=  b1 * x[n-1] */
-      acc += (q31_t) b1 *Xn1;
-      /* acc +=  b[2] * x[n-2] */
-      acc += (q31_t) b2 *Xn2;
-      /* acc +=  a1 * y[n-1] */
-      acc += (q31_t) a1 *Yn1;
-      /* acc +=  a2 * y[n-2] */
-      acc += (q31_t) a2 *Yn2;
-
-      /* The result is converted to 1.31  */
-      acc = __SSAT((acc >> shift), 16);
-
-      /* Every time after the output is computed state should be updated. */
-      /* The states should be updated as:  */
-      /* Xn2 = Xn1    */
-      /* Xn1 = Xn     */
-      /* Yn2 = Yn1    */
-      /* Yn1 = acc    */
-      Xn2 = Xn1;
-      Xn1 = Xn;
-      Yn2 = Yn1;
-      Yn1 = (q15_t) acc;
-
-      /* Store the output in the destination buffer. */
-      *pOut++ = (q15_t) acc;
-
-      /* decrement the loop counter */
-      sample--;
-    }
-
-    /*  The first stage goes from the input buffer to the output buffer. */
-    /*  Subsequent stages occur in-place in the output buffer */
-    pIn = pDst;
-
-    /* Reset to destination pointer */
-    pOut = pDst;
-
-    /*  Store the updated state variables back into the pState array */
-    *pState++ = Xn1;
-    *pState++ = Xn2;
-    *pState++ = Yn1;
-    *pState++ = Yn2;
-
-  } while(--stage);
-#endif
 }
 
 

@@ -5,12 +5,12 @@
 * $Revision: 	V.1.4.5
 *   
 * Project: 	    CMSIS DSP Library   
-* Title:		arm_conv_partial_q15.c   
+* Title:		arm_conv_partial_fast_q15.c   
 *   
-* Description:	Partial convolution of Q15 sequences.  
+* Description:	Fast Q15 Partial convolution.   
 *   
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
-* 
+* Target Processor: Cortex-M4/Cortex-M3
+*  
 * Redistribution and use in source and binary forms, with or without 
 * modification, are permitted provided that the following conditions
 * are met:
@@ -35,9 +35,9 @@
 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
+* POSSIBILITY OF SUCH DAMAGE.  
 
- Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)   
+ Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino) 
 * -------------------------------------------------------------------- */
 
 #include "riscv_math.h"
@@ -52,7 +52,7 @@
  */
 
 /**   
- * @brief Partial convolution of Q15 sequences.   
+ * @brief Partial convolution of Q15 sequences (fast version) for Cortex-M3 and Cortex-M4.   
  * @param[in]       *pSrcA points to the first input sequence.   
  * @param[in]       srcALen length of the first input sequence.   
  * @param[in]       *pSrcB points to the second input sequence.   
@@ -60,17 +60,13 @@
  * @param[out]      *pDst points to the location where the output result is written.   
  * @param[in]       firstIndex is the first output sample to start with.   
  * @param[in]       numPoints is the number of output points to be computed.   
- * @return  Returns either RISCV_MATH_SUCCESS if the function completed correctly or RISCV_MATH_ARGUMENT_ERROR if the requested subset is not in the range [0 srcALen+srcBLen-2].   
+ * @return Returns either RISCV_MATH_SUCCESS if the function completed correctly or RISCV_MATH_ARGUMENT_ERROR if the requested subset is not in the range [0 srcALen+srcBLen-2].   
  *   
- * Refer to <code>riscv_conv_partial_fast_q15()</code> for a faster but less precise version of this function for Cortex-M3 and Cortex-M4.  
- * 
- * \par    
- * Refer the function <code>riscv_conv_partial_opt_q15()</code> for a faster implementation of this function using scratch buffers.
- * 
+ * See <code>riscv_conv_partial_q15()</code> for a slower implementation of this function which uses a 64-bit accumulator to avoid wrap around distortion.   
  */
 
 
-riscv_status riscv_conv_partial_q15(
+riscv_status riscv_conv_partial_fast_q15(
   q15_t * pSrcA,
   uint32_t srcALen,
   q15_t * pSrcB,
@@ -80,11 +76,10 @@ riscv_status riscv_conv_partial_q15(
   uint32_t numPoints)
 {
 
-#if defined (USE_DSP_RISCV)
   q15_t *pIn1;                                   /* inputA pointer               */
   q15_t *pIn2;                                   /* inputB pointer               */
   q15_t *pOut = pDst;                            /* output pointer               */
-  q63_t sum, acc0, acc1, acc2, acc3;             /* Accumulator                  */
+  q31_t sum, acc0, acc1, acc2, acc3;             /* Accumulator                  */
   q15_t *px;                                     /* Intermediate inputA pointer  */
   q15_t *py;                                     /* Intermediate inputB pointer  */
   q15_t *pSrc1, *pSrc2;                          /* Intermediate pointers        */
@@ -208,7 +203,7 @@ riscv_status riscv_conv_partial_q15(
       }
 
       /* Store the result in the accumulator in the destination buffer. */
-      *pOut++ = (q15_t) __SSAT((sum >> 15u), 16u);
+      *pOut++ = (q15_t) (sum >> 15);
 
       /* Update the inputA and inputB pointers for next MAC calculation */
       py = ++pSrc2;
@@ -265,7 +260,7 @@ riscv_status riscv_conv_partial_q15(
       }
 
       /* Store the result in the accumulator in the destination buffer. */
-      *pOut++ = (q15_t) __SSAT((sum >> 15u), 16u);
+      *pOut++ = (q15_t) (sum >> 15);
 
       /* Update the inputA and inputB pointers for next MAC calculation */
       py = ++pSrc2 - 1u;
@@ -354,10 +349,10 @@ riscv_status riscv_conv_partial_q15(
         VectInC[1] = b; /*y[srcBLen - 2] */
 
         /* acc0 +=  x[0] * y[srcBLen - 1] + x[1] * y[srcBLen - 2] */
-        acc0 += dotpv2(VectInA, VectInC);
+        acc0 = sumdotpv2(VectInA, VectInC, acc0);
 
         /* acc1 +=  x[1] * y[srcBLen - 1] + x[2] * y[srcBLen - 2] */
-        acc1  += dotpv2(VectInB, VectInC);
+        acc1 = sumdotpv2(VectInB, VectInC, acc1);
 
         a = *px;
         b = *(px + 1);
@@ -368,10 +363,10 @@ riscv_status riscv_conv_partial_q15(
         VectInE[0] = b; /*x3*/
         VectInE[1] = a; /*x4*/
         /* acc2 +=  x[2] * y[srcBLen - 1] + x[3] * y[srcBLen - 2] */
-        acc2  += dotpv2(VectInD, VectInC);
+        acc2 = sumdotpv2(VectInD, VectInC, acc2);
 
         /* acc3 +=  x[3] * y[srcBLen - 1] + x[4] * y[srcBLen - 2] */
-        acc3  += dotpv2(VectInE, VectInC);
+        acc3 = sumdotpv2(VectInE, VectInC, acc3);
 
         /* Read y[srcBLen - 3] and y[srcBLen - 4] */
         a = *py;
@@ -381,10 +376,10 @@ riscv_status riscv_conv_partial_q15(
         VectInC[1] = b; /*y[srcBLen - 4] */
 
         /* acc0 +=  x[2] * y[srcBLen - 3] + x[3] * y[srcBLen - 4] */
-        acc0  += dotpv2(VectInD, VectInC);
+        acc0 = sumdotpv2(VectInD, VectInC, acc0);
 
         /* acc1 +=  x[3] * y[srcBLen - 3] + x[4] * y[srcBLen - 4] */
-        acc1  += dotpv2(VectInE, VectInC);
+        acc1 = sumdotpv2(VectInE, VectInC, acc1);
 
         /* Read x[4], x[5], x[6] */
         a = *(px + 2);
@@ -396,13 +391,13 @@ riscv_status riscv_conv_partial_q15(
         VectInB[0] = b; /*x5*/
         VectInB[1] = a; /*x6*/
 
-		px += 4u;
+        px += 4u;
 
         /* acc2 +=  x[4] * y[srcBLen - 3] + x[5] * y[srcBLen - 4] */
-        acc2  += dotpv2(VectInA, VectInC);
+        acc2 = sumdotpv2(VectInA, VectInC, acc2);
 
         /* acc3 +=  x[5] * y[srcBLen - 3] + x[6] * y[srcBLen - 4] */
-        acc3  += dotpv2(VectInB, VectInC);
+        acc3 = sumdotpv2(VectInB, VectInC, acc3);
 
       } while(--k);
 
@@ -427,10 +422,10 @@ riscv_status riscv_conv_partial_q15(
         VectInD[0] = a; /*x6*/
         VectInD[1] = b; /*7*/
 
-        acc0  += dotpv2(VectInA, VectInC);
-        acc1  += dotpv2(VectInB, VectInC);
-        acc2  += dotpv2(VectInB, VectInC);
-        acc3  += dotpv2(VectInD, VectInC);
+        acc0 = sumdotpv2(VectInA, VectInC, acc0);
+        acc1 = sumdotpv2(VectInB, VectInC, acc1);
+        acc2 = sumdotpv2(VectInB, VectInC, acc2);
+        acc3 = sumdotpv2(VectInD, VectInC, acc3);
       }
 
       if(k == 2u)
@@ -442,20 +437,20 @@ riscv_status riscv_conv_partial_q15(
         VectInC[1] = b;
 
         /* Read x[7], x[8], x[9] */
-	  a = *px;
-	  b = *(px + 1);
+        a = *px;
+        b = *(px + 1);
         VectInE[0] = a; /*x7*/
         VectInE[1] = b; /*x8*/
         a = *(px + 2);
         VectInD[0] = b; /*x8*/
         VectInD[1] = a; /*x9*/
-		px += 2u;
+        px += 2u;
 
         /* Perform the multiply-accumulates */
-        acc0  += dotpv2(VectInA, VectInC);
-        acc1  += dotpv2(VectInB, VectInC);
-        acc2  += dotpv2(VectInE, VectInC);
-        acc3  += dotpv2(VectInD, VectInC);
+        acc0 = sumdotpv2(VectInA, VectInC, acc0);
+        acc1 = sumdotpv2(VectInB, VectInC, acc1);
+        acc2 = sumdotpv2(VectInE, VectInC, acc2);
+        acc3 = sumdotpv2(VectInD, VectInC, acc3);
       }
 
       if(k == 3u)
@@ -477,12 +472,12 @@ riscv_status riscv_conv_partial_q15(
         VectInD[1] = a; /*x9*/
 
         /* Perform the multiply-accumulates */
-        acc0  += dotpv2(VectInA, VectInC);
-        acc1 += dotpv2(VectInB, VectInC);
-        acc2  += dotpv2(VectInE, VectInC);
-        acc3  += dotpv2(VectInD, VectInC);
-        VectInC[0] = VectInC[1]; 
-        VectInC[1] = 0;
+        acc0 = sumdotpv2(VectInA, VectInC, acc0);
+        acc1 = sumdotpv2(VectInB, VectInC, acc1);
+        acc2 = sumdotpv2(VectInE, VectInC, acc2);
+        acc3 = sumdotpv2(VectInD, VectInC, acc3);
+                VectInC[0] = VectInC[1]; 
+                VectInC[1] = 0;
 
         /* Read x[10] */
         a = *(px+2);
@@ -494,18 +489,21 @@ riscv_status riscv_conv_partial_q15(
         px += 3u;
 
         /* Perform the multiply-accumulates */
-        acc0  += dotpv2(VectInB, VectInC);
-        acc1  += dotpv2(VectInD, VectInC);
-        acc2  += dotpv2(VectInD, VectInC);
-        acc3  += dotpv2(VectInE, VectInC);
+        acc0 = sumdotpv2(VectInB, VectInC, acc0);
+        acc1 = sumdotpv2(VectInD, VectInC, acc1);
+        acc2 = sumdotpv2(VectInD, VectInC, acc2);
+        acc3 = sumdotpv2(VectInE, VectInC, acc3);
       }
 
       /* Store the results in the accumulators in the destination buffer. */
-	*pOut++ = (q15_t) __SSAT((acc0 >> 15u), 16u);
-	*pOut++ = (q15_t) __SSAT((acc1 >> 15u), 16u);
-	*pOut++ = (q15_t) __SSAT((acc2 >> 15u), 16u);
-	*pOut++ = (q15_t) __SSAT((acc3 >> 15u), 16u);
-
+	/**pOut++ = (q15_t)(acc0 >> 15);
+	*pOut++ = (q15_t)(acc1 >> 15);
+	*pOut++ = (q15_t)(acc2 >> 15);
+	*pOut++ = (q15_t)(acc3 >> 15);*/
+        *(shortV*)pOut = pack2(clip((acc0 >> 15),-32768,32767 ),clip((acc1 >> 15), -32768,32767 ));
+        pOut+=2;
+        *(shortV*)pOut = pack2(clip((acc2 >> 15), -32768,32767 ),clip((acc3 >> 15), -32768,32767 ));
+        pOut+=2;
         /* Increment the pointer pIn1 index, count by 4 */
         count += 4u;
 
@@ -534,11 +532,10 @@ riscv_status riscv_conv_partial_q15(
         while(k > 0u)
         {
           /* Perform the multiply-accumulates */
-          sum += ((q31_t) * px++ * *py--);
-          sum += ((q31_t) * px++ * *py--);
-          sum += ((q31_t) * px++ * *py--);
-          sum += ((q31_t) * px++ * *py--);
-
+          sum = mac(* px++  ,  *py--, sum);
+          sum = mac(* px++  ,  *py--, sum);
+          sum = mac(* px++  ,  *py--, sum);
+          sum = mac(* px++  ,  *py--, sum);
           /* Decrement the loop counter */
           k--;
         }
@@ -550,14 +547,13 @@ riscv_status riscv_conv_partial_q15(
         while(k > 0u)
         {
           /* Perform the multiply-accumulates */
-          sum += ((q31_t) * px++ * *py--);
-
+          sum = mac(* px++  ,  *py--, sum);
           /* Decrement the loop counter */
           k--;
         }
 
         /* Store the result in the accumulator in the destination buffer. */
-        *pOut++ = (q15_t) __SSAT((sum >> 15u),16u);
+        *pOut++ = (q15_t) (sum >> 15);
 
         /* Increment the pointer pIn1 index, count by 1 */
         count++;
@@ -587,14 +583,13 @@ riscv_status riscv_conv_partial_q15(
         while(k > 0u)
         {
           /* Perform the multiply-accumulate */
-          sum += ((q31_t) * px++ * *py--);
-
+          sum = mac(* px++  ,  *py--, sum);
           /* Decrement the loop counter */
           k--;
         }
 
         /* Store the result in the accumulator in the destination buffer. */
-        *pOut++ = (q15_t) __SSAT((sum >> 15u), 16u);
+        *pOut++ = (q15_t) (sum >> 15);
 
         /* Increment the MAC count */
         count++;
@@ -659,10 +654,10 @@ riscv_status riscv_conv_partial_q15(
     while(k > 0u)
     {	
       /* Perform the multiply-accumulates */
-        sum += ((q31_t) * px++ * *py--);
-        sum += ((q31_t) * px++ * *py--);
-        sum += ((q31_t) * px++ * *py--);
-        sum += ((q31_t) * px++ * *py--);
+        sum = mac(* px++  ,  *py--, sum);
+        sum = mac(* px++  ,  *py--, sum);
+        sum = mac(* px++  ,  *py--, sum);
+        sum = mac(* px++  ,  *py--, sum);
       /* Decrement the loop counter */
       k--;
     }
@@ -675,14 +670,13 @@ riscv_status riscv_conv_partial_q15(
       while(k > 0u)
       {
       /* Perform the multiply-accumulates */
-        sum += ((q31_t) * px++ * *py--);
-
+        sum = mac(* px++  ,  *py--, sum);
         /* Decrement the loop counter */
         k--;
       }
 
       /* Store the result in the accumulator in the destination buffer. */
-      *pOut++ = (q15_t) __SSAT((sum >> 15u), 16u);
+      *pOut++ = (q15_t) (sum >> 15);
 
       /* Update the inputA and inputB pointers for next MAC calculation */
       px = ++pSrc1;
@@ -714,14 +708,13 @@ riscv_status riscv_conv_partial_q15(
       {
         /* Perform the multiply-accumulates */
         /* sum +=  x[srcALen-1] * y[srcBLen-1] */
-        sum += ((q31_t) * px++ * *py--);
-
+        sum = mac(* px++  ,  *py--, sum);
         /* Decrement the loop counter */
         k--;
       }
 
       /* Store the result in the accumulator in the destination buffer. */
-     *pOut++ = (q15_t) __SSAT((sum >> 15u), 16u);
+      *pOut++ = (q15_t) (sum >> 15);
 
       /* Update the inputA and inputB pointers for next MAC calculation */
       px = ++pSrc1;
@@ -740,50 +733,6 @@ riscv_status riscv_conv_partial_q15(
 
   /* Return to application */
   return (status);
-#else
-
-  /* Run the below code for Cortex-M0 */
-
-  q15_t *pIn1 = pSrcA;                           /* inputA pointer */
-  q15_t *pIn2 = pSrcB;                           /* inputB pointer */
-  q63_t sum;                                     /* Accumulator */
-  uint32_t i, j;                                 /* loop counters */
-  riscv_status status;                             /* status of Partial convolution */
-
-  /* Check for range of output samples to be calculated */
-  if((firstIndex + numPoints) > ((srcALen + (srcBLen - 1u))))
-  {
-    /* Set status as RISCV_ARGUMENT_ERROR */
-    status = RISCV_MATH_ARGUMENT_ERROR;
-  }
-  else
-  {
-    /* Loop to calculate convolution for output length number of values */
-    for (i = firstIndex; i <= (firstIndex + numPoints - 1); i++)
-    {
-      /* Initialize sum with zero to carry on MAC operations */
-      sum = 0;
-
-      /* Loop to perform MAC operations according to convolution equation */
-      for (j = 0; j <= i; j++)
-      {
-        /* Check the array limitations */
-        if(((i - j) < srcBLen) && (j < srcALen))
-        {
-          /* z[i] += x[i-j] * y[j] */
-          sum += ((q31_t) pIn1[j] * (pIn2[i - j]));
-        }
-      }
-
-      /* Store the output in the destination buffer */
-      pDst[i] = (q15_t) __SSAT((sum >> 15u), 16u);
-    }
-    /* set status as RISCV_SUCCESS as there are no argument errors */
-    status = RISCV_MATH_SUCCESS;
-  }
-  return (status);
-
-#endif 
 
 }
 
