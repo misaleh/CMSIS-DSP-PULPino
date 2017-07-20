@@ -244,30 +244,30 @@ Init functions are not considered in benchmarking as they are just copying a few
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-|   arm_biquad_cas_df1_32x64_q31    |  3855|  |4200  | 
-|    arm_biquad_cascade_df1_f32   | 50713 |  |  661| 
-|  arm_biquad_cascade_df1_q15    |  1778|  |  574| 
-|   arm_biquad_cascade_df1_q31   |  2194|  | 1493 | 
-|    arm_biquad_cascade_df1_fast_q15   | N/A |  |  472| 
-|   arm_biquad_cascade_df1_fast_q31    | 1818 |  |  506| 
-|     arm_biquad_cascade_df2T_f32  |  51629|  |  537| 
-|  arm_biquad_cascade_df2T_f64    | 77806 |  | 36912 | 
-|    arm_biquad_cascade_stereo_df2T_f32   |113130 |  | 1007 | 
-|    arm_conv_f32   |  375567|  | 10844 | 
-|     arm_conv_q7  |  18594|  |9555  | 
-|  arm_conv_q15     | 25044 |  |7749  | 
-|   arm_conv_q31   |  27919|  | 15322 | 
-|     arm_conv_opt_q7  | N/A |  | 4803 | 
-|     arm_conv_fast_q15  | N/A |  |7087  | 
-|    arm_conv_opt_q15    | N/A |  |5942  | 
-|    arm_conv_fast_opt_q15   | N/A |  | 4648 | 
-|    arm_conv_fast_q31   |  10084|  |  9049| 
-|   arm_conv_partial_f32    | 374605 |  |  11038| 
-|    arm_conv_partial_q7   |  18114|  | 9594 | 
-|     arm_conv_partial_q15  |  24554|  |7999  | 
-|     arm_conv_partial_q31  | 27428 |  | 15301 | 
-|   arm_conv_partial_opt_q7   |  N/A|  |  4410| 
-|   arm_conv_partial_fast_q15    | N/A |  |  7263| 
-|    arm_conv_partial_opt_q15   | N/A |  |  5591| 
-|  arm_conv_partial_fast_opt_q15   |  N/A|  |  4295| 
-|    arm_conv_partial_fast_q31   | 9896 |  | 9000 | 
+|   arm_biquad_cas_df1_32x64_q31    |  3855| N/A |4200  | 
+|    arm_biquad_cascade_df1_f32   | 50713 |N/A  |  661| 
+|  arm_biquad_cascade_df1_q15    |  1778| 1164(35.5%) |  574| 
+|   arm_biquad_cascade_df1_q31   |  2194| N/A | 1493 | 
+|    arm_biquad_cascade_df1_fast_q15   | N/A | 613 |  472| 
+|   arm_biquad_cascade_df1_fast_q31    | 1818 | N/A |  506| 
+|     arm_biquad_cascade_df2T_f32  |  51629|  N/A|  537| 
+|  arm_biquad_cascade_df2T_f64    | 77806 | N/A | 36912 | 
+|    arm_biquad_cascade_stereo_df2T_f32   |113130 | N/A | 1007 | 
+|    arm_conv_f32   |  375567|N/A  | 10844 | 
+|     arm_conv_q7  |  18594| 4413(76.3%)  |9555  | 
+|  arm_conv_q15     | 25044 | 10738(57.1%) |7749  | 
+|   arm_conv_q31   |  27919| N/A | 15322 | 
+|     arm_conv_opt_q7  | N/A |  4478| 4803 | 
+|     arm_conv_fast_q15  | N/A | 4734 |7087  | 
+|    arm_conv_opt_q15    | N/A |11253  |5942  | 
+|    arm_conv_fast_opt_q15   | N/A |  4702| 4648 | 
+|    arm_conv_fast_q31   |  10084|  N/A|  9049| 
+|   arm_conv_partial_f32    | 374605 |N/A  |  11038| 
+|    arm_conv_partial_q7   |  18114| 4258(76.5%) | 9594 | 
+|     arm_conv_partial_q15  |  24554| 10856(55.8%) |7999  | 
+|     arm_conv_partial_q31  | 27428 | N/A | 15301 | 
+|   arm_conv_partial_opt_q7   |  N/A| 4326  |  4410| 
+|   arm_conv_partial_fast_q15    | N/A | 4783 |  7263| 
+|    arm_conv_partial_opt_q15   | N/A |  10960|  5591| 
+|  arm_conv_partial_fast_opt_q15   |  N/A| 4722 |  4295| 
+|    arm_conv_partial_fast_q31   | 9896 | N/A | 9000 | 
