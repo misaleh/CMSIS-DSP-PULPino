@@ -21,6 +21,8 @@ To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 6) Support Function
 
+7) Filtering  Function (34/99 functions)
+
 ### Benchmarks
 
 ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
@@ -211,7 +213,7 @@ There is some functions with opt and/or fast keywords , for example there is 4 f
 * Riscv_conv_fast_opt_q15
 
 
-**Normal Functions**  withiut opt or fast keywords have slower implementation, use 64-bit accumulation to avoid wrap around.
+**Normal Functions**  without opt or fast keywords have slower implementation, use 64-bit accumulation to avoid wrap around.
 
 **Fast functions** uses a 32-bit accumulator (may overflow).
 
@@ -238,7 +240,7 @@ For more refer to [
 CMSIS DSP Software Library
 ]( http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html)
 
-Init functions are not considered in benchmarking as they are just copying a few pointers and will only be called once in real applications. 
+Init functions are not considered in benchmarking as they are just copying a few pointers and will only be called once in real applications or be bypassed by intilizaing the structure directly. 
 
 
 
