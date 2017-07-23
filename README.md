@@ -273,3 +273,26 @@ Init functions are not considered in benchmarking as they are just copying a few
 |    arm_conv_partial_opt_q15   | N/A |  10960|  5591| 
 |  arm_conv_partial_fast_opt_q15   |  N/A| 4722 |  4295| 
 |    arm_conv_partial_fast_q31   | 9896 | N/A | 9000 | 
+|    arm_correlate_f32   | 375490 | |  | 
+|   arm_correlate_q7    | 18784| |  |
+|     arm_correlate_q15  | 25234 | |  |
+|     arm_correlate_q31  | 27943 | |  |
+|    arm_correlate_opt_q7   | N/A | |  |
+|     arm_correlate_fast_q15  | N/A | |  |
+|    arm_correlate_opt_q15   |  N/A| |  |
+|     arm_correlate_fast_opt_q15  | N/A | |  |
+|     arm_correlate_fast_q31  | 10031 | |  |
+|    arm_fir_decimate_f32   | 16201 | |  | 
+|     arm_fir_decimate_q15  |  1017| |  |
+|     arm_fir_decimate_q31  |  1013| |  |
+|    arm_fir_decimate_fast_q15   | N/A | |  |
+|    arm_fir_decimate_fast_q31   | 887 | |  |
+|    arm_fir_f32   | 65074 | |  |
+|    arm_fir_q7   |  1382| |  |
+|    arm_fir_q15   | 2546 | |  |
+|    arm_fir_q31   | 2956 | |  |
+|   arm_fir_fast_q15    | N/A | |  |
+|  arm_fir_fast_q31     |  3054| |  |
+|     arm_fir_lattice_f32  |  136410| |  |
+|    arm_fir_lattice_q15   | 5484 | |  |
+|    arm_fir_lattice_q31   |  5108| |  |
