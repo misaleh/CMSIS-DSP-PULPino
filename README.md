@@ -21,7 +21,7 @@ To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 6) Support Function
 
-7) Filtering  Function (34/99 functions)
+7) Filtering  Function (67/99 functions)
 
 ### Benchmarks
 
@@ -273,26 +273,26 @@ Init functions are not considered in benchmarking as they are just copying a few
 |    arm_conv_partial_opt_q15   | N/A |  10960|  5591| 
 |  arm_conv_partial_fast_opt_q15   |  N/A| 4722 |  4295| 
 |    arm_conv_partial_fast_q31   | 9896 | N/A | 9000 | 
-|    arm_correlate_f32   | 375490 | |  11155| 
-|   arm_correlate_q7    | 18784| |  9153|
-|     arm_correlate_q15  | 25234 | |  6476|
-|     arm_correlate_q31  | 27943 | |  15479|
-|    arm_correlate_opt_q7   | N/A | |  4969|
-|     arm_correlate_fast_q15  | N/A | | 5770 |
-|    arm_correlate_opt_q15   |  N/A| | 5988 |
-|     arm_correlate_fast_opt_q15  | N/A | | 4707 |
-|     arm_correlate_fast_q31  | 10031 | | 8719 |
-|    arm_fir_decimate_f32   | 16201 | | 753 | 
-|     arm_fir_decimate_q15  |  1017| | 762 |
-|     arm_fir_decimate_q31  |  1013| | 1487 |
-|    arm_fir_decimate_fast_q15   | N/A | | 675 |
-|    arm_fir_decimate_fast_q31   | 887 | | 791 |
-|    arm_fir_f32   | 65074 | | 1267 |
-|    arm_fir_q7   |  1382| |  1327|
-|    arm_fir_q15   | 2546 | | 1185 |
-|    arm_fir_q31   | 2956 | | 2722 |
-|   arm_fir_fast_q15    | N/A | | 920 |
-|  arm_fir_fast_q31     |  3054| |  1323|
-|     arm_fir_lattice_f32  |  136410| |  2195|
-|    arm_fir_lattice_q15   | 5484 | | 2280 |
-|    arm_fir_lattice_q31   |  5108| | 2185 |
+|    arm_correlate_f32   | 375490 |N/A |  11155| 
+|   arm_correlate_q7    | 18784|2907(84.5%) |  9153|
+|     arm_correlate_q15  | 25234 |10499(58.4%) |  6476|
+|     arm_correlate_q31  | 27943 | N/A|  15479|
+|    arm_correlate_opt_q7   | N/A |4568 |  4969|
+|     arm_correlate_fast_q15  | N/A |4907 | 5770 |
+|    arm_correlate_opt_q15   |  N/A| 11269| 5988 |
+|     arm_correlate_fast_opt_q15  | N/A | 4668| 4707 |
+|     arm_correlate_fast_q31  | 10031 |N/A | 8719 |
+|    arm_fir_decimate_f32   | 16201 |N/A | 753 | 
+|     arm_fir_decimate_q15  |  1017| 817(24.5%)| 762 |
+|     arm_fir_decimate_q31  |  1013|N/A | 1487 |
+|    arm_fir_decimate_fast_q15   | N/A | 568| 675 |
+|    arm_fir_decimate_fast_q31   | 887 | N/A| 791 |
+|    arm_fir_f32   | 65074 |N/A | 1267 |
+|    arm_fir_q7   |  1382|931(32.6%) |  1327|
+|    arm_fir_q15   | 2546 |1681(34%) | 1185 |
+|    arm_fir_q31   | 2956 |N/A | 2722 |
+|   arm_fir_fast_q15    | N/A | 854| 920 |
+|  arm_fir_fast_q31     |  3054| N/A|  1323|
+|     arm_fir_lattice_f32  |  136410| N/A|  2195|
+|    arm_fir_lattice_q15   | 5484 |2232(59.2%) | 2280 |
+|    arm_fir_lattice_q31   |  5108| N/A| 2185 |
