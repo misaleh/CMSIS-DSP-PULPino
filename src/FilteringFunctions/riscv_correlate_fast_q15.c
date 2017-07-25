@@ -5,11 +5,11 @@
 * $Revision: 	V.1.4.5
 *   
 * Project: 	    CMSIS DSP Library   
-* Title:		arm_correlate_q15.c   
+* Title:		arm_correlate_fast_q15.c   
 *   
-* Description:	Correlation of Q15 sequences. 
+* Description:	Fast Q15 Correlation.   
 *   
-* Target Processor: Cortex-M4/Cortex-M3/Cortex-M0
+* Target Processor: Cortex-M4/Cortex-M3
 *  
 * Redistribution and use in source and binary forms, with or without 
 * modification, are permitted provided that the following conditions
@@ -35,7 +35,7 @@
 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE. 
+* POSSIBILITY OF SUCH DAMAGE.   
 
  Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino) 
 * -------------------------------------------------------------------- */
@@ -52,7 +52,7 @@
  */
 
 /**   
- * @brief Correlation of Q15 sequences. 
+ * @brief Correlation of Q15 sequences (fast version) for Cortex-M3 and Cortex-M4.   
  * @param[in] *pSrcA points to the first input sequence.   
  * @param[in] srcALen length of the first input sequence.   
  * @param[in] *pSrcB points to the second input sequence.   
@@ -60,36 +60,33 @@
  * @param[out] *pDst points to the location where the output result is written.  Length 2 * max(srcALen, srcBLen) - 1.   
  * @return none.   
  *   
- * @details   
  * <b>Scaling and Overflow Behavior:</b>   
  *   
  * \par   
- * The function is implemented using a 64-bit internal accumulator.   
- * Both inputs are in 1.15 format and multiplications yield a 2.30 result.   
- * The 2.30 intermediate results are accumulated in a 64-bit accumulator in 34.30 format.   
- * This approach provides 33 guard bits and there is no risk of overflow.   
- * The 34.30 result is then truncated to 34.15 format by discarding the low 15 bits and then saturated to 1.15 format.   
+ * This fast version uses a 32-bit accumulator with 2.30 format.   
+ * The accumulator maintains full precision of the intermediate multiplication results but provides only a single guard bit.   
+ * There is no saturation on intermediate additions.   
+ * Thus, if the accumulator overflows it wraps around and distorts the result.   
+ * The input signals should be scaled down to avoid intermediate overflows.   
+ * Scale down one of the inputs by 1/min(srcALen, srcBLen) to avoid overflow since a   
+ * maximum of min(srcALen, srcBLen) number of additions is carried internally.   
+ * The 2.30 accumulator is right shifted by 15 bits and then saturated to 1.15 format to yield the final result.   
  *   
  * \par   
- * Refer to <code>riscv_correlate_fast_q15()</code> for a faster but less precise version of this function for Cortex-M3 and Cortex-M4. 
- *
- * \par    
- * Refer the function <code>riscv_correlate_opt_q15()</code> for a faster implementation of this function using scratch buffers.
- * 
+ * See <code>riscv_correlate_q15()</code> for a slower implementation of this function which uses a 64-bit accumulator to avoid wrap around distortion.   
  */
 
-void riscv_correlate_q15(
+void riscv_correlate_fast_q15(
   q15_t * pSrcA,
   uint32_t srcALen,
   q15_t * pSrcB,
   uint32_t srcBLen,
   q15_t * pDst)
 {
-#if defined (USE_DSP_RISCV)
   q15_t *pIn1;                                   /* inputA pointer               */
   q15_t *pIn2;                                   /* inputB pointer               */
   q15_t *pOut = pDst;                            /* output pointer               */
-  q63_t sum, acc0, acc1, acc2, acc3;             /* Accumulators                  */
+  q31_t sum, acc0, acc1, acc2, acc3;             /* Accumulators                  */
   q15_t *px;                                     /* Intermediate inputA pointer  */
   q15_t *py;                                     /* Intermediate inputB pointer  */
   q15_t *pSrc1;                                  /* Intermediate pointers        */
@@ -234,8 +231,7 @@ void riscv_correlate_q15(
     }
 
     /* Store the result in the accumulator in the destination buffer. */
-   /**pOut = (q15_t) (sum >> 15);*/
-    *pOut = (q15_t) __SSAT((sum >> 15u), 16u);
+    *pOut = (q15_t) (sum >> 15);
     /* Destination pointer is updated according to the address modifier, inc */
     pOut += inc;
 
@@ -317,10 +313,10 @@ void riscv_correlate_q15(
         VectInC[1] = b; /*y[srcBLen - 2] */
 
         /* acc0 +=  x[0] * y[0] + x[1] * y[1] */
-        acc0 += dotpv2(VectInA, VectInC);
+        acc0 = sumdotpv2(VectInA, VectInC, acc0);
 
         /* acc1 +=  x[1] * y[0] + x[2] * y[1] */
-        acc1 += dotpv2(VectInB, VectInC);
+        acc1 = sumdotpv2(VectInB, VectInC, acc1);
 
         /* Read x[2], x[3], x[4] */
         a = *px;
@@ -332,10 +328,10 @@ void riscv_correlate_q15(
         VectInE[0] = b; /*x3*/
         VectInE[1] = a; /*x4*/
         /* acc2 +=  x[2] * y[0] + x[3] * y[1] */
-        acc2 += dotpv2(VectInD, VectInC);
+        acc2 = sumdotpv2(VectInD, VectInC, acc2);
 
         /* acc3 +=  x[3] * y[0] + x[4] * y[1] */
-        acc3 += dotpv2(VectInE, VectInC);
+        acc3 = sumdotpv2(VectInE, VectInC, acc3);
 
         /* Read y[2] and y[3] */
         a = *(py + 2);
@@ -343,12 +339,12 @@ void riscv_correlate_q15(
         VectInC[0] = a; /*y[srcBLen - 3]*/
         VectInC[1] = b; /*y[srcBLen - 4] */
         py += 4u;
-	
+
         /* acc0 +=  x[2] * y[2] + x[3] * y[3] */
-        acc0 += dotpv2(VectInD, VectInC);
+        acc0 = sumdotpv2(VectInD, VectInC, acc0);
 
         /* acc1 +=  x[3] * y[2] + x[4] * y[3] */
-        acc1 += dotpv2(VectInE, VectInC);
+        acc1 = sumdotpv2(VectInE, VectInC, acc1);
 
         /* Read x[4], x[5], x[6] */
         a = *(px + 2);
@@ -362,10 +358,10 @@ void riscv_correlate_q15(
         px += 4u;
 
         /* acc2 +=  x[4] * y[2] + x[5] * y[3] */
-        acc2 += dotpv2(VectInA, VectInC);
+        acc2 = sumdotpv2(VectInA, VectInC, acc2);
 
         /* acc3 +=  x[5] * y[2] + x[6] * y[3] */
-        acc3 += dotpv2(VectInB, VectInC);
+        acc3 = sumdotpv2(VectInB, VectInC, acc3);
 
       } while(--k);
 
@@ -392,10 +388,10 @@ void riscv_correlate_q15(
         px++;
 
         /* Perform the multiply-accumulates */
-        acc0 += dotpv2(VectInA, VectInC);
-        acc1 += dotpv2(VectInB, VectInC);
-        acc2 += dotpv2(VectInB, VectInC);
-        acc3 += dotpv2(VectInD, VectInC);
+        acc0 = sumdotpv2(VectInA, VectInC, acc0);
+        acc1 = sumdotpv2(VectInB, VectInC, acc1);
+        acc2 = sumdotpv2(VectInB, VectInC, acc2);
+        acc3 = sumdotpv2(VectInD, VectInC, acc3);
       }
 
       if(k == 2u)
@@ -417,10 +413,10 @@ void riscv_correlate_q15(
         px += 2u;
 
         /* Perform the multiply-accumulates */
-        acc0 += dotpv2(VectInA, VectInC);
-        acc1 += dotpv2(VectInB, VectInC);
-        acc2 += dotpv2(VectInE, VectInC);
-        acc3 += dotpv2(VectInD, VectInC);
+        acc0 = sumdotpv2(VectInA, VectInC, acc0);
+        acc1 = sumdotpv2(VectInB, VectInC, acc1);
+        acc2 = sumdotpv2(VectInE, VectInC, acc2);
+        acc3 = sumdotpv2(VectInD, VectInC, acc3);
       }
 
       if(k == 3u)
@@ -443,10 +439,10 @@ void riscv_correlate_q15(
         VectInD[0] = b; /*x8*/
         VectInD[1] = a; /*x9*/
         /* Perform the multiply-accumulates */
-        acc0 += dotpv2(VectInA, VectInC);
-        acc1 += dotpv2(VectInB, VectInC);
-        acc2 += dotpv2(VectInE, VectInC);
-        acc3 += dotpv2(VectInD, VectInC);
+        acc0 = sumdotpv2(VectInA, VectInC, acc0);
+        acc1 = sumdotpv2(VectInB, VectInC, acc1);
+        acc2 = sumdotpv2(VectInE, VectInC, acc2);
+        acc3 = sumdotpv2(VectInD, VectInC, acc3);
 
         VectInC[0] = VectInC[1]; 
         VectInC[1] = 0;
@@ -459,28 +455,24 @@ void riscv_correlate_q15(
         px += 3u;
 
         /* Perform the multiply-accumulates */
-        acc0 += dotpv2(VectInB, VectInC);
-        acc1 += dotpv2(VectInD, VectInC);
-        acc2 += dotpv2(VectInD, VectInC);
-        acc3 += dotpv2(VectInE, VectInC);
+        acc0 = sumdotpv2(VectInB, VectInC, acc0);
+        acc1 = sumdotpv2(VectInD, VectInC, acc1);
+        acc2 = sumdotpv2(VectInD, VectInC, acc2);
+        acc3 = sumdotpv2(VectInE, VectInC, acc3);
       }
 
       /* Store the result in the accumulator in the destination buffer. */
-      /**pOut = (q15_t) (acc0 >> 15);*/
-      *pOut = (q15_t) __SSAT((acc0 >> 15u), 16u);
+      *pOut = (q15_t) (acc0 >> 15);
       /* Destination pointer is updated according to the address modifier, inc */
       pOut += inc;
 
-     /**pOut = (q15_t) (acc1 >> 15);*/
-      *pOut = (q15_t) __SSAT((acc1 >> 15u), 16u);
+      *pOut = (q15_t) (acc1 >> 15);
       pOut += inc;
 
-     /* *pOut = (q15_t) (acc2 >> 15);*/
-      *pOut = (q15_t) __SSAT((acc2 >> 15u), 16u);
+      *pOut = (q15_t) (acc2 >> 15);
       pOut += inc;
 
-    /*  *pOut = (q15_t) (acc3 >> 15);*/
-      *pOut = (q15_t) __SSAT((acc3 >> 15u), 16u);
+      *pOut = (q15_t) (acc3 >> 15);
       pOut += inc;
 
       /* Increment the pointer pIn1 index, count by 1 */
@@ -535,8 +527,7 @@ void riscv_correlate_q15(
       }
 
       /* Store the result in the accumulator in the destination buffer. */
-      /**pOut = (q15_t) (sum >> 15);*/
-      *pOut = (q15_t) __SSAT((sum >> 15u), 16u);
+      *pOut = (q15_t) (sum >> 15);
       /* Destination pointer is updated according to the address modifier, inc */
       pOut += inc;
 
@@ -575,8 +566,7 @@ void riscv_correlate_q15(
       }
 
       /* Store the result in the accumulator in the destination buffer. */
-      /**pOut = (q15_t) (sum >> 15);*/
-      *pOut = (q15_t) __SSAT((sum >> 15u), 16u);
+      *pOut = (q15_t) (sum >> 15);
       /* Destination pointer is updated according to the address modifier, inc */
       pOut += inc;
 
@@ -654,8 +644,7 @@ void riscv_correlate_q15(
     }
 
     /* Store the result in the accumulator in the destination buffer. */
-    /**pOut = (q15_t) (sum >> 15);*/
-    *pOut = (q15_t) __SSAT((sum >> 15u), 16u);
+    *pOut = (q15_t) (sum >> 15);
     /* Destination pointer is updated according to the address modifier, inc */
     pOut += inc;
 
@@ -669,88 +658,6 @@ void riscv_correlate_q15(
     /* Decrement the loop counter */
     blockSize3--;
   }
-
-#else
-
-  q15_t *pIn1 = pSrcA;                           /* inputA pointer               */
-  q15_t *pIn2 = pSrcB + (srcBLen - 1u);          /* inputB pointer               */
-  q63_t sum;                                     /* Accumulators                  */
-  uint32_t i = 0u, j;                            /* loop counters */
-  uint32_t inv = 0u;                             /* Reverse order flag */
-  uint32_t tot = 0u;                             /* Length */
-
-  /* The algorithm implementation is based on the lengths of the inputs. */
-  /* srcB is always made to slide across srcA. */
-  /* So srcBLen is always considered as shorter or equal to srcALen */
-  /* But CORR(x, y) is reverse of CORR(y, x) */
-  /* So, when srcBLen > srcALen, output pointer is made to point to the end of the output buffer */
-  /* and a varaible, inv is set to 1 */
-  /* If lengths are not equal then zero pad has to be done to  make the two   
-   * inputs of same length. But to improve the performance, we include zeroes   
-   * in the output instead of zero padding either of the the inputs*/
-  /* If srcALen > srcBLen, (srcALen - srcBLen) zeroes has to included in the   
-   * starting of the output buffer */
-  /* If srcALen < srcBLen, (srcALen - srcBLen) zeroes has to included in the  
-   * ending of the output buffer */
-  /* Once the zero padding is done the remaining of the output is calcualted  
-   * using convolution but with the shorter signal time shifted. */
-
-  /* Calculate the length of the remaining sequence */
-  tot = ((srcALen + srcBLen) - 2u);
-
-  if(srcALen > srcBLen)
-  {
-    /* Calculating the number of zeros to be padded to the output */
-    j = srcALen - srcBLen;
-
-    /* Initialise the pointer after zero padding */
-    pDst += j;
-  }
-
-  else if(srcALen < srcBLen)
-  {
-    /* Initialization to inputB pointer */
-    pIn1 = pSrcB;
-
-    /* Initialization to the end of inputA pointer */
-    pIn2 = pSrcA + (srcALen - 1u);
-
-    /* Initialisation of the pointer after zero padding */
-    pDst = pDst + tot;
-
-    /* Swapping the lengths */
-    j = srcALen;
-    srcALen = srcBLen;
-    srcBLen = j;
-
-    /* Setting the reverse flag */
-    inv = 1;
-
-  }
-
-  /* Loop to calculate convolution for output length number of times */
-  for (i = 0u; i <= tot; i++)
-  {
-    /* Initialize sum with zero to carry on MAC operations */
-    sum = 0;
-
-    /* Loop to perform MAC operations according to convolution equation */
-    for (j = 0u; j <= i; j++)
-    {
-      /* Check the array limitations */
-      if((((i - j) < srcBLen) && (j < srcALen)))
-      {
-        /* z[i] += x[i-j] * y[j] */
-        sum += ((q31_t) pIn1[j] * pIn2[-((int32_t) i - j)]);
-      }
-    }
-    /* Store the output in the destination buffer */
-    if(inv == 1)
-      *pDst-- = (q15_t) __SSAT((sum >> 15u), 16u);
-    else
-      *pDst++ = (q15_t) __SSAT((sum >> 15u), 16u);
-  }
-#endif
 
 }
 
