@@ -27,7 +27,7 @@ To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
 
-ARM M4 uses its DSP intsturctions by default.
+ARM M4 uses its DSP Instructions by default.
 
 #### BasicMath Functions
 
@@ -240,7 +240,7 @@ For more refer to [
 CMSIS DSP Software Library
 ]( http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html)
 
-Init functions are not considered in benchmarking as they are just copying a few pointers and will only be called once in real applications or be bypassed by intilizaing the structure directly. 
+Init functions are not considered in benchmarking as they are just copying a few pointers and will only be called once in real applications or can be bypassed by initializing the structure directly. 
 
 
 
