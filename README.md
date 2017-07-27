@@ -73,7 +73,7 @@ Improvements of DSP extension(Imp) = (Old - New_DSP)*100/Old
 | arm_shift_q7 (left)     | 338 |  189(44.1%) |300 | 
 | arm_shift_q15 (left)     | 370 |  184(50.3%) | 236| 
 | arm_shift_q31 (left)      | 640|  N/A | 369| 
-| arm_shift_q7 (right)      | 140 |  120(14.3%) |246 | 
+| arm_shift_q7 (right)      | 140 | 62(55.7%) |246 | 
 | arm_shift_q15 (right)      | 138 |  135(2.2%)| 203| 
 | arm_shift_q31 (right)      | 143|  N/A |236 | 
 | arm_sub_f32      | 6033 | N/A |295 | 
