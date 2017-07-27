@@ -212,14 +212,13 @@
 extern "C"
 {
 #endif
-
-#define USE_DSP_RISCV
+/*To use DSP extension*/
+#define USE_DSP_RISCV 
 
 
 /*
 *Risc-v DSP built-ins
 */
-
 #define clipu(a, zero, max)           __builtin_pulp_clipu(a, zero, max)
 #define clip(a, min, max)    	      __builtin_pulp_clip(a, min, max)
 #define addnr(a,b, Norm, Round)       __builtin_pulp_addRN(a, b, Norm, Round)
@@ -247,7 +246,7 @@ extern "C"
 #define sll2(a,b)                    __builtin_pulp_sll2(a,b)
 #define max4(a,b)                    __builtin_pulp_max4(a,b)
 #define min4(a,b)                    __builtin_pulp_min4(a,b)
-
+#define macsRN(a,b,c,d,e)            __builtin_pulp_macsRN(a,b,c,d,e)
 
 typedef signed char charV __attribute__((vector_size (4)));
 typedef signed short shortV __attribute__((vector_size (4)));
@@ -401,7 +400,7 @@ typedef signed short shortV __attribute__((vector_size (4)));
    */
 
 
-  inline q31_t __SSAT(
+  static inline q31_t __SSAT(
   q31_t x,
   uint32_t y)
   {
@@ -435,6 +434,112 @@ typedef signed short shortV __attribute__((vector_size (4)));
     return (x);
 
 
+  }
+
+
+
+  static uint32_t riscv_recip_q31(
+  q31_t in,
+  q31_t * dst,
+  q31_t * pRecipTable)
+  {
+    q31_t out;
+    q31_t outtemp;
+    uint32_t tempVal;
+    uint32_t index, i;
+    uint32_t signBits;
+    int64_t  tempo;
+    if (in > 0)
+    {
+      signBits = ((uint32_t) (__CLZ( in) - 1));
+    }
+    else
+    {
+      signBits = ((uint32_t) (__CLZ(-in) - 1));
+    }
+
+    /* Convert input sample to 1.31 format */
+    in = (in << signBits);
+
+    /* calculation of index for initial approximated Val */
+    index = (uint32_t)(in >> 24);
+    index = (index & INDEX_MASK);
+    /* 1.31 with exp 1 */
+    out = pRecipTable[index];
+    /* calculation of reciprocal value */
+    /* running approximation for two iterations */
+    for (i = 0u; i < 2u; i++)
+    {
+      tempVal = (uint32_t) (((q63_t) in * out) >> 31);
+      tempVal = 0x7FFFFFFFu - tempVal;
+      /*      1.31 with exp 1 */
+      /* out = (q31_t) (((q63_t) out * tempVal) >> 30); */ 
+      uint32_t  x = tempVal;
+      uint32_t y  = out;
+      uint32_t out1;
+      //out1 = (q31_t)clip_q63_to_q31( ((q63_t)x * y) >> 30);
+      tempo= (q63_t)((uint64_t)x * y) >> 30;
+      if(tempo > 2147483647) out1 = 0x7FFFFFFF;
+      else if (tempo < -2147483648) out1 = 0x80000000;
+      else out1 = tempo & 0x00000000FFFFFFFF;
+      out = out1;
+    }
+    /* write output */
+    *dst = out;
+
+    /* return num of signbits of out = 1/in value */
+    return (signBits + 1u);
+  }
+
+
+  /**
+   * @brief Function to Calculates 1/in (reciprocal) value of Q15 Data type.
+   */
+   inline uint32_t riscv_recip_q15(
+  q15_t in,
+  q15_t * dst,
+  q15_t * pRecipTable)
+  {
+    q15_t out = 0;
+    uint32_t tempVal = 0;
+    uint32_t index = 0, i = 0;
+    uint32_t signBits = 0;
+
+    if (in > 0)
+    {
+      signBits = ((uint32_t)(__CLZ( in) - 17));
+    }
+    else
+    {
+      signBits = ((uint32_t)(__CLZ(-in) - 17));
+    }
+
+    /* Convert input sample to 1.15 format */
+    in = (in << signBits);
+
+    /* calculation of index for initial approximated Val */
+    index = (uint32_t)(in >>  8);
+    index = (index & INDEX_MASK);
+
+    /*      1.15 with exp 1  */
+    out = pRecipTable[index];
+
+    /* calculation of reciprocal value */
+    /* running approximation for two iterations */
+    for (i = 0u; i < 2u; i++)
+    {
+      tempVal = (uint32_t) (((q31_t) in * out) >> 15);
+      tempVal = 0x7FFFu - tempVal;
+      /*      1.15 with exp 1 */
+      out = (q15_t) (((q31_t) out * tempVal) >> 14);
+      /* out = clip_q31_to_q15(((q31_t) out * tempVal) >> 14); */
+    }
+
+    /* write output */
+    *dst = out;
+
+    /* return num of signbits of out = 1/in value */
+    return (signBits + 1);
   }
 
   /**
