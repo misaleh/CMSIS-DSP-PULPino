@@ -36,6 +36,8 @@
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE.    
+
+ Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)
 * ------------------------------------------------------------------- */
 #include "riscv_math.h"
 
@@ -88,6 +90,233 @@ void riscv_fir_sparse_q15(
   uint32_t tapCnt, blkCnt;                       /* loop counters */
   q15_t coeff = *pCoeffs++;                      /* Read the first coefficient value */
   q31_t *pScr2 = pScratchOut;                    /* Working pointer for pScratchOut */
+
+#if defined (USE_DSP_RISCV)
+
+  q31_t in1, in2;                                /* Temporary variables */
+
+
+  /* BlockSize of Input samples are copied into the state buffer */
+  /* StateIndex points to the starting position to write in the state buffer */
+  riscv_circularWrite_q15(py, delaySize, &S->stateIndex, 1, pIn, 1, blockSize);
+
+  /* Loop over the number of taps. */
+  tapCnt = numTaps;
+
+  /* Read Index, from where the state buffer should be read, is calculated. */
+  readIndex = (S->stateIndex - blockSize) - *pTapDelay++;
+
+  /* Wraparound of readIndex */
+  if(readIndex < 0)
+  {
+    readIndex += (int32_t) delaySize;
+  }
+
+  /* Working pointer for state buffer is updated */
+  py = pState;
+
+  /* blockSize samples are read from the state buffer */
+  riscv_circularRead_q15(py, delaySize, &readIndex, 1,
+                       pb, pb, blockSize, 1, blockSize);
+
+  /* Working pointer for the scratch buffer of state values */
+  px = pb;
+
+  /* Working pointer for scratch buffer of output values */
+  pScratchOut = pScr2;
+
+  /* Loop over the blockSize. Unroll by a factor of 4.    
+   * Compute 4 multiplications at a time. */
+  blkCnt = blockSize >> 2;
+
+  while(blkCnt > 0u)
+  {
+    /* Perform multiplication and store in the scratch buffer */
+    *pScratchOut++ = ((q31_t) * px++ * coeff);
+    *pScratchOut++ = ((q31_t) * px++ * coeff);
+    *pScratchOut++ = ((q31_t) * px++ * coeff);
+    *pScratchOut++ = ((q31_t) * px++ * coeff);
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+  /* If the blockSize is not a multiple of 4,    
+   * compute the remaining samples */
+  blkCnt = blockSize % 0x4u;
+
+  while(blkCnt > 0u)
+  {
+    /* Perform multiplication and store in the scratch buffer */
+    *pScratchOut++ = ((q31_t) * px++ * coeff);
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+  /* Load the coefficient value and    
+   * increment the coefficient buffer for the next set of state values */
+  coeff = *pCoeffs++;
+
+  /* Read Index, from where the state buffer should be read, is calculated. */
+  readIndex = (S->stateIndex - blockSize) - *pTapDelay++;
+
+  /* Wraparound of readIndex */
+  if(readIndex < 0)
+  {
+    readIndex += (int32_t) delaySize;
+  }
+
+  /* Loop over the number of taps. */
+  tapCnt = (uint32_t) numTaps - 2u;
+
+  while(tapCnt > 0u)
+  {
+    /* Working pointer for state buffer is updated */
+    py = pState;
+
+    /* blockSize samples are read from the state buffer */
+    riscv_circularRead_q15(py, delaySize, &readIndex, 1,
+                         pb, pb, blockSize, 1, blockSize);
+
+    /* Working pointer for the scratch buffer of state values */
+    px = pb;
+
+    /* Working pointer for scratch buffer of output values */
+    pScratchOut = pScr2;
+
+    /* Loop over the blockSize. Unroll by a factor of 4.    
+     * Compute 4 MACS at a time. */
+    blkCnt = blockSize >> 2;
+
+    while(blkCnt > 0u)
+    {
+      /* Perform Multiply-Accumulate */
+     /* *pScratchOut++ += (q31_t) * px++ * coeff;
+      *pScratchOut++ += (q31_t) * px++ * coeff;
+      *pScratchOut++ += (q31_t) * px++ * coeff;
+      *pScratchOut++ += (q31_t) * px++ * coeff;*/
+      *pScratchOut = mac((int)(*px++),coeff,*pScratchOut);
+      pScratchOut++;
+      *pScratchOut = mac((int)(*px++),coeff,*pScratchOut);
+      pScratchOut++;
+      *pScratchOut = mac((int)(*px++),coeff,*pScratchOut);
+      pScratchOut++;
+      *pScratchOut = mac((int)(*px++),coeff,*pScratchOut);
+      pScratchOut++;
+
+      /* Decrement the loop counter */
+      blkCnt--;
+    }
+
+    /* If the blockSize is not a multiple of 4,    
+     * compute the remaining samples */
+    blkCnt = blockSize % 0x4u;
+
+    while(blkCnt > 0u)
+    {
+      /* Perform Multiply-Accumulate */
+      *pScratchOut++ += (q31_t) * px++ * coeff;
+
+      /* Decrement the loop counter */
+      blkCnt--;
+    }
+
+    /* Load the coefficient value and    
+     * increment the coefficient buffer for the next set of state values */
+    coeff = *pCoeffs++;
+
+    /* Read Index, from where the state buffer should be read, is calculated. */
+    readIndex = (S->stateIndex - blockSize) - *pTapDelay++;
+
+    /* Wraparound of readIndex */
+    if(readIndex < 0)
+    {
+      readIndex += (int32_t) delaySize;
+    }
+
+    /* Decrement the tap loop counter */
+    tapCnt--;
+  }
+	
+	/* Compute last tap without the final read of pTapDelay */		
+
+	/* Working pointer for state buffer is updated */
+	py = pState;
+
+	/* blockSize samples are read from the state buffer */
+	riscv_circularRead_q15(py, delaySize, &readIndex, 1,
+											 pb, pb, blockSize, 1, blockSize);
+
+	/* Working pointer for the scratch buffer of state values */
+	px = pb;
+
+	/* Working pointer for scratch buffer of output values */
+	pScratchOut = pScr2;
+
+	/* Loop over the blockSize. Unroll by a factor of 4.    
+	 * Compute 4 MACS at a time. */
+	blkCnt = blockSize >> 2;
+
+	while(blkCnt > 0u)
+	{
+
+                *pScratchOut = mac((int)(*px++),coeff,*pScratchOut);
+                pScratchOut++;
+                *pScratchOut = mac((int)(*px++),coeff,*pScratchOut);
+                pScratchOut++;
+                *pScratchOut = mac((int)(*px++),coeff,*pScratchOut);
+                pScratchOut++;
+                *pScratchOut = mac((int)(*px++),coeff,*pScratchOut);
+                pScratchOut++;
+		/* Decrement the loop counter */
+		blkCnt--;
+	}
+
+	/* If the blockSize is not a multiple of 4,    
+	 * compute the remaining samples */
+	blkCnt = blockSize % 0x4u;
+
+	while(blkCnt > 0u)
+	{
+		/* Perform Multiply-Accumulate */
+		*pScratchOut++ += (q31_t) * px++ * coeff;
+
+		/* Decrement the loop counter */
+		blkCnt--;
+	}
+
+  /* All the output values are in pScratchOut buffer.    
+     Convert them into 1.15 format, saturate and store in the destination buffer. */
+  /* Loop over the blockSize. */
+  blkCnt = blockSize >> 2;
+
+  while(blkCnt > 0u)
+  {
+    in1 = *pScr2++;
+    in2 = *pScr2++;
+    *(shortV*)pOut = pack2(clip(in1 >> 15,-32768,32767),clip(in2 >> 15,-32768,32767));
+    pOut+=2;
+    in1 = *pScr2++;
+    in2 = *pScr2++;
+    *(shortV*)pOut = pack2(clip(in1 >> 15,-32768,32767),clip(in2 >> 15,-32768,32767));
+    pOut+=2;
+
+    blkCnt--;
+
+  }
+
+  /* If the blockSize is not a multiple of 4,    
+     remaining samples are processed in the below loop */
+  blkCnt = blockSize % 0x4u;
+
+  while(blkCnt > 0u)
+  {
+    *pOut++ = (q15_t) clip(*pScr2++ >> 15,-32768,32767);
+    blkCnt--;
+  }
+
+#else
 
   /* BlockSize of Input samples are copied into the state buffer */
   /* StateIndex points to the starting position to write in the state buffer */
@@ -224,7 +453,7 @@ void riscv_fir_sparse_q15(
     *pOut++ = (q15_t) __SSAT(*pScr2++ >> 15, 16);
     blkCnt--;
   }
-
+#endif
 }
 
 /**    

@@ -98,6 +98,164 @@ void riscv_lms_q15(
   int32_t uShift = (32 - lShift);
 
 
+#if defined (USE_DSP_RISCV)
+  shortV VectInA;
+  shortV VectInB;
+  /* S->pState points to buffer which contains previous frame (numTaps - 1) samples */
+  /* pStateCurnt points to the location where the new input data should be written */
+  pStateCurnt = &(S->pState[(numTaps - 1u)]);
+
+  /* Initializing blkCnt with blockSize */
+  blkCnt = blockSize;
+
+  while(blkCnt > 0u)
+  {
+    /* Copy the new input sample into the state buffer */
+    *pStateCurnt++ = *pSrc++;
+
+    /* Initialize state pointer */
+    px = pState;
+
+    /* Initialize coefficient pointer */
+    pb = pCoeffs;
+
+    /* Set the accumulator to zero */
+    acc = 0;
+
+    /* Loop unrolling.  Process 4 taps at a time. */
+    tapCnt = numTaps >> 2u;
+
+    while(tapCnt > 0u)
+    {
+      /* acc +=  b[N] * x[n-N] + b[N-1] * x[n-N-1] */
+      /* Perform the multiply-accumulate */
+      VectInA = *(shortV*)px;
+      px+=2;
+      VectInB = *(shortV*)pb;
+      pb+=2;
+      acc += dotpv2(VectInA,VectInB);
+      VectInA = *(shortV*)px;
+      px+=2;
+      VectInB = *(shortV*)pb;
+      pb+=2;
+      acc += dotpv2(VectInA,VectInB);
+      /* Decrement the loop counter */
+      tapCnt--;
+    }
+
+    /* If the filter length is not a multiple of 4, compute the remaining filter taps */
+    tapCnt = numTaps % 0x4u;
+
+    while(tapCnt > 0u)
+    {
+      /* Perform the multiply-accumulate */
+      acc += (q63_t) (((q31_t) (*px++) * (*pb++)));
+
+      /* Decrement the loop counter */
+      tapCnt--;
+    }
+
+    /* Calc lower part of acc */
+    acc_l = acc & 0xffffffff;
+
+    /* Calc upper part of acc */
+    acc_h = (acc >> 32) & 0xffffffff;
+
+    /* Apply shift for lower part of acc and upper part of acc */
+    acc = (uint32_t) acc_l >> lShift | acc_h << uShift;
+
+    /* Converting the result to 1.15 format and saturate the output */
+    acc = clip(acc, -32768,32767);
+
+    /* Store the result from accumulator into the destination buffer. */
+    *pOut++ = (q15_t) acc;
+
+    /* Compute and store error */
+    e = *pRef++ - (q15_t) acc;
+
+    *pErr++ = (q15_t) e;
+
+    /* Compute alpha i.e. intermediate constant for taps update */
+    alpha = (q15_t) (((q31_t) e * (mu)) >> 15);
+
+    /* Initialize state pointer */
+    /* Advance state pointer by 1 for the next sample */
+    px = pState++;
+
+    /* Initialize coefficient pointer */
+    pb = pCoeffs;
+
+    /* Loop unrolling.  Process 4 taps at a time. */
+    tapCnt = numTaps >> 2u;
+
+    /* Update filter coefficients */
+    while(tapCnt > 0u)
+    {
+      coef = (q31_t) * pb + (((q31_t) alpha * (*px++)) >> 15);
+      *pb++ = (q15_t) clip((coef), -32768,32767);;
+      coef = (q31_t) * pb + (((q31_t) alpha * (*px++)) >> 15);
+      *pb++ = (q15_t) clip((coef), -32768,32767);
+      coef = (q31_t) * pb + (((q31_t) alpha * (*px++)) >> 15);
+      *pb++ = (q15_t) clip((coef), -32768,32767);
+      coef = (q31_t) * pb + (((q31_t) alpha * (*px++)) >> 15);
+      *pb++ = (q15_t) clip((coef), -32768,32767);
+
+      /* Decrement the loop counter */
+      tapCnt--;
+    }
+
+    /* If the filter length is not a multiple of 4, compute the remaining filter taps */
+    tapCnt = numTaps % 0x4u;
+
+    while(tapCnt > 0u)
+    {
+      /* Perform the multiply-accumulate */
+      coef = (q31_t) * pb + (((q31_t) alpha * (*px++)) >> 15);
+      *pb++ = (q15_t) clip((coef), -32768,32767);
+
+      /* Decrement the loop counter */
+      tapCnt--;
+    }
+
+    /* Decrement the loop counter */
+    blkCnt--;
+
+  }
+
+  /* Processing is complete. Now copy the last numTaps - 1 samples to the    
+     satrt of the state buffer. This prepares the state buffer for the    
+     next function call. */
+
+  /* Points to the start of the pState buffer */
+  pStateCurnt = S->pState;
+
+  /* Calculation of count for copying integer writes */
+  tapCnt = (numTaps - 1u) >> 2;
+
+  while(tapCnt > 0u)
+  {
+    *(shortV*)pStateCurnt = *(shortV*)pState;
+    *(shortV*)(pStateCurnt+2) = *(shortV*)(pState+2);
+    pStateCurnt+=4;
+    pStateCurnt+=4;
+    tapCnt--;
+
+  }
+
+  /* Calculation of count for remaining q15_t data */
+  tapCnt = (numTaps - 1u) % 0x4u;
+
+  /* copy data */
+  while(tapCnt > 0u)
+  {
+    *pStateCurnt++ = *pState++;
+
+    /* Decrement the loop counter */
+    tapCnt--;
+  }
+
+#else
+
   /* S->pState points to buffer which contains previous frame (numTaps - 1) samples */
   /* pStateCurnt points to the location where the new input data should be written */
   pStateCurnt = &(S->pState[(numTaps - 1u)]);
@@ -197,7 +355,7 @@ void riscv_lms_q15(
     /* Decrement the loop counter */
     tapCnt--;
   }
-
+#endif
 }
 
 /**    

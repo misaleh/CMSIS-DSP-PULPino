@@ -75,6 +75,7 @@ void riscv_fir_interpolate_q15(
   q15_t * pDst,
   uint32_t blockSize)
 {
+
   q15_t *pState = S->pState;                     /* State pointer                                            */
   q15_t *pCoeffs = S->pCoeffs;                   /* Coefficient pointer                                      */
   q15_t *pStateCurnt;                            /* Points to the current sample of the state                */

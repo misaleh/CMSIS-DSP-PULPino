@@ -101,7 +101,7 @@ void riscv_lms_norm_q15(
   //uint32_t shift = (uint32_t) S->postShift + 1u; /* Shift to be applied to the output */ 
   q15_t errorXmu, oneByEnergy;                   /* Temporary variables to store error and mu product and reciprocal of energy */
   q15_t postShift;                               /* Post shift to be applied to weight after reciprocal calculation */
-  q31_t coef;                                    /* Teporary variable for coefficient */
+  q31_t coef,coef1;                                    /* Teporary variable for coefficient */
   q31_t acc_l, acc_h;
   int32_t lShift = (15 - (int32_t) S->postShift);       /*  Post shift  */
   int32_t uShift = (32 - lShift);
@@ -115,7 +115,186 @@ void riscv_lms_norm_q15(
 
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
+#if defined (USE_DSP_RISCV)
+  shortV VectInA;
+  shortV VectInB;
+  /* Run the below code for Cortex-M4 and Cortex-M3 */
 
+  while(blkCnt > 0u)
+  {
+    /* Copy the new input sample into the state buffer */
+    *pStateCurnt++ = *pSrc;
+
+    /* Initialize pState pointer */
+    px = pState;
+
+    /* Initialize coeff pointer */
+    pb = (pCoeffs);
+
+    /* Read the sample from input buffer */
+    in = *pSrc++;
+
+    /* Update the energy calculation */
+    energy -= (((q31_t) x0 * (x0)) >> 15);
+    energy += (((q31_t) in * (in)) >> 15);
+
+    /* Set the accumulator to zero */
+    acc = 0;
+
+    /* Loop unrolling.  Process 4 taps at a time. */
+    tapCnt = numTaps >> 2;
+
+    while(tapCnt > 0u)
+    {
+
+      /* Perform the multiply-accumulate */
+      VectInA = *(shortV*)px;
+      px+=2;
+      VectInB = *(shortV*)pb;
+      pb+=2;
+      acc += dotpv2(VectInA,VectInB);
+      VectInA = *(shortV*)px;
+      px+=2;
+      VectInB = *(shortV*)pb;
+      pb+=2;
+      acc += dotpv2(VectInA,VectInB);
+
+
+      /* Decrement the loop counter */
+      tapCnt--;
+    }
+
+    /* If the filter length is not a multiple of 4, compute the remaining filter taps */
+    tapCnt = numTaps % 0x4u;
+
+    while(tapCnt > 0u)
+    {
+      /* Perform the multiply-accumulate */
+      acc += (((q31_t) * px++ * (*pb++)));
+
+      /* Decrement the loop counter */
+      tapCnt--;
+    }
+
+    /* Calc lower part of acc */
+    acc_l = acc & 0xffffffff;
+
+    /* Calc upper part of acc */
+    acc_h = (acc >> 32) & 0xffffffff;
+
+    /* Apply shift for lower part of acc and upper part of acc */
+    acc = (uint32_t) acc_l >> lShift | acc_h << uShift;
+
+    /* Converting the result to 1.15 format and saturate the output */
+    acc = clip(acc, -32768,32767);
+
+    /* Store the result from accumulator into the destination buffer. */
+    *pOut++ = (q15_t) acc;
+
+    /* Compute and store error */
+    d = *pRef++;
+    e = d - (q15_t) acc;
+    *pErr++ = e;
+
+    /* Calculation of 1/energy */
+    postShift = riscv_recip_q15((q15_t) energy + DELTA_Q15,
+                              &oneByEnergy, S->recipTable);
+
+    /* Calculation of e * mu value */
+    errorXmu = (q15_t) (((q31_t) e * mu) >> 15);
+
+    /* Calculation of (e * mu) * (1/energy) value */
+    acc = (((q31_t) errorXmu * oneByEnergy) >> (15 - postShift));
+
+    /* Weighting factor for the normalized version */
+    w = (q15_t) clip((q31_t) acc, -32768,32767);;
+
+    /* Initialize pState pointer */
+    px = pState;
+
+    /* Initialize coeff pointer */
+    pb = (pCoeffs);
+
+    /* Loop unrolling.  Process 4 taps at a time. */
+    tapCnt = numTaps >> 2;
+
+    /* Update filter coefficients */
+    while(tapCnt > 0u)
+    {
+
+      coef = *pb + (((q31_t) w * (*px++)) >> 15);
+      *pb++ = (q15_t) clip((coef), -32768,32767);
+      coef = *pb + (((q31_t) w * (*px++)) >> 15);
+      *pb++ = (q15_t) clip((coef), -32768,32767);
+      coef = *pb + (((q31_t) w * (*px++)) >> 15);
+      *pb++ = (q15_t) clip((coef), -32768,32767);
+      coef = *pb + (((q31_t) w * (*px++)) >> 15);
+      *pb++ = (q15_t) clip((coef), -32768,32767);
+
+      /* Decrement the loop counter */
+      tapCnt--;
+    }
+
+    /* If the filter length is not a multiple of 4, compute the remaining filter taps */
+    tapCnt = numTaps % 0x4u;
+
+    while(tapCnt > 0u)
+    {
+      /* Perform the multiply-accumulate */
+      coef = *pb + (((q31_t) w * (*px++)) >> 15);
+      *pb++ = (q15_t) clip((coef), -32768,32767);
+
+      /* Decrement the loop counter */
+      tapCnt--;
+    }
+
+    /* Read the sample from state buffer */
+    x0 = *pState;
+
+    /* Advance state pointer by 1 for the next sample */
+    pState = pState + 1u;
+
+    /* Decrement the loop counter */
+    blkCnt--;
+  }
+
+  /* Save energy and x0 values for the next frame */
+  S->energy = (q15_t) energy;
+  S->x0 = x0;
+
+  /* Processing is complete. Now copy the last numTaps - 1 samples to the    
+     satrt of the state buffer. This prepares the state buffer for the    
+     next function call. */
+
+  /* Points to the start of the pState buffer */
+  pStateCurnt = S->pState;
+
+  /* Calculation of count for copying integer writes */
+  tapCnt = (numTaps - 1u) >> 2;
+
+  while(tapCnt > 0u)
+  {
+    *(shortV*)pStateCurnt = *(shortV*)pState;
+    *(shortV*)(pStateCurnt+2) = *(shortV*)(pState+2);
+    pStateCurnt+=4;
+    pStateCurnt+=4;
+    tapCnt--;
+
+  }
+
+  /* Calculation of count for remaining q15_t data */
+  tapCnt = (numTaps - 1u) % 0x4u;
+
+  /* copy data */
+  while(tapCnt > 0u)
+  {
+    *pStateCurnt++ = *pState++;
+
+    /* Decrement the loop counter */
+    tapCnt--;
+  }
+
+#else
 
   while(blkCnt > 0u)
   {
@@ -237,7 +416,7 @@ void riscv_lms_norm_q15(
     /* Decrement the loop counter */
     tapCnt--;
   }
-
+#endif
 }
 
 

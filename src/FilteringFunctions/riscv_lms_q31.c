@@ -138,12 +138,9 @@ void riscv_lms_q31(
     /* Store the result from accumulator into the destination buffer. */
     /* Calc lower part of acc */
     acc_l = acc & 0xffffffff;
-
     /* Calc upper part of acc */
     acc_h = (acc >> 32) & 0xffffffff;
-
     acc = (uint32_t) acc_l >> lShift | acc_h << uShift;
-
     *pOut++ = (q31_t) acc;
 
     /* Compute and store error */
