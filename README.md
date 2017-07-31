@@ -21,7 +21,7 @@ To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 6) Support Function
 
-7) Filtering  Function (67/99 functions)
+7) Filtering  Function
 
 ### Benchmarks
 
@@ -296,19 +296,19 @@ Init functions are not considered in benchmarking as they are just copying a few
 |     arm_fir_lattice_f32  |  136410| N/A|  2195|
 |    arm_fir_lattice_q15   | 5484 |2232(59.2%) | 2280 |
 |    arm_fir_lattice_q31   |  5108| N/A| 2185 |
-|    arm_fir_interpolate_f32   |  66193|	 | 2560|
-| arm_fir_interpolate_q15 | 3966|  | 3924|
-| arm_fir_interpolate_q31 | 4282|  | 4667|
-|  arm_iir_lattice_f32|214182 |  |5241 |
-| arm_iir_lattice_q15 | 7667|  | 4854|
-|  arm_iir_lattice_q31| 13793|  | 7756|
-| arm_lms_norm_f32 | 184391|  | 7057|
-| arm_lms_norm_q15 | 11182|  |8835 |
-| arm_lms_norm_q31|14629 |  | 13127|
-| arm_lms_f32 |144095   | | 6167|
-|  arm_lms_q15| 5944|  |7347 |
-| arm_lms_q31 | 8702|  | 9017|
-| arm_fir_sparse_f32 | 62525|  | 5447|
-| arm_fir_sparse_q7 | 4215|  | 5351|
-| arm_fir_sparse_q15 | 4523|  | 5326|
-|arm_fir_sparse_q31  | 4769|  | 6007|
+|    arm_fir_interpolate_f32   |  66193|	N/A | 2560|
+| arm_fir_interpolate_q15 | 3966| N/A | 3924|
+| arm_fir_interpolate_q31 | 4282| N/A | 4667|
+|  arm_iir_lattice_f32|214182 | N/A |5241 |
+| arm_iir_lattice_q15 | 7667| 5082(33.7%) | 4854|
+|  arm_iir_lattice_q31| 13793| N/A | 7756|
+| arm_lms_norm_f32 | 184391| N/A | 7057|
+| arm_lms_norm_q15 | 11182| 9557(21%) |8835 |
+| arm_lms_norm_q31|14629 |  N/A| 13127|
+| arm_lms_f32 |144095   |N/A | 6167|
+|  arm_lms_q15| 5944| N/A |7347 |
+| arm_lms_q31 | 8702|N/A  | 9017|
+| arm_fir_sparse_f32 | 62525| N/A | 5447|
+| arm_fir_sparse_q7 | 4215| N/A | 5351|
+| arm_fir_sparse_q15 | 4523| N/A | 5326|
+|arm_fir_sparse_q31  | 4769| N/A | 6007|
