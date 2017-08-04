@@ -23,6 +23,8 @@ To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 7) Filtering  Function
 
+#
+
 ### Benchmarks
 
 ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
@@ -81,6 +83,8 @@ Improvements of DSP extension(Imp) = (Old - New_DSP)*100/Old
 | arm_sub_q15      | 425 | 189(55.5%) | 168| 
 | arm_sub_q31      | 619 | N/A | 290| 
 
+#
+
 #### FastMath Functions
 
 Fast Math Functions doesn't operate on vectors.
@@ -102,6 +106,9 @@ sqrt for float use the built in sqrt function while sqrt for fixed point use  Ne
 | arm_sin_f32      | 2015 |  N/A| 55| 
 | arm_sin_q15      | 29 |  N/A| 30| 
 | arm_sin_q31      | 38 |  N/A| 43| 
+
+
+#
 
 #### Complex Math Functions
 
@@ -129,6 +136,8 @@ Most of the optimizations are in q15 data type, as float is not supported, and a
 | arm_cmplx_mult_real_f32      | 5689 |  N/A| 236| 
 | arm_cmplx_mult_real_q31      |  717|  N/A| 302| 
 | arm_cmplx_mult_real_q15      |  302| 203(32.8%) | 211| 
+
+#
 
 #### Statistics Functions
 
@@ -164,6 +173,8 @@ Functions that need square root operations, use the functions from FastMath as r
 | arm_var_q15      | 641 | 489(23.7%) | 551| 
 | arm_var_q31       | 1142 | N/A | 993| 
 
+#
+
 #### Matrix Functions
 
 These Benchmarks are performed on matrices of size 4x4.
@@ -197,6 +208,7 @@ CMSIS DSP Software Library
 | arm_mat_trans_q15       |  113| N/A |202|
 | arm_mat_trans_q31       |  114| N/A | 262 |
 
+#
 
 #### Filtering Functions
 
@@ -312,3 +324,18 @@ Init functions are not considered in benchmarking as they are just copying a few
 | arm_fir_sparse_q7 | 4215| N/A | 5351|
 | arm_fir_sparse_q15 | 4523| N/A | 5326|
 |arm_fir_sparse_q31  | 4769| N/A | 6007|
+
+#
+
+#### Transform Functions
+
+Form CFFT transform size was 64
+
+| Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
+| ------------- |:-------------:| -----:| -----:|
+|  arm_cfft_f32(without bit reversal)  | 197447 |  | | 
+|   arm_cfft_f32(with bit reversal) |  197934|  | | 
+| arm_cfft_q15(without bit reversal)   | 6113 |  | | 
+|  arm_cfft_q15(with bit reversal)  |  6541|  | | 
+|   arm_cfft_q31(without bit reversal) | 4949 |  | | 
+|  arm_cfft_q31(with bit reversal)  | 5429 |  | | 
