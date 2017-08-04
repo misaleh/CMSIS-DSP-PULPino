@@ -329,13 +329,13 @@ Init functions are not considered in benchmarking as they are just copying a few
 
 #### Transform Functions
 
-Form CFFT transform size was 64
+For CFFT, transform size was 64.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-|  arm_cfft_f32(without bit reversal)  | 197447 |  | | 
-|   arm_cfft_f32(with bit reversal) |  197934|  | | 
-| arm_cfft_q15(without bit reversal)   | 6113 |  | | 
-|  arm_cfft_q15(with bit reversal)  |  6541|  | | 
-|   arm_cfft_q31(without bit reversal) | 4949 |  | | 
-|  arm_cfft_q31(with bit reversal)  | 5429 |  | | 
+|  arm_cfft_f32(without bit reversal)  | 197447 |  |3110 | 
+|   arm_cfft_f32(with bit reversal) |  197934|  | 3823| 
+| arm_cfft_q15(without bit reversal)   | 6113 |  | 2827| 
+|  arm_cfft_q15(with bit reversal)  |  6541|  | 3318| 
+|   arm_cfft_q31(without bit reversal) | 4949 |  |5322 | 
+|  arm_cfft_q31(with bit reversal)  | 5429 |  |6038 | 
