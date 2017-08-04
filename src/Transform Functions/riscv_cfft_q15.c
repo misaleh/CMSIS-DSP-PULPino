@@ -35,9 +35,9 @@
 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE. 
+* POSSIBILITY OF SUCH DAMAGE.   
 
- Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)  
+ Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)
 * -------------------------------------------------------------------- */
 
 #include "riscv_math.h"
@@ -157,7 +157,9 @@ void riscv_cfft_radix4by2_q15(
     uint32_t ia, l;
     q15_t xt, yt, cosVal, sinVal;
 
-    
+    shortV VectInA;
+    shortV VectInB;
+    shortV *VectInC;
     n2 = fftLen >> 1; 
 
     
@@ -190,9 +192,15 @@ void riscv_cfft_radix4by2_q15(
     riscv_radix4_butterfly_q15( pSrc, n2, (q15_t*)pCoef, 2u);
     // second col
     riscv_radix4_butterfly_q15( pSrc + fftLen, n2, (q15_t*)pCoef, 2u);
-			
+    VectInB = pack2(1,1);		
     for (i = 0; i < fftLen >> 1; i++)
     {
+#if defined (USE_DSP_RISCV)
+     VectInC = (shortV*)(pSrc + 4*i);
+     *VectInC = sll2(*VectInC,VectInB);
+     VectInC = (shortV*)(pSrc + 4*i + 2);
+     *VectInC = sll2(*VectInC,VectInB);
+#else
         p0 = pSrc[4*i+0];
         p1 = pSrc[4*i+1];
         p2 = pSrc[4*i+2];
@@ -207,6 +215,8 @@ void riscv_cfft_radix4by2_q15(
         pSrc[4*i+1] = p1;
         pSrc[4*i+2] = p2;
         pSrc[4*i+3] = p3;
+#endif
+
     }
 }
 
