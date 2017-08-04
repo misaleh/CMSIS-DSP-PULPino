@@ -333,9 +333,9 @@ For CFFT, transform size was 64.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-|  arm_cfft_f32(without bit reversal)  | 197447 |  |3110 | 
-|   arm_cfft_f32(with bit reversal) |  197934|  | 3823| 
-| arm_cfft_q15(without bit reversal)   | 6113 |  | 2827| 
-|  arm_cfft_q15(with bit reversal)  |  6541|  | 3318| 
-|   arm_cfft_q31(without bit reversal) | 4949 |  |5322 | 
-|  arm_cfft_q31(with bit reversal)  | 5429 |  |6038 | 
+|  arm_cfft_f32(without bit reversal)  | 197447 | N/A |3110 | 
+|   arm_cfft_f32(with bit reversal) |  197934|  N/A| 3823| 
+| arm_cfft_q15(without bit reversal)   | 6113 | 4484(26.6%) | 2827| 
+|  arm_cfft_q15(with bit reversal)  |  6541| 4908(25%) | 3318| 
+|   arm_cfft_q31(without bit reversal) | 4949 |N/A  |5322 | 
+|  arm_cfft_q31(with bit reversal)  | 5429 | N/A |6038 | 
