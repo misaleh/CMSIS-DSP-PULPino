@@ -1284,6 +1284,111 @@ typedef signed short shortV __attribute__((vector_size (4)));
   uint16_t nColumns,
   float32_t * pData);
 
+
+  /**
+   * @brief Instance structure for the Q15 PID Control.
+   */
+  typedef struct
+  {
+    q15_t A0;  
+
+#if defined (USE_DSP_RISCV)
+    shortV A1;        
+#else
+    q15_t A1;
+    q15_t A2;
+#endif         
+    q15_t state[3];     /**< The state array of length 3. */
+    q15_t Kp;           /**< The proportional gain. */
+    q15_t Ki;           /**< The integral gain. */
+    q15_t Kd;           /**< The derivative gain. */
+  } riscv_pid_instance_q15;
+
+  /**
+   * @brief Instance structure for the Q31 PID Control.
+   */
+  typedef struct
+  {
+    q31_t A0;            /**< The derived gain, A0 = Kp + Ki + Kd . */
+    q31_t A1;            /**< The derived gain, A1 = -Kp - 2Kd. */
+    q31_t A2;            /**< The derived gain, A2 = Kd . */
+    q31_t state[3];      /**< The state array of length 3. */
+    q31_t Kp;            /**< The proportional gain. */
+    q31_t Ki;            /**< The integral gain. */
+    q31_t Kd;            /**< The derivative gain. */
+  } riscv_pid_instance_q31;
+
+  /**
+   * @brief Instance structure for the floating-point PID Control.
+   */
+  typedef struct
+  {
+    float32_t A0;          /**< The derived gain, A0 = Kp + Ki + Kd . */
+    float32_t A1;          /**< The derived gain, A1 = -Kp - 2Kd. */
+    float32_t A2;          /**< The derived gain, A2 = Kd . */
+    float32_t state[3];    /**< The state array of length 3. */
+    float32_t Kp;          /**< The proportional gain. */
+    float32_t Ki;          /**< The integral gain. */
+    float32_t Kd;          /**< The derivative gain. */
+  } riscv_pid_instance_f32;
+
+
+
+  /**
+   * @brief  Initialization function for the floating-point PID Control.
+   * @param[in,out] S               points to an instance of the PID structure.
+   * @param[in]     resetStateFlag  flag to reset the state. 0 = no change in state 1 = reset the state.
+   */
+  void riscv_pid_init_f32(
+  riscv_pid_instance_f32 * S,
+  int32_t resetStateFlag);
+
+
+  /**
+   * @brief  Reset function for the floating-point PID Control.
+   * @param[in,out] S  is an instance of the floating-point PID Control structure
+   */
+  void riscv_pid_reset_f32(
+  riscv_pid_instance_f32 * S);
+
+
+  /**
+   * @brief  Initialization function for the Q31 PID Control.
+   * @param[in,out] S               points to an instance of the Q15 PID structure.
+   * @param[in]     resetStateFlag  flag to reset the state. 0 = no change in state 1 = reset the state.
+   */
+  void riscv_pid_init_q31(
+  riscv_pid_instance_q31 * S,
+  int32_t resetStateFlag);
+
+
+  /**
+   * @brief  Reset function for the Q31 PID Control.
+   * @param[in,out] S   points to an instance of the Q31 PID Control structure
+   */
+
+  void riscv_pid_reset_q31(
+  riscv_pid_instance_q31 * S);
+
+
+  /**
+   * @brief  Initialization function for the Q15 PID Control.
+   * @param[in,out] S               points to an instance of the Q15 PID structure.
+   * @param[in]     resetStateFlag  flag to reset the state. 0 = no change in state 1 = reset the state.
+   */
+  void riscv_pid_init_q15(
+  riscv_pid_instance_q15 * S,
+  int32_t resetStateFlag);
+
+
+  /**
+   * @brief  Reset function for the Q15 PID Control.
+   * @param[in,out] S  points to an instance of the q15 PID Control structure
+   */
+  void riscv_pid_reset_q15(
+  riscv_pid_instance_q15 * S);
+
+
   /**
    * @brief Instance structure for the floating-point Linear Interpolate function.
    */
@@ -4381,6 +4486,195 @@ void riscv_rfft_fast_f32(
 
 
 
+ /**
+   * @ingroup groupController
+   */
+
+  /**
+   * @defgroup PID PID Motor Control
+   *
+   * A Proportional Integral Derivative (PID) controller is a generic feedback control
+   * loop mechanism widely used in industrial control systems.
+   * A PID controller is the most commonly used type of feedback controller.
+   *
+   * This set of functions implements (PID) controllers
+   * for Q15, Q31, and floating-point data types.  The functions operate on a single sample
+   * of data and each call to the function returns a single processed value.
+   * <code>S</code> points to an instance of the PID control data structure.  <code>in</code>
+   * is the input sample value. The functions return the output value.
+   *
+   * \par Algorithm:
+   * <pre>
+   *    y[n] = y[n-1] + A0 * x[n] + A1 * x[n-1] + A2 * x[n-2]
+   *    A0 = Kp + Ki + Kd
+   *    A1 = (-Kp ) - (2 * Kd )
+   *    A2 = Kd  </pre>
+   *
+   * \par
+   * where \c Kp is proportional constant, \c Ki is Integral constant and \c Kd is Derivative constant
+   *
+   * \par
+   * \image html PID.gif "Proportional Integral Derivative Controller"
+   *
+   * \par
+   * The PID controller calculates an "error" value as the difference between
+   * the measured output and the reference input.
+   * The controller attempts to minimize the error by adjusting the process control inputs.
+   * The proportional value determines the reaction to the current error,
+   * the integral value determines the reaction based on the sum of recent errors,
+   * and the derivative value determines the reaction based on the rate at which the error has been changing.
+   *
+   * \par Instance Structure
+   * The Gains A0, A1, A2 and state variables for a PID controller are stored together in an instance data structure.
+   * A separate instance structure must be defined for each PID Controller.
+   * There are separate instance structure declarations for each of the 3 supported data types.
+   *
+   * \par Reset Functions
+   * There is also an associated reset function for each data type which clears the state array.
+   *
+   * \par Initialization Functions
+   * There is also an associated initialization function for each data type.
+   * The initialization function performs the following operations:
+   * - Initializes the Gains A0, A1, A2 from Kp,Ki, Kd gains.
+   * - Zeros out the values in the state buffer.
+   *
+   * \par
+   * Instance structure cannot be placed into a const data section and it is recommended to use the initialization function.
+   *
+   * \par Fixed-Point Behavior
+   * Care must be taken when using the fixed-point versions of the PID Controller functions.
+   * In particular, the overflow and saturation behavior of the accumulator used in each function must be considered.
+   * Refer to the function specific documentation below for usage guidelines.
+   */
+
+  /**
+   * @addtogroup PID
+   * @{
+   */
+
+  /**
+   * @brief  Process function for the floating-point PID Control.
+   * @param[in,out] S   is an instance of the floating-point PID Control structure
+   * @param[in]     in  input sample to process
+   * @return out processed output sample.
+   */
+  inline static float32_t riscv_pid_f32(
+  riscv_pid_instance_f32 * S,
+  float32_t in)
+  {
+    float32_t out;
+
+    /* y[n] = y[n-1] + A0 * x[n] + A1 * x[n-1] + A2 * x[n-2]  */
+    out = (S->A0 * in) +
+      (S->A1 * S->state[0]) + (S->A2 * S->state[1]) + (S->state[2]);
+
+    /* Update state */
+    S->state[1] = S->state[0];
+    S->state[0] = in;
+    S->state[2] = out;
+
+    /* return to application */
+    return (out);
+
+  }
+
+  /**
+   * @brief  Process function for the Q31 PID Control.
+   * @param[in,out] S  points to an instance of the Q31 PID Control structure
+   * @param[in]     in  input sample to process
+   * @return out processed output sample.
+   *
+   * <b>Scaling and Overflow Behavior:</b>
+   * \par
+   * The function is implemented using an internal 64-bit accumulator.
+   * The accumulator has a 2.62 format and maintains full precision of the intermediate multiplication results but provides only a single guard bit.
+   * Thus, if the accumulator result overflows it wraps around rather than clip.
+   * In order to avoid overflows completely the input signal must be scaled down by 2 bits as there are four additions.
+   * After all multiply-accumulates are performed, the 2.62 accumulator is truncated to 1.32 format and then saturated to 1.31 format.
+   */
+  inline static q31_t riscv_pid_q31(
+  riscv_pid_instance_q31 * S,
+  q31_t in)
+  {
+    q63_t acc;
+    q31_t out;
+
+    /* acc = A0 * x[n]  */
+    acc = (q63_t) S->A0 * in;
+
+    /* acc += A1 * x[n-1] */
+    acc += (q63_t) S->A1 * S->state[0];
+
+    /* acc += A2 * x[n-2]  */
+    acc += (q63_t) S->A2 * S->state[1];
+
+    /* convert output to 1.31 format to add y[n-1] */
+    out = (q31_t) (acc >> 31u);
+
+    /* out += y[n-1] */
+    out += S->state[2];
+
+    /* Update state */
+    S->state[1] = S->state[0];
+    S->state[0] = in;
+    S->state[2] = out;
+
+    /* return to application */
+    return (out);
+  }
+
+
+  /**
+   * @brief  Process function for the Q15 PID Control.
+   * @param[in,out] S   points to an instance of the Q15 PID Control structure
+   * @param[in]     in  input sample to process
+   * @return out processed output sample.
+   *
+   * <b>Scaling and Overflow Behavior:</b>
+   * \par
+   * The function is implemented using a 64-bit internal accumulator.
+   * Both Gains and state variables are represented in 1.15 format and multiplications yield a 2.30 result.
+   * The 2.30 intermediate results are accumulated in a 64-bit accumulator in 34.30 format.
+   * There is no risk of internal overflow with this approach and the full precision of intermediate multiplications is preserved.
+   * After all additions have been performed, the accumulator is truncated to 34.15 format by discarding low 15 bits.
+   * Lastly, the accumulator is saturated to yield a result in 1.15 format.
+   */
+  inline static q15_t riscv_pid_q15(
+  riscv_pid_instance_q15 * S,
+  q15_t in)
+  {
+    q63_t acc;
+    q15_t out;
+    /* acc = A0 * x[n]  */
+    acc = ((q31_t) S->A0) * in;
+#if defined (USE_DSP_RISCV)
+    shortV Vstate = *(shortV*)S->state;
+    acc += dotpv2(S->A1,Vstate);
+#else
+    /* acc += A1 * x[n-1] + A2 * x[n-2]  */
+    acc += (q31_t) S->A1 * S->state[0];
+    acc += (q31_t) S->A2 * S->state[1];
+    /* acc += y[n-1] */
+#endif
+    acc += (q31_t) S->state[2] << 15;
+
+    /* saturate the output */
+    out = (q15_t) (__SSAT((acc >> 15), 16));
+
+    /* Update state */
+    S->state[1] = S->state[0];
+    S->state[0] = in;
+    S->state[2] = out;
+
+    /* return to application */
+    return (out);
+  }
+
+  /**
+   * @} end of PID group
+   */
+
+
   /**
    * @brief Floating-point matrix inverse.
    * @param[in]  *src points to the instance of the input floating-point matrix structure.
@@ -4450,7 +4744,7 @@ void riscv_rfft_fast_f32(
    * @return none.
    */
 
-  inline void riscv_clarke_f32(
+  inline static void riscv_clarke_f32(
   float32_t Ia,
   float32_t Ib,
   float32_t * pIalpha,
@@ -4479,6 +4773,27 @@ void riscv_rfft_fast_f32(
    * The accumulator maintains 1.31 format by truncating lower 31 bits of the intermediate multiplication in 2.62 format.
    * There is saturation on the addition, hence there is no risk of overflow.
    */
+  inline static void riscv_clarke_q31(
+  q31_t Ia,
+  q31_t Ib,
+  q31_t * pIalpha,
+  q31_t * pIbeta)
+  {
+    q31_t product1, product2;                    /* Temporary variables used to store intermediate results */
+
+    /* Calculating pIalpha from Ia by equation pIalpha = Ia */
+    *pIalpha = Ia;
+
+    /* Intermediate product is calculated by (1/(sqrt(3)) * Ia) */
+    product1 = (q31_t) (((q63_t) Ia * 0x24F34E8B) >> 30);
+
+    /* Intermediate product is calculated by (2/sqrt(3) * Ib) */
+    product2 = (q31_t) (((q63_t) Ib * 0x49E69D16) >> 30);
+
+    /* pIbeta is calculated by adding the intermediate products */
+    *pIbeta = __SSAT(product1 + product2,32);
+}
+
   /**
    * @} end of clarke group
    */
@@ -4562,6 +4877,26 @@ void riscv_rfft_fast_f32(
    * There is saturation on the subtraction, hence there is no risk of overflow.
    */
 
+  inline static void riscv_inv_clarke_q31(
+  q31_t Ialpha,
+  q31_t Ibeta,
+  q31_t * pIa,
+  q31_t * pIb)
+  {
+    q31_t product1, product2;                    /* Temporary variables used to store intermediate results */
+
+    /* Calculating pIa from Ialpha by equation pIa = Ialpha */
+    *pIa = Ialpha;
+
+    /* Intermediate product is calculated by (1/(2*sqrt(3)) * Ia) */
+    product1 = (q31_t) (((q63_t) (Ialpha) * (0x40000000)) >> 31);
+
+    /* Intermediate product is calculated by (1/sqrt(3) * pIb) */
+    product2 = (q31_t) (((q63_t) (Ibeta) * (0x6ED9EBA1)) >> 31);
+
+    /* pIb is calculated by subtracting the products */
+    *pIb = __SSAT(product2 - product1, 32);
+}
 
   /**
    * @brief  Converts the elements of the Q7 vector to Q15 vector.
@@ -4624,7 +4959,7 @@ void riscv_rfft_fast_f32(
    *
    */
 
-  inline void riscv_park_f32(
+  static inline void riscv_park_f32(
   float32_t Ialpha,
   float32_t Ibeta,
   float32_t * pId,
@@ -4656,7 +4991,35 @@ void riscv_rfft_fast_f32(
    * The accumulator maintains 1.31 format by truncating lower 31 bits of the intermediate multiplication in 2.62 format.
    * There is saturation on the addition and subtraction, hence there is no risk of overflow.
    */
+  static inline void riscv_park_q31(
+  q31_t Ialpha,
+  q31_t Ibeta,
+  q31_t * pId,
+  q31_t * pIq,
+  q31_t sinVal,
+  q31_t cosVal)
+  {
+    q31_t product1, product2;                    /* Temporary variables used to store intermediate results */
+    q31_t product3, product4;                    /* Temporary variables used to store intermediate results */
 
+    /* Intermediate product is calculated by (Ialpha * cosVal) */
+    product1 = (q31_t) (((q63_t) (Ialpha) * (cosVal)) >> 31);
+
+    /* Intermediate product is calculated by (Ibeta * sinVal) */
+    product2 = (q31_t) (((q63_t) (Ibeta) * (sinVal)) >> 31);
+
+    /* Intermediate product is calculated by (Ialpha * sinVal) */
+    product3 = (q31_t) (((q63_t) (Ialpha) * (sinVal)) >> 31);
+
+    /* Intermediate product is calculated by (Ibeta * cosVal) */
+    product4 = (q31_t) (((q63_t) (Ibeta) * (cosVal)) >> 31);
+
+    /* Calculate pId by adding the two intermediate products 1 and 2 */
+    *pId = __SSAT(product1 + product2,32);
+
+    /* Calculate pIq by subtracting the two intermediate products 3 from 4 */
+    *pIq = __SSAT(product4 - product3,32);
+}
 
   /**
    * @} end of park group
@@ -4745,6 +5108,37 @@ void riscv_rfft_fast_f32(
    * The accumulator maintains 1.31 format by truncating lower 31 bits of the intermediate multiplication in 2.62 format.
    * There is saturation on the addition, hence there is no risk of overflow.
    */
+  inline static void riscv_inv_park_q31(
+  q31_t Id,
+  q31_t Iq,
+  q31_t * pIalpha,
+  q31_t * pIbeta,
+  q31_t sinVal,
+  q31_t cosVal)
+  {
+    q31_t product1, product2;                    /* Temporary variables used to store intermediate results */
+    q31_t product3, product4;                    /* Temporary variables used to store intermediate results */
+
+    /* Intermediate product is calculated by (Id * cosVal) */
+    product1 = (q31_t) (((q63_t) (Id) * (cosVal)) >> 31);
+
+    /* Intermediate product is calculated by (Iq * sinVal) */
+    product2 = (q31_t) (((q63_t) (Iq) * (sinVal)) >> 31);
+
+
+    /* Intermediate product is calculated by (Id * sinVal) */
+    product3 = (q31_t) (((q63_t) (Id) * (sinVal)) >> 31);
+
+    /* Intermediate product is calculated by (Iq * cosVal) */
+    product4 = (q31_t) (((q63_t) (Iq) * (cosVal)) >> 31);
+
+    /* Calculate pIalpha by using the two intermediate products 1 and 2 */
+    *pIalpha = __SSAT(product1 - product2,32);
+
+    /* Calculate pIbeta by using the two intermediate products 3 and 4 */
+    *pIbeta = __SSAT(product4 + product3,32 );
+}
+
 
   /**
    * @} end of Inverse park group
