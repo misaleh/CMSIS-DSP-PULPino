@@ -1,6 +1,6 @@
 ## CMSIS DSD for PULPino
 This is a port of ARM CMSIS DSP [library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html) to [PULPino](https://github.com/pulp-platform/pulpino) microcontroller.
-This [project](https://summerofcode.withgoogle.com/projects/#5599084384616448) is part of GSoC 2017 
+This [project](https://summerofcode.withgoogle.com/projects/#5599084384616448) is part of Google Summer of Code (GSoC) 2017 
 
 This Repo is still under development.
 
@@ -19,9 +19,13 @@ To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 5) Matrix Functions
 
-6) Support Function
+6) Support Functions
 
-7) Filtering  Function
+7) Filtering  Functions
+
+8) Transform Functions (CFFT only without suppressed Functions)
+
+9) Controller Functions
 
 #
 
@@ -339,3 +343,27 @@ For CFFT, transform size was 64.
 |  arm_cfft_q15(with bit reversal)  |  6541| 4908(25%) | 3318| 
 |   arm_cfft_q31(without bit reversal) | 4949 |N/A  |5322 | 
 |  arm_cfft_q31(with bit reversal)  | 5429 | N/A |6038 | 
+
+
+#### Controller Functions
+
+For PID functions it operates on single at a time, this results are obtained by iterating over a vector of size 32.
+
+Init functions are not considered in benchmarking.
+
+| Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
+| ------------- |:-------------:| -----:| -----:|
+|  arm_pid_f32 |  33726 | |   | 
+|  arm_pid_q15 |  1429 | |   | 
+| arm_pid_q31  |   1334| |   | 
+|  arm_clarke_f32 | 557  | |   | 
+| arm_clarke_q31  |  97 | |   | 
+| arm_inv_clarke_f32  | 1093  | |   | 
+|  arm_inv_clarke_q31 |  82 | |   | 
+|   arm_sin_cos_f32| 7529  | |   | 
+| arm_sin_cos_q31  | 284  | |   | 
+| arm_park_f32  |  1046 | |   | 
+|  arm_park_q31 |  177 | |   | 
+|  arm_inv_park_f32 |  1039 | |   | 
+|  arm_inv_park_q31 |  178 | |   | 
+
