@@ -347,7 +347,7 @@ For CFFT, transform size was 64.
 
 #### Controller Functions
 
-For PID functions it operates on single at a time, this results are obtained by iterating over a vector of size 32.
+For PID functions, it operates on single sample at a time, this results are obtained by iterating over a vector of size 32.
 
 Init functions are not considered in benchmarking.
 
@@ -364,6 +364,24 @@ Init functions are not considered in benchmarking.
 | arm_sin_cos_q31  | 284  | N/A|  309 | 
 | arm_park_f32  |  1046 |N/A |  34 | 
 |  arm_park_q31 |  177 | N/A|   54| 
-|  arm_inv_park_f32 |  1039 |N/A | 33	  | 
+|  arm_inv_park_f32 |  1039 |N/A | 33| 
 |  arm_inv_park_q31 |  178 |N/A |  54 | 
 
+#### Interpolation Functions
+
+
+| Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
+| ------------- |:-------------:| -----:| -----:|
+|  arm_pid_f32 |  33726 | N/A| 2158 | 
+|  arm_pid_q15 |  1429 | 1348(5.7%)|  2318 | 
+| arm_pid_q31  |   1334| N/A|  2536 | 
+|  arm_clarke_f32 | 557  |N/A |  25 | 
+| arm_clarke_q31  |  97 |N/A |  36 | 
+| arm_inv_clarke_f32  | 1093  | N/A|  24 | 
+|  arm_inv_clarke_q31 |  82 |N/A |   34| 
+|   arm_sin_cos_f32| 7529  | N/A|   129| 
+| arm_sin_cos_q31  | 284  | N/A|  309 | 
+| arm_park_f32  |  1046 |N/A |  34 | 
+|  arm_park_q31 |  177 | N/A|   54| 
+|  arm_inv_park_f32 |  1039 |N/A | 33| 
+|  arm_inv_park_q31 |  178 |N/A |  54 | 
