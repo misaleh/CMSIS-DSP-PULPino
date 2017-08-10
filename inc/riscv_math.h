@@ -5206,7 +5206,7 @@ void riscv_rfft_fast_f32(
    *
    */
 
-  inline float32_t riscv_linear_interp_f32(
+  static inline float32_t riscv_linear_interp_f32(
   riscv_linear_interp_instance_f32 * S,
   float32_t x)
   {
@@ -5265,7 +5265,7 @@ void riscv_rfft_fast_f32(
    */
 
 
-  inline q31_t riscv_linear_interp_q31(
+  static inline q31_t riscv_linear_interp_q31(
   q31_t * pYData,
   q31_t x,
   uint32_t nValues)
@@ -5327,7 +5327,7 @@ void riscv_rfft_fast_f32(
    */
 
 
-  inline q15_t riscv_linear_interp_q15(
+  static inline q15_t riscv_linear_interp_q15(
   q15_t * pYData,
   q31_t x,
   uint32_t nValues)
@@ -5387,7 +5387,7 @@ void riscv_rfft_fast_f32(
    */
 
 
-  inline q7_t riscv_linear_interp_q7(
+  static inline q7_t riscv_linear_interp_q7(
   q7_t * pYData,
   q31_t x,
   uint32_t nValues)
@@ -6577,7 +6577,7 @@ void riscv_rfft_fast_f32(
   */
 
 
-  inline float32_t riscv_bilinear_interp_f32(
+  static inline float32_t riscv_bilinear_interp_f32(
   const riscv_bilinear_interp_instance_f32 * S,
   float32_t X,
   float32_t Y)
@@ -6645,7 +6645,7 @@ void riscv_rfft_fast_f32(
   * @return out interpolated value.
   */
 
-  inline q31_t riscv_bilinear_interp_q31(
+  static inline q31_t riscv_bilinear_interp_q31(
   riscv_bilinear_interp_instance_q31 * S,
   q31_t X,
   q31_t Y)
@@ -6721,7 +6721,7 @@ void riscv_rfft_fast_f32(
   * @return out interpolated value.
   */
 
-  inline q15_t riscv_bilinear_interp_q15(
+  static inline q15_t riscv_bilinear_interp_q15(
   riscv_bilinear_interp_instance_q15 * S,
   q31_t X,
   q31_t Y)
@@ -6801,7 +6801,7 @@ void riscv_rfft_fast_f32(
   * @return out interpolated value.
   */
 
-  inline q7_t riscv_bilinear_interp_q7(
+  static inline q7_t riscv_bilinear_interp_q7(
   riscv_bilinear_interp_instance_q7 * S,
   q31_t X,
   q31_t Y)
