@@ -379,7 +379,7 @@ Init functions are not considered in benchmarking.
 |  arm_linear_interp_q15 | 47|N/A| 92 | 
 | arm_linear_interp_q31  |40| N/A| 84 | 
 | arm_bilinear_interp_f32 |1740| N/A| 189 | 
-|  arm_bilinear_interp_q7 |178840| N/A| 219 | 
+|  arm_bilinear_interp_q7 |88| N/A| 219 | 
 | arm_bilinear_interp_q15  |139| N/A| 240 | 
 |  arm_bilinear_interp_q31 |111| N/A| 226 | 
 
