@@ -27,6 +27,8 @@ To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 9) Controller Functions
 
+10) Interpolation Functions
+
 #
 
 ### Benchmarks
@@ -372,16 +374,12 @@ Init functions are not considered in benchmarking.
 
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
-|  arm_pid_f32 |  33726 | N/A| 2158 | 
-|  arm_pid_q15 |  1429 | 1348(5.7%)|  2318 | 
-| arm_pid_q31  |   1334| N/A|  2536 | 
-|  arm_clarke_f32 | 557  |N/A |  25 | 
-| arm_clarke_q31  |  97 |N/A |  36 | 
-| arm_inv_clarke_f32  | 1093  | N/A|  24 | 
-|  arm_inv_clarke_q31 |  82 |N/A |   34| 
-|   arm_sin_cos_f32| 7529  | N/A|   129| 
-| arm_sin_cos_q31  | 284  | N/A|  309 | 
-| arm_park_f32  |  1046 |N/A |  34 | 
-|  arm_park_q31 |  177 | N/A|   54| 
-|  arm_inv_park_f32 |  1039 |N/A | 33| 
-|  arm_inv_park_q31 |  178 |N/A |  54 | 
+| arm_linear_interp_f32 |701 | N/A| 55 | 
+|  arm_linear_interp_q7  |27| N/A| 80 | 
+|  arm_linear_interp_q15 | 47|N/A| 92 | 
+| arm_linear_interp_q31  |40| N/A| 84 | 
+| arm_bilinear_interp_f32 |1740| N/A| 189 | 
+|  arm_bilinear_interp_q7 |178840| N/A| 219 | 
+| arm_bilinear_interp_q15  |139| N/A| 240 | 
+|  arm_bilinear_interp_q31 |111| N/A| 226 | 
+
