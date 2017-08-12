@@ -23,7 +23,7 @@ To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 7) Filtering  Functions
 
-8) Transform Functions (CFFT only without suppressed Functions)
+8) Transform Functions (without  radix-2 suppressed Functions)
 
 9) Controller Functions
 
@@ -345,7 +345,12 @@ For CFFT, transform size was 64.
 |  arm_cfft_q15(with bit reversal)  |  6541| 4908(25%) | 3318| 
 |   arm_cfft_q31(without bit reversal) | 4949 |N/A  |5322 | 
 |  arm_cfft_q31(with bit reversal)  | 5429 | N/A |6038 | 
-
+|  arm_rfft_fast_f32| 54930 | N/A  | 1930| 
+| arm_rfft_q15 | 1245 | N/A  |1228 | 
+|  arm__rfft_q31|2461 |N/A   |2727 | 
+| arm__dct4_f32 |658439  | N/A  |16037| 
+| arm_dct4_q15 |  12763| N/A  | | 
+|arm_dct4_q31  | 29770 | N/A  | | 
 
 #### Controller Functions
 
