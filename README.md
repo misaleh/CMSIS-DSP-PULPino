@@ -8,6 +8,19 @@ The names of files and functions are renamed from arm to riscv, Check  examples 
 
 To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
+***Directory Structure:***
+
+* inc/ : Inculde files for CMSIS DSP.
+
+* src/ : Ported Source code.
+
+* tests/ : some tests, used for benchmarking.
+
+* examples/ : Ported examples.
+
+* more_tests/ : More tests based on subset of the CMSISv5 test suite, it doesn't compare results with pre-known values but with reference implementation.
+
+
 ### Ported Modules
 1) Basic Math Functions
 
