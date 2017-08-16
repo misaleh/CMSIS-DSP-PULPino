@@ -97,8 +97,8 @@ void riscv_power_q7(
   while(blkCnt > 0u)
   {
     /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
-    sum += *pSrc++;
-
+    in = *pSrc++;
+    sum += ((q15_t) in * in);
     /* Decrement the loop counter */
     blkCnt--;
   }
