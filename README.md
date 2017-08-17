@@ -350,6 +350,12 @@ Init functions are not considered in benchmarking as they are just copying a few
 
 For CFFT, transform size was 64.
 
+RFFT uses Transform of size 16.
+
+DCT uses Transform of size 128.
+
+To use most of theses tests, the RAM size has to be changed to 512kb.
+
 | Function        | Puplino Cycles           | Puplino DSP  Cycles (Imp%)|  ARM M4 Cycles|
 | ------------- |:-------------:| -----:| -----:|
 |  arm_cfft_f32(without bit reversal)  | 197447 | N/A |3110 | 
