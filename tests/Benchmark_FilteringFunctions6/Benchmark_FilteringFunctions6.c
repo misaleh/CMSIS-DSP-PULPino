@@ -5,11 +5,14 @@
 #include "utils.h"
 #include "string_lib.h"
 #include "bar.h"
+#include "bench.h"
+
+#define EVENT_ID 0x00  /*number of cycles ID for benchmarking*/
 
 
-#define PRINT_F32(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i]*100)); \
+#define PRINT_F32(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i]*100)); \
 printf("\n\n")
-#define PRINT_Q(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
+#define PRINT_Q(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
 printf("\n\n")
 //#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define MAX_BLOCKSIZE     32
@@ -42,6 +45,10 @@ to measure the time of execution of each function.
 *Also the correct results are printed for the current vectors which are calculated from the orignal library 
 and also were checked by hand
 */
+void perf_enable_id( int eventid){
+  cpu_perf_conf_events(SPR_PCER_EVENT_MASK(eventid));
+  cpu_perf_conf(SPR_PCMR_ACTIVE | SPR_PCMR_SATURATE);
+};
  float32_t srcA_buf_f32[MAX_BLOCKSIZE] =
 {
   -0.4325648115282207,  -1.6655843782380970,  0.1253323064748307,
@@ -240,13 +247,6 @@ int32_t main(void)
 {
 
  /*Init*/ 
-  set_pin_function(5, FUNC_GPIO);
-  set_gpio_pin_direction(5, DIR_OUT);
-  set_pin_function(6, FUNC_GPIO);
-  set_gpio_pin_direction(6, DIR_OUT);
-  CLR_GPIO_5() ;
-  CLR_GPIO_6() ;
-
  /*Finite Impulse Response (FIR) Interpolator Init*/
   riscv_fir_interpolate_init_f32( &S_interpolator_f32,L,NUMTAPS,coeffs_interpolate_f32,state_interpolate_f32, MAX_BLOCKSIZE);
   riscv_fir_interpolate_init_q15( &S_interpolator_q15,L,NUMTAPS,coeffs_interpolate_q15,state_interpolate_q15, MAX_BLOCKSIZE);
@@ -261,71 +261,89 @@ int32_t main(void)
   riscv_lms_norm_init_q31(&S_lms_norm_q31, NUMTAPS, coeffs_lms_norm_q31, state_lms_norm_q31, MU_q31, MAX_BLOCKSIZE,POS_SHIFT);
 /*Finite Impulse Response (FIR) Interpolator*/
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_fir_interpolate_f32(&S_interpolator_f32,srcA_buf_f32,interpolate_result_f32,MAX_BLOCKSIZE);
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_fir_interpolate_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_fir_interpolate_f32",interpolate_result_f32,L*MAX_BLOCKSIZE);
+  PRINT_F32(interpolate_result_f32,L*MAX_BLOCKSIZE);
 #endif
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_fir_interpolate_q15(&S_interpolator_q15,srcA_buf_q15,interpolate_result_q15,MAX_BLOCKSIZE);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_fir_interpolate_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_fir_interpolate_q15",interpolate_result_q15,L*MAX_BLOCKSIZE);
+  PRINT_Q(interpolate_result_q15,L*MAX_BLOCKSIZE);
 #endif
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_fir_interpolate_q31(&S_interpolator_q31,srcA_buf_q31,interpolate_result_q31,MAX_BLOCKSIZE);
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_fir_interpolate_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_fir_interpolate_q31",interpolate_result_q31,L*MAX_BLOCKSIZE);
+  PRINT_Q(interpolate_result_q31,L*MAX_BLOCKSIZE);
 #endif
 
 /*Infinite Impulse Response (IIR) Lattice Filters*/
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_iir_lattice_f32( &S_iir_f32, srcA_buf_f32, result_f32, MAX_BLOCKSIZE);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_iir_lattice_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_iir_lattice_f32",result_f32,MAX_BLOCKSIZE);
+  PRINT_F32(result_f32,MAX_BLOCKSIZE);
 #endif
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_iir_lattice_q15( &S_iir_q15, srcA_buf_q15, result_q15, MAX_BLOCKSIZE);
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_iir_lattice_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_iir_lattice_q15",result_q15,MAX_BLOCKSIZE);
+  PRINT_Q(result_q15,MAX_BLOCKSIZE);
 #endif
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_iir_lattice_q31( &S_iir_q31, srcA_buf_q31, result_q31, MAX_BLOCKSIZE);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_iir_lattice_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_iir_lattice_q31",result_q31,MAX_BLOCKSIZE);
+  PRINT_Q(result_q31,MAX_BLOCKSIZE);
 #endif
 
 /*Normalized LMS Filters*/
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_lms_norm_f32(&S_lms_norm_f32, srcA_buf_f32,srcB_buf_f32,result_f32,err_signal_f32, MAX_BLOCKSIZE); 
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_lms_norm_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_lms_norm_f32",result_f32,MAX_BLOCKSIZE);
+  PRINT_F32(result_f32,MAX_BLOCKSIZE);
 #endif
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_lms_norm_q15(&S_lms_norm_q15, srcA_buf_q15,srcB_buf_q15,result_q15,err_signal_q15, MAX_BLOCKSIZE); 
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_lms_norm_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_lms_norm_q15",result_q15,MAX_BLOCKSIZE);
+  PRINT_Q(result_q15,MAX_BLOCKSIZE);
 #endif
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_lms_norm_q31(&S_lms_norm_q31, srcA_buf_q31,srcB_buf_q31,result_q31,err_signal_q31, MAX_BLOCKSIZE); 
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_lms_norm_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_lms_norm_q31",result_q31,MAX_BLOCKSIZE);
+  PRINT_Q(result_q31,MAX_BLOCKSIZE);
 #endif
 
   printf("End\n");

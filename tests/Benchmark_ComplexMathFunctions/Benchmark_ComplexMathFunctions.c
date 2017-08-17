@@ -4,8 +4,10 @@
 #include "utils.h"
 #include "string_lib.h"
 #include "bar.h"
+#include "bench.h"
 
 //#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
+#define EVENT_ID 0x00  /*number of cycles ID for benchmarking*/
 #define MAX_BLOCKSIZE     32
 #define NUM_SAMPLES  16  /*size of array 32. num of elements are 16 as each 2 elements represnt a complex number */
 /*
@@ -29,6 +31,11 @@ to measure the time of execution of each function.
 *Also the correct results are printed for the current values which are calculated from the orignal library 
 and also were checked by hand
 */
+void perf_enable_id( int eventid){
+  cpu_perf_conf_events(SPR_PCER_EVENT_MASK(eventid));
+  cpu_perf_conf(SPR_PCMR_ACTIVE | SPR_PCMR_SATURATE);
+};
+
  float32_t srcA_buf_f32[MAX_BLOCKSIZE] =
 {
   -0.4325648115282207,  -1.6655843782380970,  0.1253323064748307,
@@ -158,30 +165,25 @@ int i= 0;
 
 int32_t main(void)
 {
- /*Init*/ 
-  set_pin_function(5, FUNC_GPIO);
-  set_gpio_pin_direction(5, DIR_OUT);
-  set_pin_function(6, FUNC_GPIO);
-  set_gpio_pin_direction(6, DIR_OUT);
-  CLR_GPIO_5();
-  CLR_GPIO_6();
 /*Tests*/
 /*Complex Conjugate*/
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_conj_f32( srcA_buf_f32,result_f32,NUM_SAMPLES);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_cmplx_conj_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_conj_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
     {
       printf("%d + i%d\n",(int)(result_f32[i]*100),(int)(result_f32[i+1]*100));  
     }
 #endif
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_conj_q31(srcA_buf_q31,result_q31,NUM_SAMPLES);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_cmplx_conj_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_conj_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
     {
       printf("0x%X + 0xi%X\n",result_q31[i],result_q31[i+1]);  
@@ -206,11 +208,12 @@ int32_t main(void)
 0x91000436 + 0xiBB9655EB");
   printf("\n");
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_conj_q15(srcA_buf_q15,result_q15,NUM_SAMPLES);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_cmplx_conj_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_conj_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
     {
       printf("0x%X + 0xi%X\n",result_q15[i],result_q15[i+1]);  
@@ -236,19 +239,21 @@ int32_t main(void)
   printf("\n");
 #endif
 /*Complex Dot Product*/
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_dot_prod_f32( srcA_buf_f32,srcB_buf_f32,NUM_SAMPLES,&real_f32,&img_f32);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_cmplx_dot_prod_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_dot_prod_f32:\n");  
   printf("%d + i%d\n",(int)(real_f32*100),(int)(img_f32*100));  
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_dot_prod_q31(srcA_buf_q31,srcB_buf_q31,NUM_SAMPLES,&real_q63,&img_q63);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_cmplx_dot_prod_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_dot_prod_q31:\n");  
   int * ptr = &real_q63;
   ptr++;
   printf("0x%X",*(ptr--));
@@ -261,11 +266,12 @@ int32_t main(void)
   printf("\nCorrect answer:\n");
   printf("0x2927C892B96BC + i0x22D6ABC4110A6 \n");
 #endif
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_dot_prod_q15(srcA_buf_q15,srcB_buf_q15,NUM_SAMPLES,&real_q31,&img_q31);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_cmplx_dot_prod_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_dot_prod_q15:\n");  
   printf("0x%X + 0xi%X\n",real_q31,img_q31);  
   printf("\n");
   printf("\nCorrect answer:\n");
@@ -274,21 +280,23 @@ int32_t main(void)
 
 /*Complex Magnitude*/
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mag_f32(srcA_buf_f32,result_f32,NUM_SAMPLES);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_cmplx_mag_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mag_f32:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
     {
       printf("%d\n",(int)(result_f32[i]*100));  
     }
 #endif
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mag_q31(srcA_buf_q31,result_q31,NUM_SAMPLES); //output 2.30
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_cmplx_mag_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mag_q31:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
     {
       printf("0x%X\n",result_q31[i]);  
@@ -313,11 +321,12 @@ int32_t main(void)
 0x4131CA9E ");
   printf("\n");
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mag_q15(srcA_buf_q15,result_q15,NUM_SAMPLES); //output 2.14
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_cmplx_mag_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mag_q15:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
     {
       printf("0x%X\n",result_q15[i]);  
@@ -344,21 +353,23 @@ int32_t main(void)
 #endif
 
 /*Complex Magnitude Squared*/
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mag_squared_f32(srcA_buf_f32,result_f32,NUM_SAMPLES);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_cmplx_mag_squared_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mag_squared_f32:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
     {
       printf("%d\n",(int)(result_f32[i]*100));  
     }
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mag_squared_q31(srcA_buf_q31,result_q31,NUM_SAMPLES);//output 3.29
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_cmplx_mag_squared_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mag_squared_q31:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
     {
       printf("0x%X\n",result_q31[i]);  
@@ -383,11 +394,12 @@ int32_t main(void)
 0x2134A528");
   printf("\n");
 #endif
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mag_squared_q15(srcA_buf_q15,result_q15,NUM_SAMPLES); //output 3.13
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_cmplx_mag_squared_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mag_squared_q15:\n");  
   for(i = 0 ; i < NUM_SAMPLES ; i++)
     {
       printf("0x%X\n",result_q15[i]);  
@@ -415,21 +427,23 @@ int32_t main(void)
 
 /*Complex-by-Complex Multiplication*/
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mult_cmplx_f32(srcA_buf_f32, srcB_buf_f32, result_f32, NUM_SAMPLES);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_cmplx_mult_cmplx_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mult_cmplx_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
     {
       printf("%d + i%d\n",(int)(result_f32[i]*100),(int)(result_f32[i+1]*100));  
     }
 #endif
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mult_cmplx_q31(srcA_buf_q31, srcB_buf_q31, result_q31, NUM_SAMPLES); //output 3.29
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_cmplx_mult_cmplx_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mult_cmplx_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
     {
       printf("0x%X + i0x%X\n",result_q31[i],result_q31[i+1]);  
@@ -454,11 +468,12 @@ int32_t main(void)
 0x0EEC5730 + i0xE2563060");
   printf("\n");
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mult_cmplx_q15(srcA_buf_q15, srcB_buf_q15, result_q15, NUM_SAMPLES); //output 3.13
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_cmplx_mult_cmplx_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mult_cmplx_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
     {
       printf("0x%X + i0x%X\n",result_q15[i],result_q15[i+1]);  
@@ -486,21 +501,23 @@ int32_t main(void)
 
 /*Complex-by-Real Multiplication*/
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mult_real_f32(srcA_buf_f32, src_real_f32, result_f32, NUM_SAMPLES);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_cmplx_mult_real_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mult_real_f32:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
     {
       printf("%d + i%d\n",(int)(result_f32[i]*100),(int)(result_f32[i+1]*100));  
     }
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mult_real_q31(srcA_buf_q31, src_real_q31, result_q31, NUM_SAMPLES);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_cmplx_mult_real_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mult_real_q31:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
     {
       printf("0x%X + i0x%X\n",result_q31[i],result_q31[i+1]);  
@@ -525,11 +542,12 @@ int32_t main(void)
 0xDE2E9537 + i0x14D7D6A5");
   printf("\n");
 #endif
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cmplx_mult_real_q15(srcA_buf_q15, src_real_q15, result_q15, NUM_SAMPLES);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_cmplx_mult_real_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("\nriscv_cmplx_mult_real_q15:\n");  
   for(i = 0 ; i < MAX_BLOCKSIZE ; i+=2)
     {
       printf("0x%X + i0x%X\n",result_q15[i],result_q15[i+1]);  

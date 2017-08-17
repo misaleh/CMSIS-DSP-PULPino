@@ -1,12 +1,13 @@
 #include <math.h>
 #include <stdio.h>
 #include "riscv_math.h"
-
-#include "gpio.h" //for indication for benchmarking
+#include "gpio.h"
 #include "utils.h"
 #include "string_lib.h"
 #include "bar.h"
+#include "bench.h"
 
+#define EVENT_ID 0x00  /*number of cycles ID for benchmarking*/
 
 
 //#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
@@ -31,6 +32,10 @@ to measure the time of execution of each function.
 *Also the correct results are printed for the current vectors which are calculated from the orignal library 
 and also were checked by hand
 */
+void perf_enable_id( int eventid){
+  cpu_perf_conf_events(SPR_PCER_EVENT_MASK(eventid));
+  cpu_perf_conf(SPR_PCMR_ACTIVE | SPR_PCMR_SATURATE);
+};
  volatile float32_t srcA_buf_f32[MAX_BLOCKSIZE] =
 {
   -0.4325648115282207,  -1.6655843782380970,  0.1253323064748307,
@@ -104,13 +109,6 @@ int32_t main(void)
 {
 
  /*Init*/ 
-  set_pin_function(5, FUNC_GPIO);
-  set_gpio_pin_direction(5, DIR_OUT);
-  set_pin_function(6, FUNC_GPIO);
-  set_gpio_pin_direction(6, DIR_OUT);
-  CLR_GPIO_5() ;
-  CLR_GPIO_6() ;
-
 
   volatile riscv_linear_interp_instance_f32 S_linear_f32 = {MAX_BLOCKSIZE, 2.3, 0.1, srcA_buf_f32};
   volatile riscv_bilinear_interp_instance_f32 S_bilinear_f32= {5,5,srcA_buf_f32};/*only 25 elements from table*/
@@ -120,60 +118,76 @@ int32_t main(void)
 /*Tests*/
 /*Linear Interpolation*/
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   result_f32 = riscv_linear_interp_f32(&S_linear_f32, X_f32);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_linear_interp_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("riscv_linear_interp_f32,  %d\n",(int)(100*result_f32));
+  printf(" %d\n",(int)(100*result_f32));
 #endif	
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   result_q7 = riscv_linear_interp_q7(srcA_buf_q7,X_Q,MAX_BLOCKSIZE);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_linear_interp_q7: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("riscv_linear_interp_q7,  0x%X\n",result_q7);
+  printf(" 0x%X\n",result_q7);
 #endif
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   result_q15 = riscv_linear_interp_q15(srcA_buf_q15,X_Q,MAX_BLOCKSIZE);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_linear_interp_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("riscv_linear_interp_q15,  0x%X\n",result_q15);
+  printf(" 0x%X\n",result_q15);
 #endif
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   result_q31 = riscv_linear_interp_q31(srcA_buf_q31,X_Q,MAX_BLOCKSIZE);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_linear_interp_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("riscv_linear_interp_q31,  0x%X\n",result_q31);
+  printf(" 0x%X\n",result_q31);
 #endif	
 /*Bilinear Interpolation*/
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   result_f32 = riscv_bilinear_interp_f32(&S_bilinear_f32, 3,2);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_bilinear_interp_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("riscv_bilinear_interp_f32,  %d\n",(int)(100*result_f32));
+  printf(" %d\n",(int)(100*result_f32));
 #endif	
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   result_q7 = riscv_bilinear_interp_q7(&S_bilinear_q7,3,2);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_bilinear_interp_q7: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("riscv_bilinear_interp_q7,  0x%X\n",result_q7);
+  printf("  0x%X\n",result_q7);
 #endif
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   result_q15 = riscv_bilinear_interp_q15(&S_bilinear_q15,3,2);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_bilinear_interp_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("riscv_bilinear_interp_q15,  0x%X\n",result_q15);
+  printf(" 0x%X\n",result_q15);
 #endif
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   result_q31 = riscv_bilinear_interp_q31(&S_bilinear_q31,3,2);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_bilinear_interp_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  printf("riscv_bilinear_interp_q31,  0x%X\n",result_q31);
+  printf(" 0x%X\n",result_q31);
 #endif
   printf("End\n");
 

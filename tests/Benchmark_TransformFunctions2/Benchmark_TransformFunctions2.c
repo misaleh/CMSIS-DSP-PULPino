@@ -5,11 +5,15 @@
 #include "bar.h"
 #include <stdio.h>
 #include "riscv_const_structs.h"
-#define PRINT_F32(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i]*100)); \
+#include "bench.h"
+
+#define EVENT_ID 0x00  /*number of cycles ID for benchmarking*/
+
+#define PRINT_F32(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i]*100)); \
 printf("\n\n")
-#define PRINT_Q(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
+#define PRINT_Q(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
 printf("\n\n")
-#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
+//#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define TEST_LENGTH_SAMPLES 128
 #define RFFT_LEN  64
 /*
@@ -34,6 +38,10 @@ to measure the time of execution of each function.
 *Also the correct results are printed for the current values which are calculated from the orignal library 
 and also were checked by hand
 */
+void perf_enable_id( int eventid){
+  cpu_perf_conf_events(SPR_PCER_EVENT_MASK(eventid));
+  cpu_perf_conf(SPR_PCMR_ACTIVE | SPR_PCMR_SATURATE);
+};
 
 
 q31_t testInput_q31[TEST_LENGTH_SAMPLES] = 
@@ -58,27 +66,21 @@ q31_t testInput_q31[TEST_LENGTH_SAMPLES] =
 
 uint32_t fftSize = 64;
 uint32_t ifftFlag = 0;
-uint32_t doBitReverse = 0;
+uint32_t doBitReverse = 1;
 riscv_rfft_fast_instance_f32 S_rfft_f32;
 
 
 int32_t main(void)
 {
- /*Init*/ 
-  set_pin_function(5, FUNC_GPIO);
-  set_gpio_pin_direction(5, DIR_OUT);
-  set_pin_function(6, FUNC_GPIO);
-  set_gpio_pin_direction(6, DIR_OUT);
-  CLR_GPIO_5();
-  CLR_GPIO_6();
 
 /*Tests*/
-
 /*cfft*/
   printf("bitrev =%d\n",doBitReverse);
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);
   riscv_cfft_q31(&riscv_cfft_sR_q31_len64, testInput_q31, ifftFlag, doBitReverse);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_cfft_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
   PRINT_Q("riscv_cfft_q31",testInput_q31,fftSize);
 #endif

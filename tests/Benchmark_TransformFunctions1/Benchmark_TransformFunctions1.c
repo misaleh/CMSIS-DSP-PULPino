@@ -5,9 +5,14 @@
 #include "bar.h"
 #include <stdio.h>
 #include "riscv_const_structs.h"
-#define PRINT_F32(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i]*100)); \
+#include "bench.h"
+
+#define EVENT_ID 0x00  /*number of cycles ID for benchmarking*/
+
+
+#define PRINT_F32(X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i]*100)); \
 printf("\n\n")
-#define PRINT_Q(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
+#define PRINT_Q(X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
 printf("\n\n")
 //#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define TEST_LENGTH_SAMPLES 128
@@ -33,7 +38,10 @@ to measure the time of execution of each function.
 *Also the correct results are printed for the current values which are calculated from the orignal library 
 and also were checked by hand
 */
-
+void perf_enable_id( int eventid){
+  cpu_perf_conf_events(SPR_PCER_EVENT_MASK(eventid));
+  cpu_perf_conf(SPR_PCMR_ACTIVE | SPR_PCMR_SATURATE);
+};
 
 float32_t testInput_f32[TEST_LENGTH_SAMPLES] = 
 {   
@@ -103,22 +111,24 @@ uint32_t doBitReverse = 1;
 int32_t main(void)
 {
   //printf("bitrev =%d\n",doBitReverse);
-  SET_GPIO_5();	
+
+  perf_reset();
+  perf_enable_id(EVENT_ID);
   riscv_cfft_f32(&riscv_cfft_sR_f32_len64, testInput_f32, ifftFlag, doBitReverse);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_cfft_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_cfft_f32",testInput_f32,fftSize);
+  PRINT_F32(testInput_f32,fftSize);
 #endif
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_cfft_q15(&riscv_cfft_sR_q15_len64, testInput_q15, ifftFlag, doBitReverse);
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_cfft_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_cfft_q15",testInput_q15,fftSize);
+  PRINT_Q(testInput_q15,fftSize);
 #endif
-  printf("testInput_q15 = %X\n",testInput_q15);
-  printf("Table1 = %X\n",riscv_cfft_sR_q15_len64.pTwiddle);
-  printf("Table2 = %X\n",riscv_cfft_sR_q15_len64.pBitRevTable);
 
 
   printf("End\n");

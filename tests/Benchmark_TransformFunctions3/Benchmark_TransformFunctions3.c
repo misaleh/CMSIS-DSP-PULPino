@@ -5,9 +5,14 @@
 #include "bar.h"
 #include <stdio.h>
 #include "riscv_const_structs.h"
-#define PRINT_F32(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i]*100)); \
+#include "bench.h"
+
+#define EVENT_ID 0x00  /*number of cycles ID for benchmarking*/
+
+
+#define PRINT_F32(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i]*100)); \
 printf("\n\n")
-#define PRINT_Q(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
+#define PRINT_Q(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
 printf("\n\n")
 //#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define RFFT_LEN  32
@@ -33,6 +38,11 @@ to measure the time of execution of each function.
 *Also the correct results are printed for the current values which are calculated from the orignal library 
 and also were checked by hand
 */
+void perf_enable_id( int eventid){
+  cpu_perf_conf_events(SPR_PCER_EVENT_MASK(eventid));
+  cpu_perf_conf(SPR_PCMR_ACTIVE | SPR_PCMR_SATURATE);
+};
+
 
 
 float32_t testInput_f32[RFFT_LEN] = 
@@ -56,22 +66,18 @@ float32_t result_f32[RFFT_LEN] = {0};
 int32_t main(void)
 {
  /*Init*/ 
-  set_pin_function(5, FUNC_GPIO);
-  set_gpio_pin_direction(5, DIR_OUT);
-  set_pin_function(6, FUNC_GPIO);
-  set_gpio_pin_direction(6, DIR_OUT);
-  CLR_GPIO_5();
-  CLR_GPIO_6();
-  /*rfft Init*/
+ /*rfft Init*/
   riscv_rfft_fast_init_f32(&S_rfft_f32 , RFFT_LEN);
-/*Tests*/
+ /*Tests*/
 
-/*rfft*/
-  SET_GPIO_6();	
+ /*rfft*/
+  perf_reset();
+  perf_enable_id(EVENT_ID);
   riscv_rfft_fast_f32(&S_rfft_f32, testInput_f32,result_f32 ,ifftFlag);
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_cfft_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_rfft_fast_f32",result_f32,RFFT_LEN);
+  PRINT_F32(result_f32,RFFT_LEN);
 #endif
   printf("End\n");
  return 0;

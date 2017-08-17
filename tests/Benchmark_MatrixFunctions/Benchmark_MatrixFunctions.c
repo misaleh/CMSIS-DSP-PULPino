@@ -4,13 +4,17 @@
 #include "string_lib.h"
 #include "bar.h"
 #include <stdio.h>
-#define PRINT_F32(Z,X) printf(Z"\n"); for(int i =0 ; i < (X.numRows)*(X.numCols) ; i++) printf("%d  ",(int)(X.pData[i])); \
+#include "bench.h"
+
+#define EVENT_ID 0x00  /*number of cycles ID for benchmarking*/
+
+#define PRINT_F32(X) printf("\n"); for(int i =0 ; i < (X.numRows)*(X.numCols) ; i++) printf("%d  ",(int)(X.pData[i])); \
 printf("\n\n")
-#define PRINT_Q(Z,X) printf(Z"\n"); for(int i =0 ; i < (X.numRows)*(X.numCols) ; i++) printf("0x%X  ",X.pData[i]); \
+#define PRINT_Q(X) printf("\n"); for(int i =0 ; i < (X.numRows)*(X.numCols) ; i++) printf("0x%X  ",X.pData[i]); \
 printf("\n\n")
-#define PRINTCOMP_F32(Z,X) printf(Z"\n"); for(int i =0 ; i < 2*(X.numRows)*(X.numCols) ; i++) printf("%d  ",(int)(X.pData[i])); \
+#define PRINTCOMP_F32(X) printf("\n"); for(int i =0 ; i < 2*(X.numRows)*(X.numCols) ; i++) printf("%d  ",(int)(X.pData[i])); \
 printf("\n\n")
-#define PRINTCOMP_Q(Z,X) printf(Z"\n"); for(int i =0 ; i < 2*(X.numRows)*(X.numCols) ; i++) printf("0x%X  ",X.pData[i]); \
+#define PRINTCOMP_Q(X) printf("\n"); for(int i =0 ; i < 2*(X.numRows)*(X.numCols) ; i++) printf("0x%X  ",X.pData[i]); \
 printf("\n\n")
 
 
@@ -36,6 +40,10 @@ to measure the time of execution of each function.
 *Also the correct results are printed for the current values which are calculated from the orignal library 
 and also were checked by hand
 */
+void perf_enable_id( int eventid){
+  cpu_perf_conf_events(SPR_PCER_EVENT_MASK(eventid));
+  cpu_perf_conf(SPR_PCMR_ACTIVE | SPR_PCMR_SATURATE);
+};
 void riscv_mat_init_f64(riscv_matrix_instance_f64*, uint16_t , uint16_t , float64_t*);
 /*  4*4  */
 float32_t A_f32_4_4[16] =
@@ -158,13 +166,6 @@ q15_t scale_q15 = 0x12B3;
 q31_t scale_q31 = 0x12C3F762;
 int32_t main(void)
 {
-/*Init I/O*/ 
-  set_pin_function(5, FUNC_GPIO);
-  set_gpio_pin_direction(5, DIR_OUT);
-  set_pin_function(6, FUNC_GPIO);
-  set_gpio_pin_direction(6, DIR_OUT);
-  CLR_GPIO_5();
-  CLR_GPIO_6();
 
 /*Init Matrices*/
   riscv_matrix_instance_f32 MatA_f32_4_4;     
@@ -212,162 +213,211 @@ int32_t main(void)
 
 /*Add*/
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_add_f32(&MatA_f32_4_4,&MatB_f32_4_4,&MatResult_f32_4_4);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_mat_add_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_mat_add_f32",MatResult_f32_4_4);
+  PRINT_F32(MatResult_f32_4_4);
 #endif
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_add_q15(&MatA_q15_4_4,&MatB_q15_4_4,&MatResult_q15_4_4);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("MatA_q15_4_4: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_add_q15",MatResult_q15_4_4);
+  PRINT_Q(MatResult_q15_4_4);
 #endif
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_add_q31(&MatA_q31_4_4,&MatB_q31_4_4,&MatResult_q31_4_4);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("MatA_q31_4_4: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_add_q31",MatResult_q31_4_4);
+  PRINT_Q(MatResult_q31_4_4);
 #endif
 
 /*complex multiplication*/
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_cmplx_mult_f32(&MatAComp_f32_4_4,&MatBComp_f32_4_4,&MatResultComp_f32_4_4);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_mat_cmplx_mult_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINTCOMP_F32("riscv_mat_cmplx_mult_f32",MatResultComp_f32_4_4);
+  PRINTCOMP_F32(MatResultComp_f32_4_4);
 #endif
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_cmplx_mult_q15(&MatAComp_q15_4_4,&MatBComp_q15_4_4,&MatResultComp_q15_4_4,scratchComp_q15);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_mat_cmplx_mult_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINTCOMP_Q("riscv_mat_cmplx_mult_q15",MatResultComp_q15_4_4);
+  PRINTCOMP_Q(MatResultComp_q15_4_4);
 #endif
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_cmplx_mult_q31(&MatAComp_q31_4_4,&MatBComp_q31_4_4,&MatResultComp_q31_4_4);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_mat_cmplx_mult_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINTCOMP_Q("riscv_mat_cmplx_mult_q31",MatResultComp_q31_4_4);
+  PRINTCOMP_Q(MatResultComp_q31_4_4);
 #endif
 
 /*inverse*/
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   status = riscv_mat_inverse_f32(&MatA_f32_4_4,&MatResult_f32_4_4);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_mat_inverse_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_mat_inverse_f32",MatResult_f32_4_4);
+  PRINT_F32(MatResult_f32_4_4);
 #endif
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   status = riscv_mat_inverse_f64(&MatA_f64_4_4,&MatResult_f64_4_4);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_mat_inverse_f64: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_mat_inverse_f64",MatResult_f64_4_4);
+  PRINT_F32(MatResult_f64_4_4);
 #endif
 
 /*multiplication*/
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_mult_f32(&MatA_f32_4_4,&MatB_f32_4_4,&MatResult_f32_4_4);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_mat_mult_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_mat_mult_f32",MatResult_f32_4_4);
+  PRINT_F32(MatResult_f32_4_4);
 #endif
-  SET_GPIO_5();	
+
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_mult_q15(&MatA_q15_4_4,&MatB_q15_4_4,&MatResult_q15_4_4,scratch_q15);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_mat_mult_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_mult_q15",MatResult_q15_4_4);
+  PRINT_Q(MatResult_q15_4_4);
 #endif
-  SET_GPIO_6();	
+
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_mult_q31(&MatA_q31_4_4,&MatB_q31_4_4,&MatResult_q31_4_4);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_mat_mult_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_mult_q31",MatResult_q31_4_4);
+  PRINT_Q(MatResult_q31_4_4);
 #endif
 
 /*fast multiplication*/
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_mult_fast_q15(&MatA_q15_4_4,&MatB_q15_4_4,&MatResult_q15_4_4,scratch_q15);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_mat_mult_fast_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_mult_fast_q15",MatResult_q15_4_4);
+  PRINT_Q(MatResult_q15_4_4);
 #endif
-  SET_GPIO_6();	
+
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_mult_fast_q31(&MatA_q31_4_4,&MatB_q31_4_4,&MatResult_q31_4_4);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_mat_mult_fast_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_mult_fast_q31",MatResult_q31_4_4);
+  PRINT_Q(MatResult_q31_4_4);
 #endif
 
 /*scale*/
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_scale_f32(&MatA_f32_4_4,scale_f32,&MatResult_f32_4_4);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_mat_scale_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_mat_scale_f32",MatResult_f32_4_4);
+  PRINT_F32(MatResult_f32_4_4);
 #endif
-  SET_GPIO_6();	
+
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_scale_q15(&MatA_q15_4_4,scale_q15,3,&MatResult_q15_4_4);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_mat_scale_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_scale_q15",MatResult_q15_4_4);
+  PRINT_Q(MatResult_q15_4_4);
 #endif
-  SET_GPIO_5();
+
+  perf_reset();
+  perf_enable_id(EVENT_ID);
   riscv_mat_scale_q31(&MatA_q31_4_4,scale_q31,3,&MatResult_q31_4_4);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_mat_scale_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_scale_q31",MatResult_q31_4_4);
+  PRINT_Q(MatResult_q31_4_4);
 #endif
 
 /*subtract*/
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_sub_f32(&MatA_f32_4_4,&MatB_f32_4_4,&MatResult_f32_4_4);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_mat_sub_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_mat_sub_f32",MatResult_f32_4_4);
+  PRINT_F32(MatResult_f32_4_4);
 #endif
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_sub_q15(&MatA_q15_4_4,&MatB_q15_4_4,&MatResult_q15_4_4);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_mat_sub_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_sub_q15",MatResult_q15_4_4);
+  PRINT_Q(MatResult_q15_4_4);
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_sub_q31(&MatA_q31_4_4,&MatB_q31_4_4,&MatResult_q31_4_4);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_mat_sub_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_sub_q31",MatResult_q31_4_4);
+  PRINT_Q(MatResult_q31_4_4);
 #endif
 
 /*transpose*/
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_trans_f32(&MatA_f32_4_4,&MatResult_f32_4_4);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_mat_trans_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_mat_trans_f32",MatResult_f32_4_4);
+  PRINT_F32(MatResult_f32_4_4);
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_trans_q15(&MatA_q15_4_4,&MatResult_q15_4_4);
-  CLR_GPIO_6();
+  perf_stop();
+  printf("riscv_mat_trans_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_trans_q15",MatResult_q15_4_4);
+  PRINT_Q(MatResult_q15_4_4);
 #endif
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_mat_trans_q31(&MatA_q31_4_4,&MatResult_q31_4_4);
-  CLR_GPIO_5();
+  perf_stop();
+  printf("riscv_mat_trans_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_mat_trans_q31",MatResult_q31_4_4);
+  PRINT_Q(MatResult_q31_4_4);
 #endif
 
   printf("End\n");

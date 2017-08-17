@@ -1,16 +1,16 @@
 #include <math.h>
 #include <stdio.h>
 #include "riscv_math.h"
-
 #include "gpio.h" //for indication for benchmarking
 #include "utils.h"
 #include "string_lib.h"
 #include "bar.h"
+#include "bench.h"
 
-
-#define PRINT_F32(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(100*X[i])); \
+#define EVENT_ID 0x00  /*number of cycles ID for benchmarking*/
+#define PRINT_F32(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(100*X[i])); \
 printf("\n\n")
-#define PRINT_Q(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
+#define PRINT_Q(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
 printf("\n\n")
 //#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define MAX_BLOCKSIZE 32
@@ -34,6 +34,11 @@ to measure the time of execution of each function.
 *Also the correct results are printed for the current vectors which are calculated from the orignal library 
 and also were checked by hand
 */
+void perf_enable_id( int eventid){
+  cpu_perf_conf_events(SPR_PCER_EVENT_MASK(eventid));
+  cpu_perf_conf(SPR_PCMR_ACTIVE | SPR_PCMR_SATURATE);
+};
+
  float32_t srcA_buf_f32[MAX_BLOCKSIZE] =
 {
   -0.4325648115282207,  -1.6655843782380970,  0.1253323064748307,
@@ -125,13 +130,6 @@ int i = 0,j = 0 ; /*loop counters*/
 int32_t main(void)
 {
 
- /*Init*/ 
-  set_pin_function(5, FUNC_GPIO);
-  set_gpio_pin_direction(5, DIR_OUT);
-  set_pin_function(6, FUNC_GPIO);
-  set_gpio_pin_direction(6, DIR_OUT);
-  CLR_GPIO_5() ;
-  CLR_GPIO_6() ;
 /*PID inits*/
   S_PID_f32.Kp = 0.7;
   S_PID_f32.Kd = 0.01;
@@ -152,75 +150,101 @@ int32_t main(void)
 /*Tests*/
 /*PID*/
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   for(j=0;j<MAX_BLOCKSIZE;j++)
   result_f32[j] =  riscv_pid_f32( &S_PID_f32, srcA_buf_f32[j] );
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_pid_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_pid_f32",result_f32,MAX_BLOCKSIZE);
+  PRINT_F32(result_f32,MAX_BLOCKSIZE);
 #endif
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   for(j=0;j<MAX_BLOCKSIZE;j++)
   result_q15[j] =  riscv_pid_q15( &S_PID_q15, srcA_buf_q15[j] );
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_pid_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_pid_q15",result_q15,MAX_BLOCKSIZE);
+  PRINT_Q(result_q15,MAX_BLOCKSIZE);
 #endif
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   for(j=0;j<MAX_BLOCKSIZE;j++)
   result_q31[j] =  riscv_pid_q31( &S_PID_q31, srcA_buf_q31[j] );
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_pid_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_pid_q31",result_q31,MAX_BLOCKSIZE);
+  PRINT_Q(result_q31,MAX_BLOCKSIZE);
 #endif
 
 /*Vector Clarke Transform*/
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_clarke_f32(Ia_f32, Ib_f32, &pIalpha_f32, &pIbeta_f32);
-  CLR_GPIO_6();	
-  SET_GPIO_5();	
+  perf_stop();
+  printf("riscv_clarke_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_clarke_q31(Ia_q31, Ib_q31, &pIalpha_q31, &pIbeta_q31);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_clarke_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
   printf("riscv_clarke_f32 = %d  %d\nriscv_clarke_q31 = 0x%X  0x%X\n\n",(int)(100*pIalpha_f32),(int)(100*pIbeta_f32),pIalpha_q31,pIbeta_q31 );
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_inv_clarke_f32( pIalpha_f32, pIbeta_f32, &Ia_f32, &Ib_f32);
-  CLR_GPIO_6();	
-  SET_GPIO_5();	
+  perf_stop();
+  printf("riscv_inv_clarke_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_inv_clarke_q31( pIalpha_q31, pIbeta_q31, &Ia_q31, &Ib_q31);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_inv_clarke_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
   printf("riscv_inv_clarke_f32 = %d  %d\nriscv_inv_clarke_q31 = 0x%X  0x%X\n\n",(int)(100*Ia_f32),(int)(100*Ib_f32),Ia_q31,Ib_q31 );
 #endif
 /*Sine Cosine*/
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_sin_cos_f32(theta_f32, &pSinVal_f32, &pCosVal_f32);
-  CLR_GPIO_6();	
-  SET_GPIO_5();	
+  perf_stop();
+  printf("riscv_sin_cos_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_sin_cos_q31(theta_q31, &pSinVal_q31, &pCosVal_q31);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_sin_cos_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
   printf("riscv_sin_cos_f32 = %d  %d\nriscv_sin_cos_q31 = 0x%X  0x%X\n\n",(int)(100*pSinVal_f32),(int)(100*pCosVal_f32),pSinVal_q31,pCosVal_q31 );
 #endif
 /*Vector Park Transform*/
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_park_f32(Ia_f32, Ib_f32, &pIalpha_f32, &pIbeta_f32, pSinVal_f32, pCosVal_f32);
-  CLR_GPIO_6();	
-  SET_GPIO_5();	
+  perf_stop();
+  printf("riscv_park_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_park_q31(Ia_q31, Ib_q31, &pIalpha_q31, &pIbeta_q31, pSinVal_q31, pCosVal_q31);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_park_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
   printf("riscv_park_f32 = %d  %d\nriscv_park_q31 = 0x%X  0x%X\n\n",(int)(100*pIalpha_f32),(int)(100*pIbeta_f32),pIalpha_q31,pIbeta_q31 );
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_inv_park_f32( pIalpha_f32, pIbeta_f32, &Ia_f32, &Ib_f32, pSinVal_f32, pCosVal_f32);
-  CLR_GPIO_6();	
-  SET_GPIO_5();	
+  perf_stop();
+  printf("riscv_inv_park_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_inv_park_q31( pIalpha_q31, pIbeta_q31, &Ia_q31, &Ib_q31, pSinVal_q31, pCosVal_q31);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_inv_park_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
   printf("riscv_inv_park_f32 = %d  %d\nriscv_inv_park_q31 = 0x%X  0x%X\n\n",(int)(100*Ia_f32),(int)(100*Ib_f32),Ia_q31,Ib_q31 );
 #endif

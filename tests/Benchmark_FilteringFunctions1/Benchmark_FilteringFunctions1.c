@@ -1,17 +1,19 @@
 #include <math.h>
 #include <stdio.h>
 #include "riscv_math.h"
-#include "gpio.h" //for indication for benchmarking
+#include "gpio.h"
 #include "utils.h"
 #include "string_lib.h"
 #include "bar.h"
+#include "bench.h"
 
+#define EVENT_ID 0x00  /*number of cycles ID for benchmarking*/
 
-#define PRINT_F32(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i])); \
+#define PRINT_F32(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(100*X[i])); \
 printf("\n\n")
-#define PRINT_Q(Z,X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
+#define PRINT_Q(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
 printf("\n\n")
-#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
+//#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define MAX_BLOCKSIZE     32
 #define NUM_STAGES 1
 #define CONV_BLOCKSIZE   ((2*MAX_BLOCKSIZE) - 1)
@@ -35,6 +37,10 @@ to measure the time of execution of each function.
 *Also the correct results are printed for the current vectors which are calculated from the orignal library 
 and also were checked by hand
 */
+void perf_enable_id( int eventid){
+  cpu_perf_conf_events(SPR_PCER_EVENT_MASK(eventid));
+  cpu_perf_conf(SPR_PCMR_ACTIVE | SPR_PCMR_SATURATE);
+};
  float32_t srcA_buf_f32[MAX_BLOCKSIZE] =
 {
   -0.4325648115282207,  -1.6655843782380970,  0.1253323064748307,
@@ -210,12 +216,6 @@ int32_t main(void)
 {
 
  /*Init*/ 
-  set_pin_function(5, FUNC_GPIO);
-  set_gpio_pin_direction(5, DIR_OUT);
-  set_pin_function(6, FUNC_GPIO);
-  set_gpio_pin_direction(6, DIR_OUT);
-  CLR_GPIO_5() ;
-  CLR_GPIO_6() ;
 /*biquad df1 inits*/
   riscv_biquad_cas_df1_32x64_init_q31( &S32x64_q31, NUM_STAGES, coeffs_q31, state_q63,  0);
   riscv_biquad_cascade_df1_init_f32(&Sdf1_f32,NUM_STAGES, coeffs_f32,state_f32);
@@ -228,70 +228,88 @@ int32_t main(void)
 /*Tests*/
 /*biquad df1*/
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_biquad_cas_df1_32x64_q31( &S32x64_q31 ,srcA_buf_q31,result_q31, MAX_BLOCKSIZE);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_biquad_cas_df1_32x64_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_biquad_cas_df1_32x64_q31",result_q31,MAX_BLOCKSIZE);
+  PRINT_Q(result_q31,MAX_BLOCKSIZE);
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_biquad_cascade_df1_f32(&Sdf1_f32,srcA_buf_f32,result_f32,MAX_BLOCKSIZE);
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_biquad_cascade_df1_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_biquad_cascade_df1_f32",result_f32,MAX_BLOCKSIZE);
+  PRINT_F32(result_f32,MAX_BLOCKSIZE);
 #endif
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_biquad_cascade_df1_q15(&Sdf1_q15,srcA_buf_q15,result_q15,MAX_BLOCKSIZE);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_biquad_cascade_df1_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_biquad_cascade_df1_q15",result_q15,MAX_BLOCKSIZE);
+  PRINT_Q(result_q15,MAX_BLOCKSIZE);
 #endif
 
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_biquad_cascade_df1_q31(&Sdf1_q31,srcA_buf_q31,result_q31,MAX_BLOCKSIZE);
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_biquad_cascade_df1_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_biquad_cascade_df1_q31",result_q31,MAX_BLOCKSIZE);
+  PRINT_Q(result_q31,MAX_BLOCKSIZE);
 #endif
 	
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_biquad_cascade_df1_fast_q15(&Sdf1_q15,srcA_buf_q15,result_q15,MAX_BLOCKSIZE);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_biquad_cascade_df1_fast_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_biquad_cascade_df1_fast_q15",result_q15,MAX_BLOCKSIZE);
+  PRINT_Q(result_q15,MAX_BLOCKSIZE);
 #endif 
-  SET_GPIO_6();	
+
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_biquad_cascade_df1_fast_q31(&Sdf1_q31,srcA_buf_q31,result_q31,MAX_BLOCKSIZE);
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_biquad_cascade_df1_fast_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_biquad_cascade_df1_fast_q31",result_q31,MAX_BLOCKSIZE);
+  PRINT_Q(result_q31,MAX_BLOCKSIZE);
 #endif
 
 
 
 /*biquad df2*/
 
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_biquad_cascade_df2T_f32(&Sdf2_f32,srcA_buf_f32,result_f32,MAX_BLOCKSIZE);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_biquad_cascade_df2T_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_biquad_cascade_df2T_f32",result_f32,MAX_BLOCKSIZE);
+  PRINT_F32(result_f32,MAX_BLOCKSIZE);
 #endif
-  SET_GPIO_6();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_biquad_cascade_df2T_f64(&Sdf2_f64,srcA_buf_f64,result_f64,MAX_BLOCKSIZE);
-  CLR_GPIO_6();	
+  perf_stop();
+  printf("riscv_biquad_cascade_df2T_f64: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_biquad_cascade_df2T_f64",result_f64,MAX_BLOCKSIZE);
+  PRINT_F32(result_f64,MAX_BLOCKSIZE);
 #endif
-  SET_GPIO_5();	
+  perf_reset();
+  perf_enable_id(EVENT_ID);	
   riscv_biquad_cascade_stereo_df2T_f32(&Sdf2stereo_f32,srcA_buf_f32,result_f32,MAX_BLOCKSIZE);
-  CLR_GPIO_5();	
+  perf_stop();
+  printf("riscv_biquad_cascade_stereo_df2T_f32: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_F32("riscv_biquad_cascade_stereo_df2T_f32",result_f32,MAX_BLOCKSIZE);
+  PRINT_F32(result_f32,MAX_BLOCKSIZE);
 #endif
-
 
 
 
