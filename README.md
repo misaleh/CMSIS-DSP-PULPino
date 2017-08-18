@@ -2,11 +2,11 @@
 This is a port of ARM CMSIS DSP [library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html) to [PULPino](https://github.com/pulp-platform/pulpino) microcontroller.
 This [project](https://summerofcode.withgoogle.com/projects/#5599084384616448) is part of Google Summer of Code (GSoC) 2017 
 
-This Repo is still under development.
-
 The names of files and functions are renamed from arm to riscv, Check  examples or the tests for more clarification.
 
 To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
+
+The library is already configured with PULPino in this [fork](https://github.com/misaleh/pulpino).
 
 ***Directory Structure:***
 
@@ -50,15 +50,15 @@ ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
 
 ARM M4 uses its DSP Instructions by default.
 
+The floating point arithmetic operations are slow as these results are obtained without using the FPU.
+
+Improvements of DSP extension(Imp%) = (Old - New_DSP)*100/Old
+
 #### BasicMath Functions
 
 These Benchmarks are performed on vectors of size 32.
 
-It can be seen that floating point arithmetic operations are very slow, the reason is that pulpino does not have a FPU unlike ARM M4.
-
 Results from pulpino were compared with results from ARM m4 and also were checked by hand.
-
-Improvements of DSP extension(Imp) = (Old - New_DSP)*100/Old
 
 
 | Function        | Puplino Cycles           | Puplino DSP Cycles (Imp%)|  ARM M4 Cycles|
