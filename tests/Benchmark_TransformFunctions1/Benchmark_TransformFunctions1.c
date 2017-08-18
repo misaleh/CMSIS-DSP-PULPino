@@ -10,9 +10,9 @@
 #define EVENT_ID 0x00  /*number of cycles ID for benchmarking*/
 
 
-#define PRINT_F32(X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i]*100)); \
+#define PRINT_F32(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("%d  ",(int)(X[i]*100)); \
 printf("\n\n")
-#define PRINT_Q(X,Y) printf(Z"\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
+#define PRINT_Q(X,Y) printf("\n"); for(int i =0 ; i < (Y); i++) printf("0x%X  ",X[i]); \
 printf("\n\n")
 //#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define TEST_LENGTH_SAMPLES 128
