@@ -88,7 +88,7 @@ void riscv_power_q7(
   {
     /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
     VectInA = (charV*)pSrc;
-    sum = sumdotpv4(*VectInA, *VectInA, sum);
+    sum = sumdotpv4(*VectInA, *VectInA, sum); /*multiply each element by itself then add*/
     pSrc+=4;
     /* Decrement the loop counter */
     blkCnt--;

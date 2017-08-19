@@ -228,22 +228,8 @@ riscv_status riscv_mat_mult_fast_q15(
           /* c(m,n) = a(1,1)*b(1,1) + a(1,2) * b(2,1) + .... + a(m,p)*b(p,n) */
 
 #if defined (USE_DSP_RISCV)
-        /*  inA1 = *pInA++;
-          inB1 = *pInB++;
-          sum =  mac(inA1,inB1,sum);
-          inA2 = *pInA++;
-          inB2 = *pInB++;
-          sum =  mac(inA2,inB2,sum);
-          inA1 = *pInA++;
-          inB1 = *pInB++;
-          sum =  mac(inA1,inB1,sum);
-          inA2 = *pInA++;
-          inB2 = *pInB++;
-          sum =  mac(inA2,inB2,sum);
-*/
           VectInA = (shortV*)pInA;
           VectInB = (shortV*)pInB;
-
 
           sum = sumdotpv2(*VectInA,*VectInB,sum);
           VectInA = (shortV*)(pInA+2);

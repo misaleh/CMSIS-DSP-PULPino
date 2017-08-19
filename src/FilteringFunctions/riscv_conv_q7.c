@@ -296,25 +296,21 @@ void riscv_conv_q7(
         VectInacc0A[1] = in2;
         VectInB[0] = in3;
         VectInB[1] = in4;
-        /* acc0 += x[0] * y[srcBLen - 1] + x[1] * y[srcBLen - 2]  */
-       /*acc0 = sumdotpv2(VectInA, VectInB, acc0);*/
-
 
         /* x[1] and x[2] are packed */
         in1 = (q15_t) x1;
         in2 = (q15_t) x2;
         VectInacc1A[0] = in1;
         VectInacc1A[1] = in2;
-        /* acc1 += x[1] * y[srcBLen - 1] + x[2] * y[srcBLen - 2]  */
-       /* acc1 = sumdotpv2(VectInA, VectInB, acc1);*/
+
+
         /* x[2] and x[3] are packed */
         in1 = (q15_t) x2;
         in2 = (q15_t) x3;
         VectInacc2A[0] = in1;
         VectInacc2A[1] = in2;
 
-        /* acc2 += x[2] * y[srcBLen - 1] + x[3] * y[srcBLen - 2]  */
-        /*acc2 = sumdotpv2(VectInA, VectInB, acc2);*/
+
 
         /* Read x[4] sample */
         x0 = *(px++);

@@ -88,7 +88,7 @@ void riscv_mean_q7(
   {
     /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
     VectInA = (charV*)pSrc;
-    sum = sumdotpv4(*VectInA, *VectInB, sum);
+    sum = sumdotpv4(*VectInA, *VectInB, sum); /*multiply each element by one the acc == add the 4 elements together at the same time */
     pSrc+=4;
     /* Decrement the loop counter */
     blkCnt--;

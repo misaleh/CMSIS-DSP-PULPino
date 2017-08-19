@@ -36,6 +36,8 @@
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 * POSSIBILITY OF SUCH DAMAGE. 
+
+ Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino)
 * -------------------------------------------------------------------- */
 #include "riscv_math.h"
 #include "riscv_common_tables.h"
@@ -106,6 +108,14 @@ riscv_status riscv_sqrt_q15(
     temp_float1 = tempconv.floatval;
     /* Convert to integer format */
     var1 = (q31_t) (temp_float1 * 16384);
+
+
+/*
+    var1 = ((q15_t) mulsN( var1 , (0x3000 -  (q15_t) mulsN( mulsN(var1,var1,15) , half , 15 ) ), 15) ) << 2;
+    var1 = ((q15_t) mulsN( var1 , (0x3000 - (q15_t) mulsN( mulsN(var1,var1,15) ,  half,15)  ), 15) ) << 2;
+    var1 = ((q15_t) mulsN( var1 , (0x3000 -  (q15_t)mulsN( mulsN(var1,var1,15) , half, 15)  ), 15 ) ) << 2;
+    var1 = (q15_t)( mulsN(temp1 , var1,15) ) << 1;
+*/
 
     /* 1st iteration */
     var1 = ((q15_t) ((q31_t) var1 * (0x3000 -

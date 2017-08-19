@@ -95,19 +95,21 @@ void riscv_shift_q15(
       blkCnt--;
     }
   }
-  else
+  else /*shift right*/
   {
 
     /* Initialize blkCnt with number of samples */
+    VectInB = pack2(-shiftBits,-shiftBits);
     while(blkCnt > 0u)
     {
       /* C = A >> shiftBits */
       /* Shift the input and then store the result in the destination buffer. */
       VectInA = (shortV*)pSrc; 
-      VectInB = pack2(-shiftBits,-shiftBits);
       VectInC = sra2(*VectInA,VectInB); 
-      *pDst++ = VectInC[0];
-      *pDst++ = VectInC[1];
+      //*pDst++ = VectInC[0];
+      //*pDst++ = VectInC[1];
+      *(shortV*)pDst =  VectInC;
+      pDst+=2;
       pSrc+=2;
       /* Decrement the loop counter */
       blkCnt--;

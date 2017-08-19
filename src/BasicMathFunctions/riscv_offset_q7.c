@@ -80,13 +80,13 @@ void riscv_offset_q7(
   shortV VectInC; 
   /*loop Unrolling */
   blkCnt = blockSize >> 1u;
+  /*pack to copies from offest*/
+  VectInB = pack2(offset,offset);
   while (blkCnt > 0u)
   {
     /*read 2 elements from memory*/
     VectInA[0] = (short)(*pSrc++);
     VectInA[1] = (short)(*pSrc++);
-    /*pack to copies from offest*/
-    VectInB = pack2(offset,offset);
     /*add the packed offset to the memory read*/
     VectInC = add2v(VectInA,VectInB); 
     /*check for saturation then save to destination buffer*/

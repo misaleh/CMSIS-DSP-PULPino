@@ -79,6 +79,7 @@ void riscv_q7_to_q15(
 {
   q7_t *pIn = pSrc;                              /* Src pointer */
   uint32_t blkCnt;                               /* loop counter */
+/*was slower*/
 /*
 #if defined (USE_DSP_RISCV)
   shortV VectInA;

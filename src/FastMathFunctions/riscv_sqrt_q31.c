@@ -35,7 +35,9 @@
 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE. 
+* POSSIBILITY OF SUCH DAMAGE.
+
+ Modifications 2017  Mostafa Saleh       (Ported to RISC-V PULPino) 
 * -------------------------------------------------------------------- */
 #include "riscv_math.h"
 #include "riscv_common_tables.h"

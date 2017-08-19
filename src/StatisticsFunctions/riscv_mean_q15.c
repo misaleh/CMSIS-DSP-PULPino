@@ -88,7 +88,7 @@ void riscv_mean_q15(
   {
     /* C = (A[0] + A[1] + A[2] + ... + A[blockSize-1]) */
     VectInA = (shortV*)pSrc;
-    sum = sumdotpv2(*VectInA, *VectInB, sum);
+    sum = sumdotpv2(*VectInA, *VectInB, sum); /*add 2 elements and the sum at the same time*/
     pSrc+=2;
     /* Decrement the loop counter */
     blkCnt--;

@@ -198,10 +198,6 @@ riscv_status riscv_mat_cmplx_mult_q15(
           VectInB[0] = d;
           VectInB[1] = c;
           sumImag += dotpv2(VectInA,VectInB);
-         /* sumReal += (q31_t) a *c;
-          sumImag += (q31_t) a *d;
-          sumReal -= (q31_t) b *d;
-          sumImag += (q31_t) b *c;*/
 
           /* read next real and imag values from pSrcA buffer */
           a = *(pInA + 2u);

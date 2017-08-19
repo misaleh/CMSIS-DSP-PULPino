@@ -243,8 +243,6 @@ void riscv_conv_fast_opt_q15(
     while(tapCnt > 0u)
     {
 
-      /* Read four samples from smaller buffer */
-
       VectInC= (shortV*)pIn2;
       VectInC1= (shortV*)(pIn2 + 2 );
       acc0 = sumdotpv2(*VectInA, *VectInC,acc0);

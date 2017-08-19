@@ -77,9 +77,9 @@ void riscv_cmplx_mag_squared_q15(
   shortV *VectInA;
   while (numSamples > 0u)
   {
-    VectInA =  (shortV*)pSrc;
-    acc0 = dotpv2(*VectInA, *VectInA);
-    *pDst++ = (q15_t) (((q63_t)acc0) >> 17);
+    VectInA =  (shortV*)pSrc;/*read 2 elements (a complex number)*/
+    acc0 = dotpv2(*VectInA, *VectInA);/*dot product with itself == magnitude squared*/
+    *pDst++ = (q15_t) (((q63_t)acc0) >> 17);/*normalize*/
     pSrc+=2;
     numSamples--;
   }

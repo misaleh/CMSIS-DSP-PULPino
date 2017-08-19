@@ -78,9 +78,9 @@ void riscv_cmplx_conj_q15(
   {
     /* realOut + j (imagOut) = realIn+ j (-1) imagIn */
     /* Calculate Complex Conjugate and then store the results in the destination buffer. */
-    *pDst++ = *pSrc++;
-    out = -(*pSrc++);
-    *pDst++ = (q15_t)clip(out,-32768,32767);
+    *pDst++ = *pSrc++;/*real as it is*/
+    out = -(*pSrc++); /*negate the imaginary part*/
+    *pDst++ = (q15_t)clip(out,-32768,32767);/*saturate the imaginary part (in case of -2^15 it will become 2^15 - 1)*/
     /* Decrement the loop counter */
     numSamples--;
   }
