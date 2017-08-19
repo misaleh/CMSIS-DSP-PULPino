@@ -10,7 +10,7 @@ The library is already configured with PULPino in this [fork](https://github.com
 
 ***Directory Structure:***
 
-* inc/ : Inculde files for CMSIS DSP.
+* inc/ : Include files for CMSIS DSP.
 
 * src/ : Ported Source code.
 
@@ -95,7 +95,7 @@ Results from pulpino were compared with results from ARM m4 and also were checke
 | arm_shift_q15 (left)     | 373 |  185(50.4%) | 236| 
 | arm_shift_q31 (left)      | 642|  N/A | 369| 
 | arm_shift_q7 (right)      | 143 | 62(56.6%) |246 | 
-| arm_shift_q15 (right)      | 141 |  140| 203| 
+| arm_shift_q15 (right)      | 141 |  91(35.5%)| 203| 
 | arm_shift_q31 (right)      | 145|  N/A |236 | 
 | arm_sub_f32      | 5350 | N/A |295 | 
 | arm_sub_q7      | 398 |  340(14.6%)| 109| 
@@ -291,7 +291,7 @@ From arm documentation:
 
 From arm documentation:
  
->Opt versions are supported for Q15 and Q7. Design uses internal scratch buffer for getting good optimisation. These versions are optimised in cycles and consumes more memory(Scratch memory) compared to Q15 and Q7 versions 
+>Opt versions are supported for Q15 and Q7. Design uses internal scratch buffer for getting good optimization. These versions are optimized in cycles and consumes more memory(Scratch memory) compared to Q15 and Q7 versions 
 
 **Opt fast functions** use scratch buffers and 32 bit accumulator. 
 
@@ -379,7 +379,7 @@ Init functions are not considered in benchmarking as they are just copying a few
 
 #### Transform Functions
 
-For CFFT, transform size was 64.
+For CFFT, Transform size was 64.
 
 RFFT uses Transform of size 16.
 
@@ -437,4 +437,3 @@ Init functions are not considered in benchmarking.
 |  arm_bilinear_interp_q7 |81| N/A| 219 | 
 | arm_bilinear_interp_q15  |132| N/A| 240 | 
 |  arm_bilinear_interp_q31 |104| N/A| 226 | 
-
