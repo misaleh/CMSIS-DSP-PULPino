@@ -8,11 +8,22 @@ Check  examples or the tests for more clarification.
 
 To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
-The library is already configured and integrated in the CMake of PULPino in this [fork](https://github.com/misaleh/pulpino).
+The library is already configured and integrated in the CMake files of PULPino in this [fork](https://github.com/misaleh/pulpino).
 
-For example after configuring pulpino itself and installing tools required, you can simulate ` Benchmark_BasicMathFunctions1 ` by typing.
+For example, after configuring pulpino itself and installing tools required, you can simulate ` Benchmark_BasicMathFunctions1 ` by typing.
 
 	make Benchmark_BasicMathFunctions1.vsim
+	
+Note that some `Transform Fucntion` benchmarks needs more memory than the default (512kb instead of 32kb).
+
+To increase memory size, three files should be changed: 
+
+* `rtl/core_region.sv`, where parameter `DATA_RAM_SIZE` changes the size of the RAM.
+
+* `sw/ref/link.common.ld`, the `dataram` size  and `stack` start address need to be changed in the linker script.
+ 
+* `sw/utils/s19toslm.py`, which translates the compiler output to the format the testbench reads, `tcdm_bank_size` needs to be changed.
+
 
 ***Directory Structure:***
 
