@@ -2,11 +2,17 @@
 This is a port of ARM CMSIS DSP [library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html) to [PULPino](https://github.com/pulp-platform/pulpino) microcontroller.
 This [project](https://summerofcode.withgoogle.com/projects/#5599084384616448) is part of Google Summer of Code (GSoC) 2017 
 
-The names of files and functions are renamed from arm to riscv, Check  examples or the tests for more clarification.
+The names of files and functions are renamed from arm to riscv. For example `arm_add_q15` is changed to `riscv_add_q15`
+
+Check  examples or the tests for more clarification.
 
 To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
-The library is already configured with PULPino in this [fork](https://github.com/misaleh/pulpino).
+The library is already configured and integrated in the CMake of PULPino in this [fork](https://github.com/misaleh/pulpino).
+
+For example after configuring pulpino itself and installing tools required, you can simulate ` Benchmark_BasicMathFunctions1 ` by typing.
+
+	make Benchmark_BasicMathFunctions1.vsim
 
 ***Directory Structure:***
 
