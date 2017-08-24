@@ -1,20 +1,26 @@
 ## CMSIS DSD for PULPino
-This is a port of ARM CMSIS DSP [library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html) to [PULPino](https://github.com/pulp-platform/pulpino) microcontroller.
+This is a port of ARM CMSIS DSP [library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html) to [PULPino](https://github.com/pulp-platform/pulpino) microcontroller(RISC-V RVIMD ISA with costum extensions).
 This [project](https://summerofcode.withgoogle.com/projects/#5599084384616448) is part of Google Summer of Code (GSoC) 2017 
 
-The names of files and functions are renamed from arm to riscv. For example `arm_add_q15` is changed to `riscv_add_q15`
+#
 
-Check  examples or the tests for more clarification.
+The names of files and functions are renamed from arm to riscv. For example `arm_add_q15` is changed to `riscv_add_q15`. Check  examples or  tests for more clarification.
+
+#
 
 To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
+#
+
 The library is already configured and integrated in the CMake files of PULPino in this [fork](https://github.com/misaleh/pulpino).
 
-For example, after configuring pulpino itself and installing tools required, you can simulate ` Benchmark_BasicMathFunctions1 ` by typing.
+For example, after configuring PULPino itself and installing tools required, you can simulate ` Benchmark_BasicMathFunctions1 ` by typing.
 
 	make Benchmark_BasicMathFunctions1.vsim
 	
-Note that some `Transform Fucntion` benchmarks needs more memory than the default (512kb instead of 32kb).
+#
+	
+Note that some `Transform Fucntions` benchmarks needs more memory than the default (512kb instead of 32kb).
 
 To increase memory size, three files should be changed: 
 
@@ -24,6 +30,7 @@ To increase memory size, three files should be changed:
  
 * `sw/utils/s19toslm.py`, which translates the compiler output to the format the testbench reads, `tcdm_bank_size` needs to be changed.
 
+#
 
 ***Directory Structure:***
 
@@ -37,6 +44,21 @@ To increase memory size, three files should be changed:
 
 * more_tests/ : More tests based on subset of the CMSISv5 test suite, it doesn't compare results with pre-known values but with reference implementation.
 
+#
+
+***Flow of development:***
+
+For each module:
+
+1. Port to PULPino.
+2. Test it.
+3. Benchmark basic implementation.
+4. Optimize the implementation with PULPino DSP extension.
+5. Test it.
+6. Benchmark DSP implementation.
+7. Benchmark ARM m4 and compare results.
+
+#
 
 ### Ported Modules
 1) Basic Math Functions
@@ -75,7 +97,7 @@ Improvements of DSP extension(Imp%) = (Old - New_DSP)*100/Old
 
 These Benchmarks are performed on vectors of size 32.
 
-Results from pulpino were compared with results from ARM m4 and also were checked by hand.
+Results from PULPino were compared with results from ARM m4 and also were checked by hand.
 
 
 | Function        | Puplino Cycles           | Puplino DSP Cycles (Imp%)|  ARM M4 Cycles|
@@ -454,3 +476,14 @@ Init functions are not considered in benchmarking.
 |  arm_bilinear_interp_q7 |81| N/A| 219 | 
 | arm_bilinear_interp_q15  |132| N/A| 240 | 
 |  arm_bilinear_interp_q31 |104| N/A| 226 | 
+
+#
+
+### Credits
+
+The initial port was performerd by Mostafa Saleh, for the lowRISC project in Google Summer of Code (GSoC) 2017. 
+
+#
+### License
+
+This project in under The 3-Clause BSD [License](LICENSE).
