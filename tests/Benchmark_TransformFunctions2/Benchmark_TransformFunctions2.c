@@ -82,7 +82,7 @@ int32_t main(void)
   perf_stop();
   printf("riscv_cfft_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_cfft_q31",testInput_q31,fftSize);
+  PRINT_Q(testInput_q31,fftSize);
 #endif
 
   printf("End\n");

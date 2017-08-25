@@ -96,7 +96,7 @@ void riscv_fir_q15(
   q63_t acc0, acc1, acc2, acc3;                  /* Accumulators */
   uint32_t numTaps = S->numTaps;                 /* Number of taps in the filter */
   uint32_t tapCnt, blkCnt;                       /* Loop counters */
-  shortV *VectInA;
+  shortV *VectInA = NULL; /*compiler generates unreasonable  warning here, although it is initialized later*/
   shortV *VectInB;
   shortV *VectInC;
   shortV *VectInD;
@@ -141,8 +141,9 @@ void riscv_fir_q15(
     /* Initialize coeff pointer of type q31 */
     pb = pCoeffs;
 
+
     /* Read the first two samples from the state buffer:  x[n-N], x[n-N-1] */
-    VectInA = (shortV*)px1;
+    VectInA = (shortV*)(px1);
     /* Read the third and forth samples from the state buffer: x[n-N-1], x[n-N-2] */
     VectInB = (shortV*)(px1+1u);
     px1 += 2u;

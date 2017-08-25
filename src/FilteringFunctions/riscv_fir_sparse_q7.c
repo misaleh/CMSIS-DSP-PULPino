@@ -98,9 +98,7 @@ void riscv_fir_sparse_q7(
 
 
 
-#ifndef ARM_MATH_CM0_FAMILY
-
-  /* Run the below code for Cortex-M4 and Cortex-M3 */
+#if defined (USE_DSP_RISCV)
 
   q7_t in1, in2, in3, in4;
 
@@ -307,7 +305,7 @@ void riscv_fir_sparse_q7(
     in3 = (q7_t) clip(*pScr2++ >> 7, -128,127);
     in4 = (q7_t) clip(*pScr2++ >> 7, -128,127);
 
-    *(charV*)pOut = pack4(in2, in1, in4, in3);
+    *(charV*)pOut = pack4(in1, in2, in3, in4);
     pOut+=4;
     /* Decrement the blockSize loop counter */
     blkCnt--;

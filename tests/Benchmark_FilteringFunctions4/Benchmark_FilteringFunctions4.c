@@ -354,7 +354,7 @@ int32_t main(void)
   perf_stop();
   printf("riscv_conv_opt_q15: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_fir_decimate_fast_q31",result_decimate_q31,MAX_BLOCKSIZE/M);
+  PRINT_Q(result_decimate_q31,MAX_BLOCKSIZE/M);
 #endif
 */
 

@@ -89,7 +89,7 @@ void riscv_q31_to_q7(
     out3 = (q7_t) (*pIn++ >> 24);
     out4 = (q7_t) (*pIn++ >> 24);
     /* Decrement the loop counter */
-    VectInA = pack4(out2,out1,out4,out3);
+    VectInA = pack4(out1,out2,out3,out4);
     *(charV*)pDst  = VectInA;
     pDst+=4;
     blkCnt--;

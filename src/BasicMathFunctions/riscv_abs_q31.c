@@ -86,7 +86,7 @@ void riscv_abs_q31(
     /* Calculate absolute value of the input (if -1 then saturated to 0x7fffffff) and then store the results in the destination buffer. */
     in = *pSrc++; /*read from source buffer and increment it for next read */
    /*check for saturation*/
-    if(in == 0x80000000)
+    if(in == INT32_MIN)
     {
 	*pDst++ = INT32_MAX; 
     }

@@ -79,7 +79,7 @@ void riscv_fir_q7(
   q7_t *pState = S->pState;                      /* State pointer */
   q7_t *pCoeffs = S->pCoeffs;                    /* Coefficient pointer */
   q7_t *pStateCurnt;                             /* Points to the current sample of the state */
-  q7_t x0, x1, x2, x3,x4,x5,x6;                           /* Temporary variables to hold state */
+  q7_t x0, x1=0, x2=0, x3=0,x4=0,x5=0,x6=0;      /* Temporary variables to hold state */
   q7_t c0;                                       /* Temporary variable to hold coefficient value */
   q7_t *px;                                      /* Temporary pointer for state */
   q7_t *pb;                                      /* Temporary pointer for coefficient buffer */
@@ -142,10 +142,10 @@ void riscv_fir_q7(
       x5 = *(px + 2u); 
       x6 = *(px + 3u); 
       VectInC0 = (charV*)pb;
-      VectInACC0 = pack4(x1,x0,x3,x2);
-      VectInACC1 = pack4(x2,x1,x4,x3);
-      VectInACC2 = pack4(x3,x2,x5,x4);
-      VectInACC3 = pack4(x4,x3,x6,x5);
+      VectInACC0 = pack4(x0,x1,x2,x3);
+      VectInACC1 = pack4(x1,x2,x3,x4);
+      VectInACC2 = pack4(x2,x3,x4,x5);
+      VectInACC3 = pack4(x3,x4,x5,x6);
 
       acc0 = sumdotpv4(VectInACC0,*VectInC0,acc0);
       acc1 = sumdotpv4(VectInACC1,*VectInC0,acc1);
@@ -198,7 +198,7 @@ void riscv_fir_q7(
     acc1 = clip((acc1 >> 7u),-128,127);
     acc2 = clip((acc2 >> 7u), -128,127);
     acc3 = clip((acc3 >> 7u), -128,127);
-    *(charV*)pDst= pack4(acc1,acc0,acc3,acc2);
+    *(charV*)pDst= pack4(acc0,acc1,acc2,acc3);
     pDst+=4;
     /* Decrement the samples loop counter */
     blkCnt--;

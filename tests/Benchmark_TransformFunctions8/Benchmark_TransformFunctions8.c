@@ -106,7 +106,7 @@ int32_t main(void)
   perf_stop();
   printf("riscv_dct4_q31: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_dct4_q31",testInput_q31,RFFT_LEN);
+  PRINT_Q(testInput_q31,RFFT_LEN);
 #endif
   printf("End\n");
 

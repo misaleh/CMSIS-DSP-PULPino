@@ -13,7 +13,7 @@
 printf("\n\n")
 #define PRINT_Q(X,Y) printf("\n"); for(int i =0 ; i < Y; i++) printf("0x%X  ",X[i]); \
 printf("\n\n")
-//#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
+#define PRINT_OUTPUT  /*for testing functionality for each function, removed while benchmarking*/
 #define MAX_BLOCKSIZE     32
 
 /*
@@ -198,7 +198,7 @@ int32_t main(void)
   perf_stop();
   printf("riscv_float_to_q7: %s: %d\n", SPR_PCER_NAME(EVENT_ID),  cpu_perf_get(EVENT_ID));	
 #ifdef PRINT_OUTPUT
-  PRINT_Q("riscv_float_to_q7",result_q7,MAX_BLOCKSIZE);
+  PRINT_Q(result_q7,MAX_BLOCKSIZE);
 #endif
   perf_reset();
   perf_enable_id(EVENT_ID);

@@ -156,10 +156,11 @@ void riscv_cfft_radix4by2_q15(
 
     uint32_t ia, l;
     q15_t xt, yt, cosVal, sinVal;
-
+#if defined (USE_DSP_RISCV)
     shortV VectInA;
     shortV VectInB;
     shortV *VectInC;
+#endif
     n2 = fftLen >> 1; 
 
     
@@ -192,7 +193,9 @@ void riscv_cfft_radix4by2_q15(
     riscv_radix4_butterfly_q15( pSrc, n2, (q15_t*)pCoef, 2u);
     // second col
     riscv_radix4_butterfly_q15( pSrc + fftLen, n2, (q15_t*)pCoef, 2u);
-    VectInB = pack2(1,1);		
+#if defined (USE_DSP_RISCV)
+    VectInB = pack2(1,1);	
+#endif	
     for (i = 0; i < fftLen >> 1; i++)
     {
 #if defined (USE_DSP_RISCV)

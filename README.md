@@ -283,14 +283,14 @@ These Benchmarks are performed on vectors of size 32.
 | arm_fill_q7     |  63| 40(36.5%)|89 | 
 | arm_fill_q15    | 62 |35(43.5%) |98 |
 | arm_fill_q31    | 75 | N/A |118 | 
-| arm_float_to_q7      | 7036 |  N/A |559 | 
-| arm_float_to_q15      | 7036 | N/A |534|
+| arm_float_to_q7      | 7178 |  7036(2%) |559 | 
+| arm_float_to_q15      | 7242 | 7036(2.8%) |534|
 | arm_float_to_q31       | 45287 | N/A |1566 | 
 | arm_q7_to_float      | 7295 |N/A |328 | 
 | arm_q7_to_q15     | 140 |  N/A|156| 
 | arm_q7_to_q31       | 140 | N/A |182 | 
 | arm_q15_to_float    | 7327 |  N/A|182 | 
-| arm_q15_to_q7    | 133| N/A |270 | 
+| arm_q15_to_q7    | 140| 133(5%) |270 | 
 | arm_q15_to_q31      | 138 | N/A |206| 
 | arm_q31_to_float   | 7305 | N/A |182 | 
 | arm_q31_to_q7    |  140| 115(17.6%) |156|

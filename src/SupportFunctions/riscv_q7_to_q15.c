@@ -79,29 +79,9 @@ void riscv_q7_to_q15(
 {
   q7_t *pIn = pSrc;                              /* Src pointer */
   uint32_t blkCnt;                               /* loop counter */
-/*was slower*/
-/*
-#if defined (USE_DSP_RISCV)
-  shortV VectInA;
-  shortV VectInC,VectInB; 
-  blkCnt = blockSize >> 1u;
-  VectInB = pack2(8,8);
-  while(blkCnt > 0u)
-    {
-      VectInA[0] = pSrc[0];
-      VectInA[1] = pSrc[1];
-      VectInC = sll2(VectInA,VectInB); 
-      *(shortV*)pDst = VectInC;
-      pDst+=2;
-      pSrc+=2;
-      blkCnt--;
-    }
-  blkCnt = blockSize % 0x2u;
-#else
-*/
+
   /* Loop over blockSize number of values */
   blkCnt = blockSize;
-/*#endif*/
   while(blkCnt > 0u)
   {
     /* C = (q15_t) A << 8 */

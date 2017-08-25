@@ -331,7 +331,7 @@ riscv_status riscv_conv_partial_opt_q7(
       out1 = (q7_t) (clip(acc1 >> 7u, -128,127));
       out2 = (q7_t) (clip(acc2 >> 7u, -128,127));
       out3 = (q7_t) (clip(acc3 >> 7u, -128,127));
-      *(charV*)pOut = pack4(out1,out0,out3,out2);
+      *(charV*)pOut = pack4(out0,out1,out2,out3);
       pOut+=4;
       /* Initialization of inputB pointer */
       pScr2 = py;
