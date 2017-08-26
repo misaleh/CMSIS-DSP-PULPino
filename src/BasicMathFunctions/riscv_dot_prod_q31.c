@@ -79,48 +79,8 @@ void riscv_dot_prod_q31(
   uint32_t blkCnt;                               /* loop counter */
 
 
-#if defined (USE_DSP_RISCV)
-
-  q31_t inA1, inA2, inA3, inA4;
-  q31_t inB1, inB2, inB3, inB4;
-
-  /*loop Unrolling */
-  blkCnt = blockSize >> 2u;
-
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-   ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0u)
-  {
-    /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
-    /* Calculate dot product and then store the result in a temporary buffer. */
-
-    /*read 4 elements from each buffer*/
-    inA1 = *pSrcA++;
-    inA2 = *pSrcA++;
-    inA3 = *pSrcA++;
-    inA4 = *pSrcA++;
-    inB1 = *pSrcB++;
-    inB2 = *pSrcB++;
-    inB3 = *pSrcB++;
-    inB4 = *pSrcB++;
-    /* multiply and accumulate then normalize*/
-    sum += ((q63_t) inA1 * inB1) >> 14u;
-    sum += ((q63_t) inA2 * inB2) >> 14u;
-    sum += ((q63_t) inA3 * inB3) >> 14u;
-    sum += ((q63_t) inA4 * inB4) >> 14u;
-
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
-
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-   ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4u;
-
-#else
-  /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
-#endif
+
   while(blkCnt > 0u)
   {
     /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */

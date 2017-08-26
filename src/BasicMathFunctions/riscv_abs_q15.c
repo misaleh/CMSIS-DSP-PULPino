@@ -61,7 +61,6 @@
  * <b>Scaling and Overflow Behavior:</b>    
  * \par    
  * The function uses saturating arithmetic.    
- * The Q15 value -1 (0x8000) will be saturated to the maximum allowable positive value 0x7FFF.    
  */
 
 void riscv_abs_q15(

@@ -102,13 +102,10 @@ void riscv_dot_prod_q15(
   }
 
   blkCnt = blockSize % 0x2u;
-
-  while (blkCnt > 0u)
+ /*the remaning sample if vector size is odd*/
+  while (blkCnt > 0u) 
   {
-    /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
-    /* muls perform multiplication */
-    sum +=  muls(*pSrcA++,*pSrcB++); 
-
+    sum +=  (q63_t) ((q31_t) * pSrcA++ * *pSrcB++);
     /* Decrement the loop counter */
     blkCnt--;
   }

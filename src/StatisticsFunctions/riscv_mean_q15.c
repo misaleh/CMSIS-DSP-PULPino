@@ -80,7 +80,7 @@ void riscv_mean_q15(
   uint32_t blkCnt;                               /* loop counter */
 #if defined (USE_DSP_RISCV)
   blkCnt = blockSize>>1;
-  short ones[4] = {0x01,0x01};
+  short ones[2] = {0x01,0x01};
   shortV *VectInA;
   shortV *VectInB =(shortV*)ones; 
 

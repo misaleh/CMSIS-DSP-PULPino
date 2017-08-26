@@ -69,6 +69,7 @@ void riscv_mult_q7(
   {
     /* C = A * B */
     /*multiply and normailze then accumulate*/
+   // out1 =  mulsN(*pSrcA++, *pSrcB++,7);// (((q15_t) (*pSrcA++) * (*pSrcB++)) >> 7)
     *pDst++ =  (q7_t)clip((((q15_t) (*pSrcA++) * (*pSrcB++)) >> 7),-128,127);
     /* Decrement the blockSize loop counter */
     blkCnt--;

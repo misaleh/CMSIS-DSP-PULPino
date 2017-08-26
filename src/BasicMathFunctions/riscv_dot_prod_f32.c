@@ -82,35 +82,9 @@ void riscv_dot_prod_f32(
 {
   float32_t sum = 0.0f;                          /* Temporary result storage */
   uint32_t blkCnt;                               /* loop counter */
-  #if defined (USE_DSP_RISCV)
-
-  /*loop Unrolling */
-  blkCnt = blockSize >> 2u;
-
-  /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
-   ** a second loop below computes the remaining 1 to 3 samples. */
-  while (blkCnt > 0u)
-  {
-    /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
-    /* Calculate dot product and then store the result in a temporary buffer */
-    sum += (*pSrcA++) * (*pSrcB++);
-    sum += (*pSrcA++) * (*pSrcB++);
-    sum += (*pSrcA++) * (*pSrcB++);
-    sum += (*pSrcA++) * (*pSrcB++);
-
-    /* Decrement the loop counter */
-    blkCnt--;
-  }
-
-  /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
-   ** No loop unrolling is used. */
-  blkCnt = blockSize % 0x4u;
-
-#else
   /* Initialize blkCnt with number of samples */
   blkCnt = blockSize;
 
-#endif 
   while(blkCnt > 0u)
   {
     /* C = A[0]* B[0] + A[1]* B[1] + A[2]* B[2] + .....+ A[blockSize-1]* B[blockSize-1] */
