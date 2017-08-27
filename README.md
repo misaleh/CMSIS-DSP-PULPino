@@ -1,5 +1,5 @@
 ## CMSIS DSD for PULPino
-This is a port of ARM CMSIS DSP [library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html) to [PULPino](https://github.com/pulp-platform/pulpino) microcontroller(RISC-V RVIMD ISA with costum extensions).
+This is a port of ARM CMSIS DSP [library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html) to [PULPino](https://github.com/pulp-platform/pulpino) microcontroller(RISC-V  RV32IMFD ISA with custom extensions).
 This [project](https://summerofcode.withgoogle.com/projects/#5599084384616448) is part of Google Summer of Code (GSoC) 2017
 
 #
@@ -8,15 +8,15 @@ The names of files and functions are renamed from arm to riscv. For example `arm
 
 #
 
-To use DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
+To use optimized functions with DSP extension, add `#define USE_DSP_RISCV` in riscv_math.h
 
 #
 
 The library is already configured and integrated in the CMake files of PULPino in this [fork](https://github.com/misaleh/pulpino).
 
-For example, after configuring PULPino itself and installing tools required, you can simulate ` Benchmark_BasicMathFunctions1 ` by typing.
+For example, after configuring PULPino itself and installing required tools, you can simulate ` Benchmark_BasicMathFunctions1 ` by typing.
 
-	make Benchmark_BasicMathFunctions1.vsim
+  make Benchmark_BasicMathFunctions1.vsim
 
 #
 
@@ -91,9 +91,11 @@ ARM M4 Benchmarks were done with  Keil simulator(CM4_FP) and CMSISv5.
 
 ARM M4 uses its DSP Instructions by default.
 
-The floating point arithmetic operations are slow as these results are obtained without using the FPU.
+The floating point arithmetic operations are slow as these results are obtained without FPU.
 
-Improvements of DSP extension(Imp%) = (Old - New_DSP)*100/Old
+Improvements of DSP extension:
+
+![equation](http://www.sciweavers.org/download/Tex2Img_1503817629.jpg)
 
 #### BasicMath Functions
 
@@ -440,8 +442,8 @@ To use most of theses tests, the RAM size has to be changed to 512kb.
 | arm_rfft_q15 | 1466 | N/A  |1228 |
 |  arm_rfft_q31|2466 |N/A   |2727 |
 | arm_dct4_f32 |584790  | N/A  |16037|
-| arm_dct4_q15 |  17773| N/A  | |
-|arm_dct4_q31  | 29773 | N/A  | |
+| arm_dct4_q15 |  17773| N/A  | - |
+|arm_dct4_q31  | 29773 | N/A  |  - |
 
 #### Controller Functions
 
@@ -488,4 +490,4 @@ The initial port was performerd by Mostafa Saleh, for the lowRISC project in Goo
 #
 ### License
 
-This project in under The 3-Clause BSD [License](LICENSE).
+This project in under The 3-Clause BSD License.
