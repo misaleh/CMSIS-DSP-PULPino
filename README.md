@@ -483,6 +483,12 @@ Init functions are not considered in benchmarking.
 
 #
 
+### Future Work
+
+* Port rest of test suite .
+* Benchmark with FPU (when double precision instructions are implemented).
+
+#
 ### Credits
 
 The initial port was performerd by Mostafa Saleh, for the lowRISC project in Google Summer of Code (GSoC) 2017.
