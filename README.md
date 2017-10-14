@@ -95,7 +95,7 @@ The floating point arithmetic operations are slow as these results are obtained 
 
 Improvements of DSP extension:
 
-![equation](http://www.sciweavers.org/download/Tex2Img_1503817629.jpg)
+![equation](https://i.imgur.com/aiubQYZ.jpg)
 
 #### BasicMath Functions
 
