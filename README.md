@@ -1,4 +1,4 @@
-## CMSIS DSD for PULPino
+## CMSIS DSP for PULPino
 This is a port of ARM CMSIS DSP [library](http://www.keil.com/pack/doc/CMSIS/DSP/html/index.html) to [PULPino](https://github.com/pulp-platform/pulpino) microcontroller(RISC-V  RV32IMFD ISA with custom extensions).
 This [project](https://summerofcode.withgoogle.com/projects/#5599084384616448) is part of Google Summer of Code (GSoC) 2017
 
